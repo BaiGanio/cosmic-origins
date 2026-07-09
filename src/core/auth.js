@@ -11,16 +11,14 @@ auth.onAuthStateChanged(user => {
 
     loggedIn.forEach(el => el.style.display = "block");
     guestOnly.forEach(el => el.style.display = "none");
-
-    loadUniversalObjects();
   } else {
     document.body.classList.remove("logged-in");
 
     loggedIn.forEach(el => el.style.display = "none");
     guestOnly.forEach(el => el.style.display = "block");
 
-    loadUniversalObjects();
   }
+  loadUniversalObjects();
 });
 // -----------------------------
 //  START LOGOUT

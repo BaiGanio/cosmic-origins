@@ -56,22 +56,54 @@ function loadUniversalObjects() {
     const container = document.getElementById("uaoList");
     container.innerHTML = "";
 
+    // 1) Check localStorage cache
+    const cached = localStorage.getItem("uao_cache");
+
+    if (cached) {
+        const items = JSON.parse(cached);
+
+        // Render cards
+        items.forEach(item => {
+            renderObjectCard(item.id, item);
+        });
+
+        // Render carousel
+        renderCarousel(items);
+
+        return; // Stop here — no DB calls
+    }
+
+    // 2) If no cache → fetch from Firestore
     db.collection("uao")
       .orderBy("createdAt", "desc")
       .limit(12)
       .get()
       .then(snapshot => {
-          const items = []; // ← ТОВА ЛИПСВА
+          const items = [];
+
           snapshot.forEach(doc => {
+              const data = doc.data();
 
-            const data = doc.data();
+              const normalized = {
+                  id: doc.id,
+                  imageUrl: safeImageUrl(data.imageUrl),
+                  title: data.name || "Untitled",
+                  description: data.description || "",
+                  category: data.category || ""
+              };
 
-            renderObjectCard(doc.id, data);
-            items.push({ imageUrl: safeImageUrl(data.imageUrl), title: data.name || "Untitled", description: data.description || "", category: data.category || "" });
+              renderObjectCard(doc.id, normalized);
+              items.push(normalized);
           });
+
+          // Render carousel
           renderCarousel(items);
+
+          // 3) Save to localStorage
+          localStorage.setItem("uao_cache", JSON.stringify(items));
       });
 }
+
 
 function renderObjectCard(id, g) {
   const container = document.getElementById("uaoList");
@@ -103,8 +135,6 @@ function renderObjectCard(id, g) {
 
   container.appendChild(card);
 }
-
-
 
 function safeImageUrl(url) {
   if (!url) return 'images/no-image.jpg';
@@ -203,60 +233,6 @@ imageInput.addEventListener("input", () => {
 //-----------------------------
 // END IMAGE URL LIVE PREVIEW
 //-----------------------------
-
-function renderCarousel(items) {
-  if (!items || items.length === 0) {
-    document.getElementById("carouselContainer").innerHTML = `
-      <p class="text-center text-muted fs-4">No images available.</p>
-    `;
-    return;
-  }
-
-  let indicators = "";
-  let slides = "";
-
-  items.forEach((item, index) => {
-    indicators += `
-      <button 
-        type="button" 
-        data-bs-target="#carouselContainer" 
-        data-bs-slide-to="${index}"
-        class="${index === 0 ? 'active' : ''}" 
-        aria-current="${index === 0 ? 'true' : 'false'}">
-      </button>
-    `;
-
-    slides += `
-      <div class="carousel-item ${index === 0 ? 'active' : ''}">
-        <img src="${item.imageUrl}" class="carousel-img">
-
-        <div class="carousel-caption">
-          <h5>${item.title || "Untitled"}</h5>
-          <!-- <h4 class=cormorant>${item.description.split(/[.!?]/)[0] || ""}</h4> -->
-        </div>
-      </div>
-    `;
-  });
-  document.getElementById("carouselContainer").innerHTML = `
-    <div class="carousel-indicators">
-      ${indicators}
-    </div>
-
-    <div class="carousel-inner">
-      ${slides}
-    </div>
-
-    <button class="carousel-control-prev" type="button" data-bs-target="#carouselContainer" data-bs-slide="prev">
-      <span class="carousel-control-prev-icon"></span>
-    </button>
-
-    <button class="carousel-control-next" type="button" data-bs-target="#carouselContainer" data-bs-slide="next">
-      <span class="carousel-control-next-icon"></span>
-    </button>
-  `;
-  const el = document.querySelector('#carouselContainer'); 
-  new bootstrap.Carousel(el);
-}
 
 
 

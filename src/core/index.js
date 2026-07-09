@@ -174,13 +174,14 @@ Controllers.Search = {
 };
 
 Controllers.Filters = {
-    allCheckbox: null,
+    clearCheckbox: null,
     filters: {},
     cards: null,
     searchInput: null,
 
     init() {
-        this.allCheckbox = document.getElementById("filterAll");
+        this.clearCheckbox = document.getElementById("filterClear");
+
         this.filters = {
             filterGalaxies: document.getElementById("filterGalaxies"),
             filterNebulae: document.getElementById("filterNebulae"),
@@ -191,73 +192,68 @@ Controllers.Filters = {
             filterExotic: document.getElementById("filterExotic")
         };
 
-
         this.cards = document.querySelectorAll(".uaoList");
         this.searchInput = document.getElementById("searchInput");
-        Object.values(this.filters).forEach(cb => { 
-            if (!cb) return; // skip missing elements 
-            cb.addEventListener("change", () => { 
-                this.allCheckbox.checked = false; 
-                const allChecked = Object.values(this.filters).every(x => x && x.checked); 
-                if (allChecked) 
-                    this.allCheckbox.checked = true; 
-                this.applyFilters(); 
-            }); 
+
+        // Start with all unchecked
+        Object.values(this.filters).forEach(cb => cb.checked = false);
+        this.clearCheckbox.checked = false;
+
+        // Single-select logic
+        Object.values(this.filters).forEach(cb => {
+            cb.addEventListener("change", () => this.handleSingleSelect(cb));
         });
-        this.attachEvents();
+
+        // Clear logic
+        this.clearCheckbox.addEventListener("change", () => this.clearFilters());
+
+        this.searchInput.addEventListener("input", () => this.applyFilters());
+
+        this.updateClearVisual();
         this.applyFilters();
     },
 
-    // -----------------------------
-    //  CHECKBOX LOGIC
-    // -----------------------------
-    attachEvents() {
-        // ALL checkbox
-        this.allCheckbox.addEventListener("change", () => {
-            const isChecked = this.allCheckbox.checked;
-            Object.values(this.filters).forEach(cb => cb.checked = isChecked);
-            this.applyFilters();
-        });
-
-        // Other checkboxes
-        Object.values(this.filters).forEach(cb => {
-            cb.addEventListener("change", () => {
-                this.allCheckbox.checked = false;
-
-                const allChecked = Object.values(this.filters).every(x => x.checked);
-                if (allChecked) this.allCheckbox.checked = true;
-
-                this.applyFilters();
+    handleSingleSelect(selected) {
+        if (selected.checked) {
+            Object.values(this.filters).forEach(cb => {
+                if (cb !== selected) cb.checked = false;
             });
-        });
-
-        // Search input
-        this.searchInput.addEventListener("input", () => this.applyFilters());
+        }
+        this.updateClearVisual();
+        this.applyFilters();
     },
-    
-    // -----------------------------
-    //  FILTER LOGIC
-    // -----------------------------
+
+    clearFilters() {
+        Object.values(this.filters).forEach(cb => cb.checked = false);
+        this.clearCheckbox.checked = false; // auto-uncheck Clear
+        this.updateClearVisual();
+        this.applyFilters();
+    },
+
+    updateClearVisual() {
+        const anyChecked = Object.values(this.filters).some(cb => cb.checked);
+        this.clearCheckbox.disabled = !anyChecked;
+    },
+
     applyFilters() {
         const searchValue = this.searchInput.value.toLowerCase();
 
-        const activeTypes = Object.entries(this.filters)
-            .filter(([type, cb]) => cb.checked)
-            .map(([type]) => type);
+        const activeType = Object.entries(this.filters)
+            .find(([type, cb]) => cb.checked)?.[0] || null;
 
         this.cards.forEach(card => {
             const name = card.dataset.name.toLowerCase();
             const type = card.dataset.type;
 
             const matchesSearch = name.includes(searchValue);
-            const matchesType = activeTypes.includes(type);
+            const matchesType = !activeType || activeType === type;
 
             card.style.display = (matchesSearch && matchesType) ? "" : "none";
         });
     }
-
-    
 };
+
+
 
 Controllers.TermsModal = {
     checkbox: null,

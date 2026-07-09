@@ -140,10 +140,10 @@
                                         id="searchInput"
                                         class="form-control bg-dark text-white border-0 fw-bold search-xl-input"
                                         placeholder="(e.g.) Andromeda, M16, Messier 101"
-                                        oninput="searchUniversalObjects()">
+                                        oninput="fetchNASA()">
                                     <button 
                                         class="btn btn-primary fw-bold px-4 search-xl-btn"
-                                        onclick="searchUniversalObjects()">
+                                        onclick="fetchNASA()">
                                         Search
                                     </button>
                                 </div>                                
@@ -152,8 +152,8 @@
                             <div class="mt-4 d-flex flex-wrap gap-4 fw-bold filter-row filters-container">
 
                                 <div class="form-check filter-item">
-                                    <input class="form-check-input" type="checkbox" id="filterAll" checked>
-                                    <label class="form-check-label" for="filterAll">All</label>
+                                    <input class="form-check-input" type="checkbox" id="filterClear" checked>
+                                    <label class="form-check-label" for="filterClear">Clear</label>
                                 </div>
 
                                 <div class="form-check filter-item">
@@ -627,6 +627,7 @@
     <script src="src/core/auth.js"></script> 
     <script src="src/ui/nasa.js"></script> 
     <script src="src/ui/uao-service.js"></script>
+        <script src="src/ui/carousel.js"></script>
     <script src="src/ui/food-cost.js"></script>  
 </body>
 </html>
