@@ -1,185 +1,147 @@
-# 🌌 CORE — Cosmic Origins & Realms Encyclopedia
+# 🌌 Cosmic Origins
 
- _🌟 "A Living Archive of the Infinite"_
+_A real astronomical object catalog — explore, search, and curate the universe._
 
-**CORE (Cosmic Origins & Realms Encyclopedia)** is a universal, open, community‑driven multiverse encyclopedia designed to catalog  
-**worlds, species, technologies, cultures, realms, artifacts, and cosmic phenomena**  
-across all fictional universes — sci‑fi, fantasy, magical, technological, or entirely original, creating a shared, evolving archive of the infinite.
-
-This project aims to become a **universal knowledge hub** where fans, creators, and worldbuilders  
-can contribute entries from any universe, or invent entirely new ones.
-
-**CORE** is not just an encyclopedia — it’s the foundation of a unified fictional multiverse.
+**Cosmic Origins** is a single-page web application for cataloging and exploring real astronomical objects — galaxies, nebulae, star clusters, stars, exoplanets, planets, moons, and more. Built as a hands-on project to learn full-stack web development with Firebase and vanilla JavaScript.
 
 ---
 
-## 🚀 Vision
-**CORE** envisions a unified, open multiverse where worlds, species, technologies, magic systems, and civilizations from all fictional universes can be explored, connected, and expanded through a shared, evolving knowledge platform.
+## ✨ Features
 
-**CORE** is built to be:
-
-- **🌍 Free & open** — like a cosmic Wikipedia, free for everyone to explore and contribute
-- **Artistic & immersive** — with animations, maps, and visualizations  
-- **🧩 Modular & extensible** — supporting multiple universes and realms and any world building style or genre
-- **🤝 Community‑powered** — shaped by fans, creators, and storytellers... anyone can contribute new species, planets, tech, or lore
-- **🔄 Evolving** — expanding as new universes and ideas emerge
-- **Technically modern** — .NET backend, Angular UI, cloud‑ready architecture  
-
----
-
-## 🧭 Values
-🔓 **Openness** - knowledge should be free, shared, and accessible to everyone.
-
-🎨 **Creativity** - every world, species, and idea deserves a place in the multiverse.
-
-🧱 **Structure** - even infinite imagination needs clear taxonomy and order.
-
-🤝 **Community** - CORE grows through collaboration, contribution, and shared passion.
-
-📚 **Respect for Lore** -  every universe — big or small — is treated with care and consistency.
-
-🔄 **Evolution** - CORE is a living system that expands, adapts, and improves over time.
+- **Universal Astronomical Object (UAO) catalog** — a unified data model for normalizing astronomical objects from multiple real-world catalogs (SAC, SIMBAD, NASA Exoplanet Archive, JPL Horizons)
+- **Firebase Authentication** — email/password login and registration
+- **Firestore database** — persistent storage for user-contributed objects
+- **NASA Image API integration** — search and display real NASA imagery by category
+- **Category filtering** — filter by Galaxies, Nebulae, Clusters, Stars, Exoplanets, Solar System bodies, and Exotic objects
+- **Text search** — prefix-based Firestore search across object names
+- **Image carousel** — Bootstrap-powered slideshow of catalog images
+- **Image modal viewer** — click any card image to see it full-size
+- **Like/favorite system** — authenticated users can like objects
+- **Food cost calculator** — a quirky utility that calculates lifetime food energy consumption and cost with Chart.js visualizations
+- **Multiple themes** — Dark, Light, Cosmic, Cosmic Retro, Cosmic Nebula, and Cosmic Flare
+- **Responsive design** — Bootstrap 5 grid with animated side navigation
+- **localStorage caching** — reduces Firestore reads for returning visitors
 
 ---
 
-## 🧩 What CORE Will Contain
+## 🏗️ Tech Stack
 
-**🌍 Realms** - parallel universes, magical dimensions, sci‑fi sectors, timelines.
+| Layer | Technology |
+|---|---|
+| **Frontend** | Vanilla JavaScript (ES6+), jQuery 3.6 |
+| **UI Framework** | Bootstrap 5.3, Bootstrap Icons, Font Awesome 6 |
+| **Charts** | Chart.js |
+| **Backend / BaaS** | Firebase (Firestore + Authentication) |
+| **External API** | NASA Image API |
+| **Hosting** | GitHub Pages |
+| **Fonts** | Alsandra, Buxton Sketch, Guildof, Lobster, Qt Arabian, Cormorant Garamond, Inter |
 
- **🪐 Worlds** - planets, moons, artificial habitats, pocket dimensions.
-
-**🧬 Species** - biology, culture, evolution, adaptations, xenobiology.
-
-**🏛️ Civilizations** - politics, factions, economies, conflicts, alliances.
-
-**⚙️ Technologies** - Star ships, energy systems, weapons, AI, artifacts.
-
-**🔮 Magic Systems** - rules, sources, schools, limitations, rituals.
-
-**Artifacts** - legendary items, relics, devices, cosmic anomalies.
-
-**🌠 Cosmic Phenomena**
-
-**🕰️ Timelines** - historical events, wars, migrations, discoveries.
-
-* Across any universe — sci‑fi, fantasy, magical, futuristic, or entirely original.
-  
----
-
-## 🧩 Why CORE Exists
-Stories shape worlds. Worlds shape universes.
-But until now, there has never been a single place where all fictional universes can coexist, connect, and grow together. **CORE** is building the first shared, evolving archive of the infinite — a place where imagination becomes organized knowledge.
-
-**CORE** fills that gap by creating:
-
-- [x] 🌐 a shared multiverse framework
-- [x] 📚 a living archive of lore
-- [x] 🛠️ a platform for creators
-- [x] 🔗 a bridge between genres and realities
+No build tools, no bundler, no framework — plain HTML, CSS, and JavaScript served directly.
 
 ---
 
+## 📁 Project Structure
 
-## 🚀 What CORE Will Become
-CORE aims to evolve into a full multiverse engine with:
-
-- [x] 🗺️ Interactive Realm Maps
-- [x] 🌳 Species Evolution Trees
-- [x] 🔗 Technology Dependency Graphs
-- [x] 🕰️ Timeline Visualizations
-- [x] 🤖 AI‑assisted worldbuilding tools
-- [x] 👤 Creator profiles & community submissions
-- [x] 🌌 Cross‑realm linking & dimensional physics
+```
+cosmic-origins/
+├── index.html                     # Main SPA entry point
+├── index-old.html                 # Earlier landing page prototype
+├── src/
+│   ├── core/
+│   │   ├── index.js               # App logic: routing, themes, search, filters, controllers
+│   │   ├── auth.js                # Firebase auth: login, register, logout, UI state
+│   │   └── firebase-config.js     # Firebase initialization and global refs
+│   ├── models/
+│   │   └── UniversalAstronomicalObject.js   # UAO data model (ES6 class)
+│   ├── ui/
+│   │   ├── uao-service.js         # CRUD operations, card rendering, search
+│   │   ├── carousel.js            # Bootstrap carousel renderer
+│   │   ├── nasa.js                # NASA Image API integration
+│   │   ├── food-cost.js           # Food energy/cost calculator + Chart.js
+│   │   ├── modal-images.js        # Image modal viewer
+│   │   ├── side-navigation.js     # Animated side-nav open/close
+│   │   └── sidebar.html           # Sidebar component template
+│   └── helpers/
+│       └── firestoreImport.js     # Bulk Firestore import + dummy dataset (~20 objects)
+├── styles/
+│   ├── styles.css                 # Design system: CSS variables, themes, typography, layout
+│   ├── index.css                  # Page-specific styles
+│   ├── navigation.css             # Side navigation styles
+│   ├── uao-styles.css             # UAO card and form styles
+│   └── fonts.css                  # Custom font-face declarations
+├── fonts/                         # Custom web fonts (TTF/OTF)
+├── images/                        # Static images and icons
+└── README.md
+```
 
 ---
 
-## 🏗️ Tech Stack (Work in Progress)
+## 🚀 Getting Started
 
-- **Frontend:** Angular (hosted on GitHub Pages)  
-- **Backend:** .NET 8 Minimal API (Azure App Service)  
-- **Database:** SQL + NoSQL hybrid (CosmosDB / Firebase / Kinvey)  
-- **DevOps:** GitHub Actions CI/CD  
-- **Architecture:** Modular, multiverse‑ready, API‑first  
+### Prerequisites
+
+- A Firebase project with Firestore and Email/Password Authentication enabled
+- A NASA API key (free tier available at [api.nasa.gov](https://api.nasa.gov))
+
+### Setup
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/BaiGanio/cosmic-origins.git
+   cd cosmic-origins
+   ```
+
+2. **Configure Firebase**
+   - Replace the `firebaseConfig` object in `src/core/firebase-config.js` with your own Firebase project credentials.
+
+3. **Configure NASA API key**
+   - Replace the `Authorization` header in `src/ui/nasa.js` with your own NASA API key.
+
+4. **Open in browser**
+   - Open `index.html` directly, or serve with any static file server:
+     ```bash
+     npx serve .
+     ```
+
+### Seeding Data
+
+The file `src/helpers/firestoreImport.js` contains a dummy dataset of ~20 real astronomical objects (NGC 891, M42 Orion Nebula, M13 Hercules Cluster, Sirius, Kepler-22b, Europa, etc.) and a `importToFirestore()` function. Open the browser console and call it to populate your Firestore database.
 
 ---
 
-## 🌠 Live Demo (Prototype)
+## 🧩 Data Model
 
-A minimal HTML preview is available on GitHub Pages to showcase the concept  
-while the full UI is being developed.
+The `UniversalAstronomicalObject` (UAO) model normalizes data from multiple astronomical catalogs into a single schema:
 
-👉 *Coming soon…*
-
----
-
-## 🤝 Contributing
-
-**CORE** will support:
-
-- Community submissions  
-- Moderation workflow  
-- Versioning of entries  
-- Canon / non‑canon tagging  
-
-**CORE** is open to contributions from:
-
-- [x] world builders
-- [x] writers
-- [x] artists
-- [x] developers
-- [x] lore enthusiasts
-- [x] sci‑fi & fantasy fans
-
-Contribution templates are available for:
-
-- [x] Species
-- [x] Worlds
-- [x] Technologies
-- [x] Realms
-- [x] Civilizations
-- [x] Magic Systems
-- [x] Artifacts
-- [x] Phenomena
-
-Guidelines will be added once the API and UI foundations are ready.
-Submit your ideas through GitHub Issues.
+| Field | Description |
+|---|---|
+| `name` | Primary designation (NGC 891, Kepler-22b, etc.) |
+| `aliases` | Alternate catalog identifiers |
+| `category` | High-level type: galaxy, nebula, star, exoplanet, planet, moon, asteroid, comet, quasar, AGN, supernova |
+| `subcategory` | Specific classification (spiral, emission, red_dwarf, gas_giant, etc.) |
+| `catalogSource` | Origin catalogs: SAC, SIMBAD, NASA, JPL |
+| `ra` / `dec` | Right Ascension and Declination (J2000 epoch) |
+| `distance` | Distance in appropriate units (ly, Mly, AU, pc) |
+| `magnitude` | Apparent magnitude |
+| `spectralType` | Stellar spectral classification |
+| `mass` / `radius` / `temperature` / `luminosity` | Physical properties |
+| `orbitalPeriod` / `semiMajorAxis` / `eccentricity` | Exoplanet orbital elements |
+| `parentBody` | Solar System parent (e.g., "Jupiter" for Europa) |
+| `tags` | UI filter tags |
+| `imageUrl` | Associated image URL |
 
 ---
 
 ## 📜 License
 
-Open‑source. Free forever.  
-You are free to use, modify, and expand **CORE** - knowledge belongs to the multiverse and multiverse belong to everyone.
+MIT License — see [LICENSE](LICENSE) for details.
+
+Copyright (c) 2021 Lyuben Kikov
 
 ---
 
 ## ✨ Author
 
-Created by **Lyuben** — a developer passionate about  
-**C#, .NET, Angular, cloud architecture, design systems, and worldbuilding**.
+Created by **Lyuben Kikov** — a developer exploring full-stack web development, Firebase, and the cosmos.
 
----
-
-
-
-
-
-🗺️ Roadmap
-The full roadmap is available in the GitHub Project:
-
-👉 /projects/1 — CORE Roadmap
-
-Phases include:
-
-Foundation (MVP)
-
-API Foundations
-
-UI Foundations
-
-Community Features
-
-Advanced Features
-
-Long‑Term Expansion
-
+- GitHub: [@BaiGanio](https://github.com/BaiGanio)
