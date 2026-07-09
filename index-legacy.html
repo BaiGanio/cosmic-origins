@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    
+    <title>Cosmic Origins</title>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+    <!-- CUSTOM CSS -->
+    <link rel="stylesheet" href="styles/fonts.css">
+    <link rel="stylesheet" href="styles/styles.css">
+    <link rel="stylesheet" href="styles/index.css">
+    <link rel="stylesheet" href="styles/navigation.css">
+    <link rel="stylesheet" href="styles/uao-styles.css">
+
+</head>
+<body class="orbitron">
+
+    <!--============================== ANIMATED SIDE NAVIGATION =================================-->
+    <div id="mySidenav" class="sidenav guildof">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <a href="#">ABOUT</a>
+        <a href="#">SERVICES</a>
+        <a href="#">CLIENTS</a>
+        <a href="#">Contact</a>
+        <a href="#" id="linkJSONviaAJAX" class="single-menu-element-link">
+            Using jQuery to Retrieve JSON via AJAX
+        </a>
+        <a href="../index.html">Back to baiganio.github.io</a>
+        <div style="width: 80%; margin: 0 auto;">
+            <img src="images/hidden-portals.jpg" class="modal-trigger" id="portalsHolder" alt="NASA Discovers Hidden Portals In Earth’s Magnetic Field.">
+        </div>
+    </div>
+    <!--============================== END ANIMATED SIDE NAVIGATION =================================-->
+
+    
+    <!--============================== PAGE CONTENT =================================-->
+    <div id="container-fluid g-0">
+        <div class="row g-0" >
+            <!-- SIDE MENU -->
+            <div class="guildof" id="side-nav-menu">
+                <p><a id="shrink-menu" href="#">Expand Menu</a></p>
+            </div>
+            <div class="col-md-3" id="left-column">
+                <!-- <div id="sidebar"></div> -->
+
+                <aside class="sidebar" id="asidebar-menu">
+                <button id="collapseAside" class="btn btn-outline-info guildof">
+                    ⮜ Collapse
+                </button>
+                    <div class="logo">
+                        <a href="javascript:void(0)" onclick="closeNav()">
+                            <img src="images/satellite.png" alt="logo" id="logo" >
+                        </a>
+                        <h1 class="guildof" style="font-size:3.4em;"><b>COSMIC ORIGINS</b></h1>
+                        <a href="#" onclick="openNav()">
+                            <img src="images/menu-icon.png" class="sidebar-menu" alt="" style="width:25%" />
+                        </a>
+                    <br>
+                        <br>
+                        <button id="themeSwitcher" class="btn btn-primary guildof" 
+                            🌗 Theme
+                        </button>
+                    </div>
+                    <hr>
+                    <nav class="page-navigation guildof">
+                        <a href="#" id="linkHome" class="single-menu-element-link">
+                            Home
+                        </a>
+                        <a href="#" id="linkGallery" class="single-menu-element-link">
+                            Gallery
+                        </a>
+                        <a href="#" id="linkLogin" class="single-menu-element-link guest-only">
+                            Login
+                        </a>
+                        <a href="#" id="linkRegister" class="single-menu-element-link guest-only">
+                            Register
+                        </a>
+                        <hr>
+                        <hr>
+                        <a href="#" id="linkFoodCost" class="single-menu-element-link">
+                            food cost
+                            </a>
+                            <hr>
+                        <a href="#" id="linkLogout" class="single-menu-element-link requires-auth">
+                            Logout
+                        </a>
+                        <hr>
+                    </nav>
+                </aside>
+            </div>
+              
+            <!-- END SIDE MENU -->
+
+            <!-- MAIN PAGE CONTENT -->
+            <div class="col-md-9" id="main-page-content">
+
+                <!-- MESSAGES HELPERS -->
+                <section id="loadingBox">Loading.....</section>
+                <section id="infoBox" onclick="$(this).hide()">Info.....</section>
+                <section id="errorBox" onclick="$(this).hide()">Error.....</section>
+                <!-- END MESSAGES HELPERS -->
+
+                <!-- START HOME PAGE CONTENT -->
+                <section id="viewHome">
+                    <hr>
+                    <h1 class="guildof" style="font-size: 2.6rem; font-weight: 600;"><b>respect the diversities of the species - we are all unique</b></h1>
+                    <hr />
+                    <!-- <div id="carouselContainer"></div> -->
+                    <div id="carouselContainer" class="carousel-wrapper carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="6500">
+                </section>
+                <!-- END HOME PAGE CONTENT -->
+
+                <!-- START GALAXIES LIST CONTENT -->
+                <section id="viewGallery">
+                    <h1 class="guildof" style="font-size: 3rem;"><b>The Unified Data Hub of the Known Universe</b></h1>
+                    <hr />
+                    <div class="container ">
+                        <div class="row justify-content-center align-items-center">
+                            <div class="search-filter-wrapper">
+                                <div class="input-group search-container">
+                                <!-- Add Galaxy button (only for logged users) --> 
+                                    <button 
+                                        class="requires-auth btn btn-info fw-bold px-4 search-xl-btn border-0" 
+                                        type="button" 
+                                        onclick="showAddGalaxyView()" 
+                                        title="Add New Galaxy"> Add
+                                    </button> 
+                                    <input 
+                                        type="text" 
+                                        id="searchInput"
+                                        class="form-control bg-dark text-white border-0 fw-bold search-xl-input"
+                                        placeholder="(e.g.) Andromeda, M16, Messier 101"
+                                        oninput="fetchNASA()">
+                                    <button 
+                                        class="btn btn-primary fw-bold px-4 search-xl-btn"
+                                        onclick="fetchNASA()">
+                                        Search
+                                    </button>
+                                </div>                                
+                            </div>
+                            <!-- Filters -->
+                            <div class="mt-4 d-flex flex-wrap gap-4 fw-bold filter-row filters-container">
+
+                                <div class="form-check filter-item">
+                                    <input class="form-check-input" type="checkbox" id="filterClear" checked>
+                                    <label class="form-check-label" for="filterClear">Clear</label>
+                                </div>
+
+                                <div class="form-check filter-item">
+                                    <input class="form-check-input" type="checkbox" id="filterGalaxies" checked>
+                                    <label class="form-check-label" for="filterGalaxies">Galaxies</label>
+                                </div>
+
+                                <div class="form-check filter-item">
+                                    <input class="form-check-input" type="checkbox" id="filterNebulae" checked>
+                                    <label class="form-check-label" for="filterNebulae">Nebulae</label>
+                                </div>
+
+                                <div class="form-check filter-item">
+                                    <input class="form-check-input" type="checkbox" id="filterClusters" checked>
+                                    <label class="form-check-label" for="filterClusters">Clusters</label>
+                                </div>
+
+                                <div class="form-check filter-item">
+                                    <input class="form-check-input" type="checkbox" id="filterStars" checked>
+                                    <label class="form-check-label" for="filterStars">Stars</label>
+                                </div>
+
+                                <div class="form-check filter-item">
+                                    <input class="form-check-input" type="checkbox" id="filterExoplanets" checked>
+                                    <label class="form-check-label" for="filterExoplanets">Exoplanets</label>
+                                </div>
+
+                                <div class="form-check filter-item">
+                                    <input class="form-check-input" type="checkbox" id="filterSolarSystem" checked>
+                                    <label class="form-check-label" for="filterSolarSystem">Solar System</label>
+                                </div>
+
+                                <div class="form-check filter-item">
+                                    <input class="form-check-input" type="checkbox" id="filterExotic" checked>
+                                    <label class="form-check-label" for="filterExotic">Exotic</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" id="uaoList"></div>
+                </section>
+                <!-- END GALAXIES LIST CONTENT -->
+
+                <!-- START LOGIN CONTENT -->
+                <section id="viewLogin" class="guildof">
+                    <h1 class="guildof" style="font-size: 3.8rem;"><b>Login</b></h1>
+                    <hr />
+                    <div class="container d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+                        <div class="auth-animate p-4 shadow-lg" style="max-width: 480px; width: 100%; font-size: 1.75rem; font-weight: 600;">
+
+                            <form id="loginForm" onsubmit="event.preventDefault(); login();">
+
+                                <div class="mb-4">
+                                    <label for="loginEmail" class="form-label" style="font-size: 2.8rem;">Email</label>
+                                    <input type="email"
+                                        class="form-control form-control-lg annie"
+                                        id="loginEmail"
+                                        placeholder="your@email.com"
+                                        required>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="loginPassword" class="form-label" style="font-size: 2.8rem;">Password</label>
+                                    <input type="password"
+                                        class="form-control form-control-lg annie-use-your-telescope-regular"
+                                        id="loginPassword"
+                                        placeholder="••••••••"
+                                        required>
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    id="loginBtn"
+                                    class="btn btn-primary w-100 py-3"
+                                    style="font-size: 2rem; font-weight: 700;">
+                                    Go
+                                </button>
+
+                            </form>
+
+                        </div>
+                    </div>
+                </section>
+                <!-- END LOGIN CONTENT -->               
+
+                <!-- START REGISTRATION CONTENT -->
+                <section id="viewRegister" class="guildof">
+                    <h1 class="guildof" style="font-size: 3.8rem;"><b>Register</b></h1>
+                    <hr />
+                    <div class="container d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+                        <div class="p-4 shadow-lg" style="max-width: 480px; width: 100%; font-size: 1.75rem; font-weight: 600;">
+                            <form id="registerForm" onsubmit="event.preventDefault(); registerUser();">
+                                <div class="mb-4">
+                                    <label for="email" class="form-label" style="font-size: 2.8rem;">Email</label>
+                                    <input 
+                                        type="email"
+                                        class="form-control form-control-lg annie-use-your-telescope-regular"
+                                        id="email"
+                                        placeholder="your@email.com"
+                                        required>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="password" class="form-label" style="font-size: 2.8rem;">Password</label>
+                                    <input type="password"
+                                        class="form-control form-control-lg annie-use-your-telescope-regular"
+                                        id="password"
+                                        placeholder="••••••••"
+                                        required>
+                                </div>
+
+                                <div class="form-check mb-4 d-flex align-items-center" style="gap: 10px;">
+                                    <input type="checkbox"
+                                        class="form-check-input"
+                                        id="terms"
+                                        style="transform: scale(1.2); margin: 0;">
+
+                                    <label class="form-check-label fw-bold" for="terms" style="font-size: 1.2rem;"> 
+                                        I agree to the <a href="#" class="text-info fw-bold" id="openTermsModal"> Terms of Use </a> 
+                                    </label>
+                                </div>
+
+                                <!-- Modal for Terms of Use -->
+                                <div class="modal fade annie" id="termsModal" tabindex="-1" style="text-align: left;">
+                                    <div class="modal-dialog modal-lg modal-dialog-centered">
+                                        <div class="modal-content">
+                                        
+                                        <div class="modal-header">
+                                            <h1 class="fw-bold annie">
+                                            Terms of Use
+                                            </h1>
+                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                        </div>
+
+                                        <div class="modal-body">
+                                            <h2 class="annie">By using Space University, you agree to the following:</h2>
+
+                                            <ul>
+                                            <li>Registered users may add, edit, and update catalog entries.</li>
+                                            <li>Registered users may like and interact with content.</li>
+                                            <li>All images used must be from official public-domain sources such as NASA, ESA, JAXA, and similar agencies.</li>
+                                            <li>No copyrighted or AI-generated images are allowed unless explicitly permitted.</li>
+                                            <li>All submitted content must be factual, scientific, and respectful.</li>
+                                            </ul>
+
+                                            <h4 class="annie">By closing this window, you confirm that you have read and agree to these terms.</h4>
+                                        </div>
+
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-primary fw-bold" data-bs-dismiss="modal">
+                                            I Agree
+                                            </button>
+                                        </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    id="registerBtn"
+                                    class="btn btn-primary w-100 py-3"
+                                    style="font-size: 2rem; font-weight: 700;"
+                                    disabled>
+                                    Go
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+                <!-- END REGISTRATION CONTENT -->
+
+                <!-- START ADD GALAXY CONTENT -->
+                <section id="viewAddGalaxy">
+                    <div class="uac-create-wrapper card p-4 mx-auto mt-4">
+
+                <h2 class="fw-bold mb-3 text-center guildof">Create Astronomical Object</h2>
+
+                <form id="uacForm" class="row g-3">
+
+                    <!-- LEFT COLUMN -->
+                    <div class="col-md-6">
+
+                        <div class="mb-3">
+                            <label class="form-label">Name *</label>
+                            <input type="text" id="uacName" class="form-control form-control-sm" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Aliases</label>
+                            <input type="text" id="uacAliases" class="form-control form-control-sm">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Category *</label>
+                            <select id="uacCategory" class="form-select form-select-sm" required>
+                                <option value="">Select...</option>
+                                <option value="galaxy">Galaxy</option>
+                                <option value="nebula">Nebula</option>
+                                <option value="open_cluster">Open Cluster</option>
+                                <option value="globular_cluster">Globular Cluster</option>
+                                <option value="star">Star</option>
+                                <option value="variable_star">Variable Star</option>
+                                <option value="exoplanet">Exoplanet</option>
+                                <option value="planet">Planet</option>
+                                <option value="moon">Moon</option>
+                                <option value="asteroid">Asteroid</option>
+                                <option value="comet">Comet</option>
+                                <option value="quasar">Quasar</option>
+                                <option value="AGN">AGN</option>
+                                <option value="supernova">Supernova</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Subcategory</label>
+                            <input type="text" id="uacSubcategory" class="form-control form-control-sm">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Description *</label>
+                            <textarea id="uacDescription" class="form-control form-control-sm" rows="3" required></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Notes</label>
+                            <textarea id="uacNotes" class="form-control form-control-sm" rows="2"></textarea>
+                        </div>
+
+                    </div>
+
+                    <!-- RIGHT COLUMN -->
+                    <div class="col-md-6">
+
+                        <h6 class=" guildof ">Coordinates</h6>
+
+                        <div class="row g-2 mb-3">
+                            <div class="col-4">
+                                <label class="form-label">RA</label>
+                                <input type="text" id="uacRA" class="form-control form-control-sm">
+                            </div>
+                            <div class="col-4">
+                                <label class="form-label">DEC</label>
+                                <input type="text" id="uacDEC" class="form-control form-control-sm">
+                            </div>
+                            <div class="col-4">
+                                <label class="form-label">Epoch</label>
+                                <input type="text" id="uacEpoch" class="form-control form-control-sm" value="J2000">
+                            </div>
+                        </div>
+
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label">Distance</label>
+                                <input type="text" id="uacDistance" class="form-control form-control-sm">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label">Magnitude</label>
+                                <input type="number" id="uacMagnitude" class="form-control form-control-sm">
+                            </div>
+                        </div>
+
+                        <!-- STAR FIELDS -->
+                        <div id="uacStarFields" class="d-none">
+                            <h6 class="fw-bold">Star Properties</h6>
+                            <div class="row g-2 mb-3">
+                                <div class="col-4">
+                                    <label class="form-label">Spectral</label>
+                                    <input type="text" id="uacSpectralType" class="form-control form-control-sm">
+                                </div>
+                                <div class="col-4">
+                                    <label class="form-label">Temp (K)</label>
+                                    <input type="number" id="uacTemperature" class="form-control form-control-sm">
+                                </div>
+                                <div class="col-4">
+                                    <label class="form-label">Luminosity</label>
+                                    <input type="number" id="uacLuminosity" class="form-control form-control-sm">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- EXOPLANET FIELDS -->
+                        <div id="uacExoplanetFields" class="d-none">
+                            <h6 class="fw-bold">Exoplanet Properties</h6>
+                            <div class="row g-2 mb-3">
+                                <div class="col-4">
+                                    <label class="form-label">Period</label>
+                                    <input type="number" id="uacOrbitalPeriod" class="form-control form-control-sm">
+                                </div>
+                                <div class="col-4">
+                                    <label class="form-label">Axis</label>
+                                    <input type="number" id="uacSemiMajorAxis" class="form-control form-control-sm">
+                                </div>
+                                <div class="col-4">
+                                    <label class="form-label">Ecc</label>
+                                    <input type="number" step="0.001" id="uacEccentricity" class="form-control form-control-sm">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SOLAR SYSTEM FIELDS -->
+                        <div id="uacSolarSystemFields" class="d-none">
+                            <h6 class="fw-bold">Solar System</h6>
+                            <div class="row g-2 mb-3">
+                                <div class="col-6">
+                                    <label class="form-label">Parent Body</label>
+                                    <input type="text" id="uacParentBody" class="form-control form-control-sm">
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label">Orbital Elements</label>
+                                    <input type="text" id="uacOrbitalElements" class="form-control form-control-sm">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- DEEP SKY FIELDS -->
+                        <div id="uacDeepSkyFields" class="d-none">
+                            <h6 class="fw-bold">Deep Sky</h6>
+                            <div class="row g-2 mb-3">
+                                <div class="col-4">
+                                    <label class="form-label">Size Max</label>
+                                    <input type="text" id="uacSizeMax" class="form-control form-control-sm">
+                                </div>
+                                <div class="col-4">
+                                    <label class="form-label">Size Min</label>
+                                    <input type="text" id="uacSizeMin" class="form-control form-control-sm">
+                                </div>
+                                <div class="col-4">
+                                    <label class="form-label">Angle</label>
+                                    <input type="number" id="uacPositionAngle" class="form-control form-control-sm">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Image URL</label>
+                            <input type="text" id="uacImageUrl" class="form-control form-control-sm">
+                            <!-- Preview box --> 
+                            <div id="uacImagePreviewWrapper" class="mt-2 d-none"> 
+                                <img id="uacImagePreview" class="img-fluid border rounded shadow-sm" style="max-height: 260px; object-fit: contain; width: 100%;"> 
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- SUBMIT -->
+                    <div class="col-12 mt-2">
+                        <button type="button" onclick="saveUniversalObject()" class="btn btn-primary w-100 btn-sm">
+                            Save Object
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+
+
+                </section>
+                <!-- END ADD GALAXY CONTENT -->
+               
+                <!-- START FOOD COST CONTENT -->
+               <section id="viewFoodCost"> 
+                    <div class="row g-5 d-flex justify-content-center mt-5 alsandra">
+                      
+                        <!-- LEFT SIDE: FORM --> 
+                         <div class="col-lg-5"> 
+                            <div class="card shadow-sm p-4" style="max-width: 480px; width: 100%; font-size: 1.75rem; font-weight: 600;"> 
+                                <h3 class="mb-4 text-center" style="font-weight: 700; font-size: 2rem;"> Food Cost Calculator </h3> 
+                                <form onsubmit="event.preventDefault(); calculate();"> 
+                                    <div class="mb-4"> 
+                                        <label for="inputYears" class="form-label" style="font-size: 2rem;">Years</label> 
+                                        <input type="number" class="form-control form-control-lg annie-use-your-telescope-regular" id="inputYears" placeholder="(e.g. 40)"> 
+                                    </div> 
+                                    <div class="mb-4"> 
+                                        <label for="inputWeight" class="form-label" style="font-size: 2rem;">Weight (kg)</label> <input type="number" class="form-control form-control-lg annie-use-your-telescope-regular" id="inputWeight" placeholder="(e.g. 90)"> 
+
+                                    </div> 
+                                    <div class="mb-4 form-check"> 
+                                        <input type="checkbox" class="form-check-input" id="generateChartCheck" style="transform: scale(1.3);"> 
+                                        <label class="form-check-label ms-2" for="generateChartCheck" style="font-size: 2rem;"> Generate chart 
+                                        </label> 
+                                    </div> 
+                                    <button 
+                                        type="submit" 
+                                        id="calculateBtn"
+                                        class="btn btn-primary w-100 py-3" 
+                                        style="font-size: 2rem; font-weight: 700;"
+                                        disabled> Calculate 
+
+                                    </button> 
+                                </form> 
+                            </div> 
+                        </div> 
+                         <!-- RIGHT SIDE: OUTPUT --> 
+                          <div class="col-lg-7"> 
+                            <div class="alsandra card shadow-sm p-4" style="font-size: 1.75rem; font-weight: 600;"> 
+                                   <h3 class="mb-4 text-center" style="font-weight: 700; font-size: 2rem;"> The Bill: </h3> 
+                                <div id="output" class="eb-garamond" style="text-align: left;"> 
+                                    <em class="alsandra">Your results will appear here...</em> 
+                                </div> 
+                            </div> 
+                        </div>
+                        <canvas id="energyChart" width="400" height="200"></canvas>
+                        <canvas id="costChart" width="400" height="200"></canvas>
+                    </div>
+                </section>
+                <!-- END FOOD COST CONTENT -->
+
+
+
+            </div>
+            <!-- MAIN PAGE CONTENT -->
+        </div>
+    </div>
+    <!--============================== END PAGE CONTENT =================================-->
+    <hr>
+
+    <!--============================== FOOTER =================================-->
+    <footer>
+        <div id="footer-holder"  style="font-family: Alsandra;">
+            <span">(C) Space University - DateTime.Now. All rights reserved.</span>
+            <p>Developed by Lyuben Kikov 2021</p>
+
+            <div>
+                <a href="#">
+                    <img src="images/facebook.jpg" alt="Facebook" title="Facebook">
+                </a>
+                <a href="https://github.com/BaiGanio" target="_blank">
+                    <img src="images/daftpunktocat-small.png" alt="GitHub" title="Github">
+                </a>
+                <a href="#">
+                    <img src="images/google.jpg" alt="Google" title="Google">
+                </a>
+            </div>
+        </div>
+    </footer>
+    <!--============================== END FOOTER =================================-->
+    <hr>   
+
+    <!--============================== MODAL WINDOW =================================-->
+    <div id="imageModal" class="modal fade" tabindex="-1" data-bs-backdrop="true">
+
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <!-- The Close Button -->
+            <button type="button" class="btn-close btn-close-white position-absolute" data-bs-dismiss="modal"></button>
+
+            <div class="modal-content bg-dark text-white">
+                <div class="modal-body p-0">
+                    <img id="modalImage" src="" class="img-fluid w-100 rounded-3">
+                </div>
+                <div class="modal-footer border-0">
+                    <h5 id="modalCaption" class="m-0"></h5>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--============================== END MODAL WINDOW =================================-->    
+     
+    <!--============================== REQUIRED 3rd PARTY SCRIPTS =================================-->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!--============================== CUSTOM SCRIPTS =================================-->
+    <script src="src/core/firebase-config.js"></script> 
+    <script src="src/helpers/firestoreImport.js"></script>
+    <script src="src/core/index.js"></script>
+    <script src="src/ui/side-navigation.js"></script>
+    <script src="src/ui/modal-images.js"></script>
+    <script src="src/core/auth.js"></script> 
+    <script src="src/ui/nasa.js"></script> 
+    <script src="src/ui/uao-service.js"></script>
+        <script src="src/ui/carousel.js"></script>
+    <script src="src/ui/food-cost.js"></script>  
+</body>
+</html>
