@@ -20,10 +20,15 @@ A single-page, no-build web app cataloging real astronomical objects —
 The eidos: **a record of humanity's — and its machines' — discoveries across the
 universe.** Free public data (NASA, ESA, and other sources publishing open catalogs,
 e.g. yearly CSVs) is parsed into one `UniversalAstronomicalObject` model and shown
-with real imagery and real data. It is equally a **learning vehicle for young
+with real imagery and real data — **no AI-generated content, only the truth and the
+wonders as the probes captured them.** It is equally a **learning vehicle for young
 developers**: clarity and easy-to-understand code are core values. When trade-offs
 collide, real data and readable code win; the immersive full-bleed imagery is the
 product surface that makes both worth looking at.
+
+Direction (planned, see `var/plans/real-data-pipeline.md`): the backend moves off
+Firestore to the developer's own infrastructure — PostgreSQL + a small API on a
+Raspberry Pi 5 k3s cluster, later fronted by Keycloak and a rate limiter.
 
 ## Co-pilot Contract
 
@@ -191,16 +196,19 @@ gitignored, so these exist locally only.
 
 | Topic | File |
 |-------|------|
-| Roadmap: wiring the redesign to real services | `var/follow-ups.md` |
-| Design-system notes (tokens, type roles, motion) | end of `var/follow-ups.md`; token block at top of `styles/cosmic.css` |
+| Roadmap: wiring the redesign to real services | `var/follow-ups.md` (reconstructed 2026-07-10 — original was lost; `var/` is not backed up by git) |
+| Plan: free catalogs → own DB → k3s on Pi 5 | `var/plans/real-data-pipeline.md` + `-tests.md` |
+| Design-system notes (tokens, type roles, motion) | token block at top of `styles/cosmic.css` (the follow-ups copy was lost) |
 | Data model reference | `README.md` § Data Model, `src/models/UniversalAstronomicalObject.js` |
-| Legacy landing pages (do not extend) | `var/index-legacy.html`, `var/index-old.html` |
+| Legacy landing pages (do not extend) | ~~`var/index-legacy.html`, `var/index-old.html`~~ lost with `var/`; legacy code still in `src/` per the coupling map |
 
 ## Maintaining This File
 
 This file is a marker, not a manual. Any agent reading it: if a claim here no longer
-matches the repo, say so — a stale briefing is worse than none. Keep updates surgical:
-fix the pointer, don't grow the prose. When something new deserves depth, it goes in a
-reference file and earns one line here.
+matches the repo, say so — a stale briefing is worse than none. The developer has
+granted standing permission to update this file whenever a change helps future
+agent sessions — keep updates surgical: fix the pointer, don't grow the prose. When
+something new deserves depth, it goes in a reference file and earns one line here.
+(Doc-sync confirmation still applies to `README.md` and roadmap status changes.)
 
 The unexamined briefing is not worth loading. *(Apology 38a, adjusted for context windows.)*

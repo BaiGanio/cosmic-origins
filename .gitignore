@@ -10,7 +10,6 @@
 *.userosscache
 *.sln.docstates
 *.claude/
-var/
 
 *.codewhale/
 *.claude/
