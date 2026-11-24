@@ -5,7 +5,7 @@
  * SAC (deep-sky), SIMBAD (stars, AGN, variables), NASA Exoplanet Archive,
  * and JPL Horizons (Solar System bodies).
  *
- * It is normalized, Firestore‑friendly, and designed for your SPA’s
+ * It is normalized, and designed for your SPA’s
  * controllers, search system, and future DI architecture.
  *
  * This extended version includes:
@@ -24,7 +24,7 @@ export default class UniversalAstronomicalObject {
     constructor(data = {}) {
 
         /**
-         * Stable internal ID for Firestore.
+         * Stable internal ID.
          * This ensures objects remain uniquely identifiable even if names change.
          */
         this.id = data.id || crypto.randomUUID();
@@ -182,7 +182,7 @@ export default class UniversalAstronomicalObject {
         this.likedBy = data.likedBy || [];
 
         /**
-         * Optional: metadata for Firestore
+         * Optional: metadata
          */
         this.createdBy = data.createdBy || null;
         this.createdAt = data.createdAt || null;
@@ -192,7 +192,7 @@ export default class UniversalAstronomicalObject {
 
 
 /*
-✨ A dummy dataset (10–20 objects) ✨ A Firestore import helper ✨ A universal card renderer ✨ A search/filter system based on this model
+✨ A dummy dataset (10–20 objects) ✨ An import helper ✨ A universal card renderer ✨ A search/filter system based on this model
 
 
 */

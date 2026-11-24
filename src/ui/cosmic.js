@@ -1,14 +1,14 @@
 /* ============================================================
    COSMIC ORIGINS — application shell
    Static build: mock catalog shaped like UniversalAstronomicalObject.
-   Firestore / NASA imagery wiring is documented in follow-ups.md.
+   BGAPI wiring is described in docs/briefs/cosmic-origins-platform.md.
    ============================================================ */
 "use strict";
 
 /* ------------------------------------------------------------
    1. MOCK CATALOG
    Fields mirror src/models/UniversalAstronomicalObject.js so a
-   later pass can swap this array for a Firestore query result.
+   later pass can swap this array for BGAPI data.
    ph = placeholder tint per category.
    ------------------------------------------------------------ */
 const CATEGORY_TINTS = {

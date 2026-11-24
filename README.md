@@ -1,147 +1,97 @@
 # 🌌 Cosmic Origins
 
-_A real astronomical object catalog — explore, search, and curate the universe._
+_A record of humanity's — and its machines' — discoveries across the universe._
 
-**Cosmic Origins** is a single-page web application for cataloging and exploring real astronomical objects — galaxies, nebulae, star clusters, stars, exoplanets, planets, moons, and more. Built as a hands-on project to learn full-stack web development with Firebase and vanilla JavaScript.
-
----
-
-## ✨ Features
-
-- **Universal Astronomical Object (UAO) catalog** — a unified data model for normalizing astronomical objects from multiple real-world catalogs (SAC, SIMBAD, NASA Exoplanet Archive, JPL Horizons)
-- **Firebase Authentication** — email/password login and registration
-- **Firestore database** — persistent storage for user-contributed objects
-- **NASA Image API integration** — search and display real NASA imagery by category
-- **Category filtering** — filter by Galaxies, Nebulae, Clusters, Stars, Exoplanets, Solar System bodies, and Exotic objects
-- **Text search** — prefix-based Firestore search across object names
-- **Image carousel** — Bootstrap-powered slideshow of catalog images
-- **Image modal viewer** — click any card image to see it full-size
-- **Like/favorite system** — authenticated users can like objects
-- **Food cost calculator** — a quirky utility that calculates lifetime food energy consumption and cost with Chart.js visualizations
-- **Multiple themes** — Dark, Light, Cosmic, Cosmic Retro, Cosmic Nebula, and Cosmic Flare
-- **Responsive design** — Bootstrap 5 grid with animated side navigation
-- **localStorage caching** — reduces Firestore reads for returning visitors
+**Cosmic Origins** is a single-page web app. It shows real astronomical objects (galaxies, nebulae, stars, exoplanets, moons and more) with real NASA photos. No AI-made images. It is also a project to help young developers learn vanilla JavaScript.
 
 ---
 
-## 🏗️ Tech Stack
+## What it does today
+
+- Full-screen gallery of objects with real NASA photos
+- Filter by category, search by name
+- Detail page for each object
+- Favorite star on each card. Favorites stay in your browser (`localStorage`, key `co-favs`)
+- **No accounts.** The login and register forms are visual only. The platform brief removes them.
+- Data is a mock `CATALOG` list inside `src/ui/cosmic.js`
+
+## Where it is going
+
+Data will come from BGAPI (`https://api.baiganio.io/api/cosmic`). Only objects with a real photo are shown. Image files stay on NASA, ESA, ESO and NOIRLab servers.
+Plan and contract: [docs/briefs/cosmic-origins-platform.md](docs/briefs/cosmic-origins-platform.md). Roadmap: [docs/follow-ups.md](docs/follow-ups.md).
+
+---
+
+## Tech Stack
 
 | Layer | Technology |
 |---|---|
-| **Frontend** | Vanilla JavaScript (ES6+), jQuery 3.6 |
-| **UI Framework** | Bootstrap 5.3, Bootstrap Icons, Font Awesome 6 |
-| **Charts** | Chart.js |
-| **Backend / BaaS** | Firebase (Firestore + Authentication) |
-| **External API** | NASA Image API |
-| **Hosting** | GitHub Pages |
-| **Fonts** | Alsandra, Buxton Sketch, Guildof, Lobster, Qt Arabian, Cormorant Garamond, Inter |
-
-No build tools, no bundler, no framework — plain HTML, CSS, and JavaScript served directly.
+| Code | Vanilla JavaScript (ES6+), no build step |
+| UI | Bootstrap 5.3 + Bootstrap Icons (CDN), design system in `styles/cosmic.css` |
+| 3D | three.js (CDN) |
+| Fonts | Chakra Petch, IBM Plex Sans, IBM Plex Mono (Google Fonts) |
+| Hosting | GitHub Pages (a push to `master` is a deploy) |
 
 ---
 
-## 📁 Project Structure
+## Quick Start
+
+```bash
+git clone https://github.com/BaiGanio/cosmic-origins.git
+cd cosmic-origins
+npx serve -l 4300 .
+```
+
+Then open <http://localhost:4300>.
+
+---
+
+## Project Structure
 
 ```
 cosmic-origins/
-├── index.html                     # Main SPA entry point
-├── index-old.html                 # Earlier landing page prototype
+├── index.html                           # The one page; loads only src/ui/cosmic.js
 ├── src/
-│   ├── core/
-│   │   ├── index.js               # App logic: routing, themes, search, filters, controllers
-│   │   ├── auth.js                # Firebase auth: login, register, logout, UI state
-│   │   └── firebase-config.js     # Firebase initialization and global refs
-│   ├── models/
-│   │   └── UniversalAstronomicalObject.js   # UAO data model (ES6 class)
-│   ├── ui/
-│   │   ├── uao-service.js         # CRUD operations, card rendering, search
-│   │   ├── carousel.js            # Bootstrap carousel renderer
-│   │   ├── nasa.js                # NASA Image API integration
-│   │   ├── food-cost.js           # Food energy/cost calculator + Chart.js
-│   │   ├── modal-images.js        # Image modal viewer
-│   │   ├── side-navigation.js     # Animated side-nav open/close
-│   │   └── sidebar.html           # Sidebar component template
-│   └── helpers/
-│       └── firestoreImport.js     # Bulk Firestore import + dummy dataset (~20 objects)
-├── styles/
-│   ├── styles.css                 # Design system: CSS variables, themes, typography, layout
-│   ├── index.css                  # Page-specific styles
-│   ├── navigation.css             # Side navigation styles
-│   ├── uao-styles.css             # UAO card and form styles
-│   └── fonts.css                  # Custom font-face declarations
-├── fonts/                         # Custom web fonts (TTF/OTF)
-├── images/                        # Static images and icons
+│   ├── ui/cosmic.js                     # App shell: mock CATALOG, grid, detail, favorites
+│   └── models/UniversalAstronomicalObject.js   # UAO data model (reference shape)
+├── styles/cosmic.css                    # Design system and all styles
+├── docs/                                # Brief, plans, roadmap, data sources
 └── README.md
 ```
 
 ---
 
-## 🚀 Getting Started
+## Data Model
 
-### Prerequisites
-
-- A Firebase project with Firestore and Email/Password Authentication enabled
-- A NASA API key (free tier available at [api.nasa.gov](https://api.nasa.gov))
-
-### Setup
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/BaiGanio/cosmic-origins.git
-   cd cosmic-origins
-   ```
-
-2. **Configure Firebase**
-   - Replace the `firebaseConfig` object in `src/core/firebase-config.js` with your own Firebase project credentials.
-
-3. **Configure NASA API key**
-   - Replace the `Authorization` header in `src/ui/nasa.js` with your own NASA API key.
-
-4. **Open in browser**
-   - Open `index.html` directly, or serve with any static file server:
-     ```bash
-     npx serve .
-     ```
-
-### Seeding Data
-
-The file `src/helpers/firestoreImport.js` contains a dummy dataset of ~20 real astronomical objects (NGC 891, M42 Orion Nebula, M13 Hercules Cluster, Sirius, Kepler-22b, Europa, etc.) and a `importToFirestore()` function. Open the browser console and call it to populate your Firestore database.
-
----
-
-## 🧩 Data Model
-
-The `UniversalAstronomicalObject` (UAO) model normalizes data from multiple astronomical catalogs into a single schema:
+The `UniversalAstronomicalObject` (UAO) is the shape every source catalog is parsed into. **The platform brief changes this model** (slugs, image credits, `distanceLy`). Treat the table as today's shape.
 
 | Field | Description |
 |---|---|
-| `name` | Primary designation (NGC 891, Kepler-22b, etc.) |
-| `aliases` | Alternate catalog identifiers |
-| `category` | High-level type: galaxy, nebula, star, exoplanet, planet, moon, asteroid, comet, quasar, AGN, supernova |
-| `subcategory` | Specific classification (spiral, emission, red_dwarf, gas_giant, etc.) |
-| `catalogSource` | Origin catalogs: SAC, SIMBAD, NASA, JPL |
-| `ra` / `dec` | Right Ascension and Declination (J2000 epoch) |
-| `distance` | Distance in appropriate units (ly, Mly, AU, pc) |
-| `magnitude` | Apparent magnitude |
-| `spectralType` | Stellar spectral classification |
-| `mass` / `radius` / `temperature` / `luminosity` | Physical properties |
-| `orbitalPeriod` / `semiMajorAxis` / `eccentricity` | Exoplanet orbital elements |
-| `parentBody` | Solar System parent (e.g., "Jupiter" for Europa) |
-| `tags` | UI filter tags |
-| `imageUrl` | Associated image URL |
+| `name` | Main name (NGC 891, Kepler-22b, etc.) |
+| `aliases` | Other catalog names |
+| `category` | galaxy, nebula, star, exoplanet, planet, moon, asteroid, comet, quasar, AGN, supernova |
+| `subcategory` | Finer type (spiral, emission, red_dwarf, gas_giant, etc.) |
+| `catalogSource` | Where it came from: SAC, SIMBAD, NASA, JPL |
+| `ra` / `dec` | Sky position (J2000) |
+| `distance` | Distance, with its unit |
+| `magnitude` | Apparent brightness |
+| `spectralType` | Star class |
+| `mass` / `radius` / `temperature` / `luminosity` | Physical values |
+| `orbitalPeriod` / `semiMajorAxis` / `eccentricity` | Orbit values |
+| `parentBody` | Parent body (Jupiter for Europa) |
+| `tags` | Filter tags |
+| `imageUrl` | Image link |
 
 ---
 
 ## 📜 License
 
-MIT License — see [LICENSE](LICENSE) for details.
+MIT License — see [LICENSE](LICENSE).
 
 Copyright (c) 2021 Lyuben Kikov
 
----
-
 ## ✨ Author
 
-Created by **Lyuben Kikov** — a developer exploring full-stack web development, Firebase, and the cosmos.
+Created by **Lyuben Kikov** — a developer exploring full-stack web development and the cosmos.
 
 - GitHub: [@BaiGanio](https://github.com/BaiGanio)

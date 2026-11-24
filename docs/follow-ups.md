@@ -6,21 +6,21 @@
 > used to live at the end of this file are also lost — the token block at the top
 > of `styles/cosmic.css` remains the source of truth.
 
-1. **Wire `CATALOG` mock to real data — SUPERSEDED.** Originally "wire to
-   Firestore"; replaced by the self-hosted pipeline in
+1. **Wire `CATALOG` mock to real data — SUPERSEDED.** Replaced by the self-hosted pipeline in
    [`plans/real-data-pipeline.md`](plans/real-data-pipeline.md) (free open
    catalogs → PostgreSQL → API on the Pi 5 k3s cluster).
 2. *(unknown — lost in reconstruction)*
 3. **Auth — LATER STAGE.** No user accounts for now (decided 2026-11-24). The
-   brief removes Firebase auth and the `data-stub` forms. Accounts may come back
+   brief removes the `data-stub` forms. Accounts may come back
    later with Keycloak (baiganio-platform `plans/cosmic-origins/README.md` §14).
 4. **Server-side favorites — LATER STAGE.** Favorites stay in `localStorage` `co-favs`
    (storing slugs). Server sync needs accounts (task 3).
 5. *(unknown — lost in reconstruction)*
 6. *(unknown — lost in reconstruction)*
-7. **Legacy removal**: drop jQuery, Chart.js, `src/ui/food-cost.js`, old
-   stylesheets and handwriting fonts; port anything still needed out of
-   `uao-service.js` first. Never load legacy and new shell together.
+7. **Legacy removal — DONE 2026-11-24.** Deleted every file `index.html` does not
+   load (old scripts, stylesheets, fonts, images). `uao-service.js` held nothing
+   `cosmic.js` needs.
+8. **UI polish — plan in `plans/ui-polish.md`, chapters 1–5.** Status: not started.
 
 ## New follow-ups (from real-data-pipeline plan, out of its scope)
 
@@ -37,5 +37,3 @@
   20,000 objects, or the snapshot passes 1 MB after gzip, move search to BGAPI: paged
   `GET /objects?q=`, keyset paging, PostgreSQL `pg_trgm` + full-text, SQL Server full-text.
   The import script warns at 80%. Details: baiganio-platform `plans/cosmic-origins/README.md` §11.
-- **Remove the unnecessary Authorization header + committed key in `src/ui/nasa.js`**
-  next time that file is touched (images-api.nasa.gov needs no key).

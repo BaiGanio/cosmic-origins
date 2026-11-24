@@ -27,7 +27,7 @@ collide, real data and readable code win; the immersive full-bleed imagery is th
 product surface that makes both worth looking at.
 
 Direction (approved 2026-11-24, see `docs/briefs/cosmic-origins-platform.md`): the
-backend moves off Firebase to the BaiGanio platform — data from BGAPI
+backend moves to the BaiGanio platform — data from BGAPI
 (`https://api.baiganio.io/api/cosmic`). **No user accounts** for now: no login, no
 sign-up; favorites stay in `localStorage`. Only objects with a real photo are shown; image files stay on
 NASA/ESA/ESO/NOIRLab servers. Until that lands, leave the `CATALOG` mock shape
@@ -38,7 +38,7 @@ as it is; the `data-stub` forms and `src/core/auth.js` will be removed by the br
 - **Never commit.** Do the work, verify it, then hand over a Conventional Commits
   message; the developer reviews and commits themselves if they wish.
 - Produce only work that can be looked at and verified — no unreviewable side
-  effects (live Firestore writes, deploys, external publishing) without explicit
+  effects (live data writes, deploys, external publishing) without explicit
   instruction.
 - **Done means:** `node --check` passes on every touched JS file, the app was
   actually loaded (`npx serve .`) and the changed flow exercised, **and** the
@@ -66,57 +66,43 @@ error blanks the entire page, which is why `node --check` is non-negotiable.
 - **Runtime**: vanilla ES6+ JavaScript in the browser; global scripts loaded via
   `<script>` tags in `index.html` — no modules, load order matters
 - **UI**: Bootstrap 5.3 + Bootstrap Icons (CDN); design system in `styles/cosmic.css`
-- **Backend**: Firebase compat SDK — Firestore + email/password Authentication
+- **3D**: three.js (CDN) — the starfield in `cosmic.js`
+- **Backend**: none yet — static site with a mock `CATALOG`; BGAPI comes with the brief
 - **Data & imagery**: NASA images API (`images-api.nasa.gov`) today; ESA and other
   free open catalogs planned as parse-and-import sources
 - **Hosting**: GitHub Pages — a push to `master` is a deploy
-- **Legacy, slated for removal** (see `docs/follow-ups.md` task 7): jQuery, Chart.js,
-  `src/ui/food-cost.js`, old stylesheets and handwriting fonts
 
 ## Configuration
 
-No env system — configuration is committed source:
-
-- `src/core/firebase-config.js` — Firebase client config. Public by design (it is a
-  client-side identifier, not a secret); real access control must live in Firestore
-  security rules, which are managed in the Firebase console, not this repo.
-- `src/ui/nasa.js` — sends an `Authorization` header to images-api.nasa.gov, but that
-  API requires no key; the header (and committed key) is unnecessary — remove it the
-  next time this file is touched.
+No env system and no secrets — everything is committed source. The BGAPI URL will
+live in `src/core/api-config.js` (brief Part B step 1).
 
 ## Database
 
-Firestore. Documents follow `src/models/UniversalAstronomicalObject.js` (UAO) — the
-single normalization target every source catalog gets parsed into. Seed data via
-`importToFirestore()` in `src/helpers/firestoreImport.js` (run from the browser console).
-
-Current state: the redesigned shell (`src/ui/cosmic.js`) renders a mock `CATALOG`
-const whose fields mirror the UAO model; wiring it to Firestore is task 1 in
-`docs/follow-ups.md`. Favorites live client-side in localStorage (key `co-favs`)
-until auth and server-side favorites land (tasks 3–4).
+None yet. `src/models/UniversalAstronomicalObject.js` (UAO) is the shape every source
+catalog gets parsed into. The shell (`src/ui/cosmic.js`) renders a mock `CATALOG`
+const whose fields mirror the UAO model; the brief replaces it with BGAPI data.
+Favorites live in localStorage (key `co-favs`); no user accounts for now.
 
 ## Module Coupling Map
 
 | Coupling | Why |
 |----------|-----|
-| `src/ui/cosmic.js` `CATALOG` mock ↔ `src/models/UniversalAstronomicalObject.js` | Mock field names mirror the UAO schema; renaming a UAO field silently breaks the planned Firestore wiring |
-| `index.html` `data-stub` forms ↔ `initAuthStubs()` in `cosmic.js` ↔ `src/core/auth.js` | Auth migration must change all three together |
+| `src/ui/cosmic.js` `CATALOG` mock ↔ `src/models/UniversalAstronomicalObject.js` | Mock field names mirror the UAO schema; renaming a UAO field silently breaks the planned BGAPI wiring |
+| `index.html` `data-stub` forms ↔ `initAuthStubs()` in `cosmic.js` | The brief removes both together |
 | `styles/cosmic.css` tokens ↔ classes used in `index.html` / `cosmic.js` | `brackets`, `--ion` / `--signal` roles, `--ease-hud` motion — UI code must consume tokens, never raw values |
-| Legacy stack (`uao-service.js`, `styles/styles.css`, …) ∥ new shell (`cosmic.js`, `cosmic.css`) | Two parallel implementations; port logic out of legacy, never load both |
 
 ## Security Model
 
-- Auth: Firebase email/password (`src/core/auth.js`); the new shell's login/register
-  forms are still stubs (`data-stub`).
-- Client-only app — the trust boundary is Firestore security rules in the Firebase
-  console. Nothing in this repo can enforce access control; assume all repo code is
-  public.
-- No secrets belong in this repo (see Configuration re: the unnecessary NASA key).
+- No accounts, no login: the `data-stub` forms are visual only.
+- Client-only app — nothing in this repo can enforce access control; assume all repo
+  code is public. Access control lives in BGAPI.
+- No secrets belong in this repo.
 
 ## Code Conventions
 
 - Plain browser globals, `<script>`-tag includes — keep new code vanilla; do **not**
-  reintroduce jQuery (only legacy files use it).
+  reintroduce jQuery.
 - Design system: all tokens at the top of `styles/cosmic.css`. Interactive = ion cyan
   `--ion`; data readouts = signal amber `--signal`. Type roles: Chakra Petch =
   headings/nav, IBM Plex Sans = prose, IBM Plex Mono = every data value, tag, label.
@@ -170,7 +156,7 @@ result) plus `node --check` on touched files, since there is no test runner.
 3. **Test execution order** — dependencies between groups; tests within a group are
    independent
 4. **Diagrams** (optional) — Mermaid, when a flow is easier to see than read
-5. **Required setup** — fixtures, seed data (`importToFirestore()`), config
+5. **Required setup** — fixtures, seed data, config
 
 Execution loop: read the test file first → confirm the current state fails the
 criteria (red) → implement until green → update the test file if discoveries change
@@ -211,7 +197,6 @@ gitignored local scratch (raw downloads in `var/data/`); never put docs there.
 | Old plan, partly superseded (fetch/normalize steps still apply) | `docs/plans/real-data-pipeline.md` + `-tests.md` |
 | Design-system notes (tokens, type roles, motion) | token block at top of `styles/cosmic.css` (the follow-ups copy was lost) |
 | Data model reference | `README.md` § Data Model, `src/models/UniversalAstronomicalObject.js` |
-| Legacy landing pages (do not extend) | ~~`var/index-legacy.html`, `var/index-old.html`~~ lost; legacy code still in `src/` per the coupling map |
 
 ## Maintaining This File
 
