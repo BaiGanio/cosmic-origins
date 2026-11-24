@@ -658,7 +658,7 @@ function initHero() {
     if (d) { heroShow(+d.dataset.hero); heroPlay(); }
   });
   $("#heroOpen").addEventListener("click", () =>
-    location.hash = "obj/" + FEATURED[heroIdx]);
+    location.hash = objectLink(FEATURED[heroIdx]));
   const hero = $("#hero");
   hero.addEventListener("mouseenter", () => clearInterval(heroTimer));
   hero.addEventListener("mouseleave", heroPlay);
@@ -701,6 +701,41 @@ function initFilters() {
    6. DETAIL VIEWER
    ------------------------------------------------------------ */
 let lastRoute = "gallery";
+let galleryScrollY = 0;        // where the gallery was, so we can go back to the same place
+
+/* The one place that knows what a link to an object looks like.
+   (The platform brief changes it to "#/object/<slug>": edit only here.) */
+function objectLink(id) {
+  return "obj/" + id;
+}
+
+/* The full-size NASA file: "~orig.jpg" instead of "~large.jpg" */
+function originalImageUrl(obj) {
+  return obj.imageUrl.replace("~large.jpg", "~orig.jpg");
+}
+
+/* The id of the object that is open now, or "" */
+function openObjectId() {
+  const h = location.hash.replace("#", "");
+  return h.startsWith("obj/") ? h.slice(4) : "";
+}
+
+/* Go to the next (step = 1) or previous (step = -1) object in the list the
+   gallery shows now (same filters and search). Wraps at both ends. */
+function stepDetail(step) {
+  const id = openObjectId();
+  let list = CATALOG.filter(isVisible);
+  if (!list.some(o => o.id === id)) list = CATALOG;    // opened from outside the list
+  const i = list.findIndex(o => o.id === id);
+  const next = list[(i + step + list.length) % list.length];
+  if (next.id !== id) location.hash = objectLink(next.id);
+}
+
+/* Back to the gallery (the "Back" button and the Esc key) */
+function closeDetail() {
+  location.hash = lastRoute === "gallery" ? "" : lastRoute;
+  showView(lastRoute);
+}
 
 function openDetail(id) {
   const obj = CATALOG.find(o => o.id === id);
@@ -716,6 +751,7 @@ function openDetail(id) {
   panel.classList.remove("is-entering");
   panel.classList.add("is-waiting");
   img.alt = obj.name;
+  $("#detailImgLink").href = originalImageUrl(obj);
   $("#detailTitle").textContent = obj.name;
   $("#detailDesig").textContent = obj.designation;
   prepareTyping($("#detailDesc"), obj.description);
@@ -740,6 +776,7 @@ function openDetail(id) {
        aria-label="Open ${o.name}">
        ${frameHTML(o, true)}<h4 class="uao-name">${o.name}</h4>
      </div>`).join("");
+  $("#relatedLabel").textContent = "More in " + (CATEGORY_LABELS[obj.category] || obj.category);
   $("#relatedWrap").style.display = related.length ? "block" : "none";
 
   showView("detail");
@@ -855,11 +892,15 @@ function loadPicture(img, url, whenReady) {
 const ROUTES = ["gallery", "login", "register", "detail"];
 
 function showView(name) {
+  const leavingDetail = document.body.classList.contains("detail-open") && name !== "detail";
+  const enteringDetail = !document.body.classList.contains("detail-open") && name === "detail";
+  if (enteringDetail) galleryScrollY = window.scrollY;
   $$(".view").forEach(v => v.classList.toggle("is-active", v.id === "view-" + name));
   $$(".side-link[data-route]").forEach(l =>
     l.classList.toggle("is-active", l.dataset.route === name));
   document.body.classList.toggle("detail-open", name === "detail");
   if (name !== "detail") lastRoute = name;
+  if (leavingDetail) window.scrollTo(0, galleryScrollY);   // back where the reader was
 }
 
 function route() {
@@ -932,19 +973,27 @@ function initDelegation() {
       return;
     }
     const card = e.target.closest(".uao-card, .related-item");
-    if (card) location.hash = "obj/" + card.dataset.id;   // deep-linkable
+    if (card) location.hash = objectLink(card.dataset.id);   // deep-linkable
   });
   document.addEventListener("keydown", (e) => {
     if (e.key !== "Enter" && e.key !== " ") return;
     const card = e.target.closest(".uao-card, .related-item");
-    if (card) { e.preventDefault(); location.hash = "obj/" + card.dataset.id; }
+    if (card) { e.preventDefault(); location.hash = objectLink(card.dataset.id); }
   });
+  /* Detail view keys: Esc = back, ← / → = previous / next object.
+     Not while typing in a field. */
+  document.addEventListener("keydown", (e) => {
+    if (!document.body.classList.contains("detail-open")) return;
+    if (e.target.closest("input, textarea, select")) return;
+    if (e.key === "Escape") closeDetail();
+    else if (e.key === "ArrowRight") stepDetail(1);
+    else if (e.key === "ArrowLeft") stepDetail(-1);
+  });
+  $("#detailPrev").addEventListener("click", () => stepDetail(-1));
+  $("#detailNext").addEventListener("click", () => stepDetail(1));
   initScrollHint();
   initTyping();
-  $("#detailBack").addEventListener("click", () => {
-    location.hash = lastRoute === "gallery" ? "" : lastRoute;
-    showView(lastRoute);
-  });
+  $("#detailBack").addEventListener("click", closeDetail);
 }
 
 /* ------------------------------------------------------------

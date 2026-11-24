@@ -717,6 +717,9 @@ html.opening-detail body { visibility: hidden; }
   transition: border-color var(--t-fast), background var(--t-fast);
 }
 .detail-back:hover { border-color: var(--hairline-hi); background: rgba(125, 211, 232, 0.16); }
+/* the photo link fills the photo area; the image inside keeps its own position */
+.detail-img-link { position: absolute; inset: 0; cursor: zoom-in; }
+.detail-hero .hero-nav { z-index: 2; }     /* above the photo link */
 .detail-live {
   position: absolute;
   top: 28px; right: var(--pad, 32px);
@@ -860,12 +863,12 @@ html.opening-detail body { visibility: hidden; }
 .related-item:first-child { margin-left: auto; }
 .related-item:last-child  { margin-right: auto; }
 .related-item {
-  flex: 0 0 130px;
+  flex: 0 0 220px;                   /* about the size of a card on a phone */
   cursor: pointer;
   padding: 6px;
 }
 .related-item .uao-frame { aspect-ratio: 1 / 1; }
-.related-item .uao-name { font-size: 11.5px; padding: 6px 2px 2px; margin: 0; }
+.related-item .uao-name { font-size: 13px; padding: 8px 2px 2px; margin: 0; }
 
 /* ---------------- auth panels ---------------- */
 .auth-wrap {

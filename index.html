@@ -123,14 +123,21 @@
       <!-- ---------- DETAIL VIEWER: full-screen observation ---------- -->
       <section class="view detail-overlay" id="view-detail" aria-label="Object telemetry">
         <div class="detail-hero">
-          <img id="detailImg" alt="">
+          <!-- the photo is a real link: click, middle-click or "open in new tab"
+               all open the original NASA file -->
+          <a class="detail-img-link" id="detailImgLink" target="_blank" rel="noopener"
+             aria-label="Open the original picture in a new tab">
+            <img id="detailImg" alt="">
+          </a>
           <div class="hero-scrim"></div>
           <button class="detail-back" id="detailBack">◂ Back to gallery</button>
-          <span class="system-clock detail-live">TELEMETRY · LIVE CATALOG RECORD</span>
+          <span class="system-clock detail-live">Catalog record</span>
           <div class="detail-caption">
             <h2 class="detail-title" id="detailTitle"></h2>
             <div class="detail-desig" id="detailDesig"></div>
           </div>
+          <button class="hero-nav hero-prev" id="detailPrev" aria-label="Previous object">‹</button>
+          <button class="hero-nav hero-next" id="detailNext" aria-label="Next object">›</button>
           <button class="scroll-hint" id="scrollHint" aria-label="Scroll down to the telemetry">
             <span>Telemetry</span>
             <i class="bi bi-chevron-down" aria-hidden="true"></i>
@@ -140,7 +147,7 @@
           <dl class="telemetry" id="telemetry"></dl>
           <p class="detail-desc" id="detailDesc"></p>
           <div id="relatedWrap">
-            <div class="related-label">Related objects — same classification</div>
+            <div class="related-label" id="relatedLabel"></div>
             <div class="related-rail" id="relatedRail"></div>
           </div>
         </div>

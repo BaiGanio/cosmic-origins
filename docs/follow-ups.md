@@ -20,7 +20,9 @@
 7. **Legacy removal — DONE 2026-11-24.** Deleted every file `index.html` does not
    load (old scripts, stylesheets, fonts, images). `uao-service.js` held nothing
    `cosmic.js` needs.
-8. **UI polish — plan in `plans/ui-polish.md`, chapters 1–5.** Status: not started.
+8. **UI polish — plan in `plans/ui-polish.md`, chapters 1–5.** Ch 1 (mobile fit) and
+   Ch 2 (gallery controls) DONE 2026-11-24 — tests T1, T2 green in `tests/ui/`.
+   Ch 3 (detail page): in progress. Ch 4–5 wait for brief Part B.
 9. **Automated UI tests — DONE 2026-11-24.** Plan: [`plans/ui-tests.md`](plans/ui-tests.md).
    Playwright, 3 engines, groups T0–T2 + no-rebuild regression + detail entrance.
    Open: switch Pages Source to "GitHub Actions" so the deploy waits for the tests.

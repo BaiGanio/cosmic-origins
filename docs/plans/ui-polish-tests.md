@@ -4,7 +4,7 @@ Companion to `docs/plans/ui-polish.md`. No test runner: each test is exact
 browser steps + expected result, plus `node --check` on every touched JS file.
 Red first: before a chapter starts, run its group and confirm the tests fail.
 
-> **Automated (2026-11-24):** T0.1, T0.2, T0.4, T1 and T2 run in `tests/ui/`
+> **Automated (2026-11-24):** T0.1, T0.2, T0.4, T1, T2 and T3 run in `tests/ui/`
 > (`npm test`, 3 engines). T0.3 and T0.5 stay manual. See `docs/plans/ui-tests.md`.
 
 ## 1. Coverage map
@@ -69,7 +69,7 @@ Red first: before a chapter starts, run its group and confirm the tests fail.
 
 | ID | Steps | Expected | Edge cases |
 |---|---|---|---|
-| T3.1 | 1440 × 900, open `#obj/m16` | Name and first telemetry row visible without scrolling | 390 px: name visible without scrolling |
+| T3.1 | 1440 × 900, open `#obj/m16` | Name + designation visible without scrolling; one tap on the "Telemetry" hint brings the data into view | 390 px: same. *(Changed 2026-11-24: the full-screen photo of commit 2e9b8cf replaced the 60vh cap.)* |
 | T3.2 | Click the photo | New tab opens the original image URL on images-assets.nasa.gov | Middle-click works too |
 | T3.3 | Look at telemetry | No empty filler cells at 1440, 1024, 390 px | — |
 | T3.4 | Look at top-right label | "Catalog record" — the word "LIVE" is gone | — |
