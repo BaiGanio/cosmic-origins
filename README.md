@@ -30,7 +30,8 @@ Plan and contract: [docs/briefs/cosmic-origins-platform.md](docs/briefs/cosmic-o
 | UI | Bootstrap 5.3 + Bootstrap Icons (CDN), design system in `styles/cosmic.css` |
 | 3D | three.js (CDN) |
 | Fonts | Chakra Petch, IBM Plex Sans, IBM Plex Mono (Google Fonts) |
-| Hosting | GitHub Pages (a push to `master` is a deploy) |
+| Tests | Playwright Test (Chromium, Firefox, WebKit) — dev tooling only, the app does not use it |
+| Hosting | GitHub Pages, deployed by GitHub Actions only after the tests pass |
 
 ---
 
@@ -44,6 +45,23 @@ npx serve -l 4300 .
 
 Then open <http://localhost:4300>.
 
+## Run the tests
+
+The app needs no install. The tests do (Node 22+):
+
+```bash
+npm ci                    # test tools only (devDependencies)
+npx playwright install    # the 3 browser engines, once
+npm test                  # all tests in Chromium, Firefox and WebKit
+npm run test:firefox      # one engine (also test:chromium, test:webkit)
+npm run test:report       # open the HTML report of the last run
+```
+
+The tests start their own server on port 4310 and need no network: NASA
+pictures and CDN files come from local copies. GitHub Actions runs the same
+tests on every pull request and every push to `master`; a red test stops the
+deploy.
+
 ---
 
 ## Project Structure
@@ -55,6 +73,9 @@ cosmic-origins/
 │   ├── ui/cosmic.js                     # App shell: mock CATALOG, grid, detail, favorites
 │   └── models/UniversalAstronomicalObject.js   # UAO data model (reference shape)
 ├── styles/cosmic.css                    # Design system and all styles
+├── tests/                               # Playwright UI tests (dev only)
+├── playwright.config.js, package.json   # Test tooling only — the app has no build
+├── .github/workflows/ui-tests.yml       # CI: tests, then deploy to Pages
 ├── docs/                                # Brief, plans, roadmap, data sources
 └── README.md
 ```

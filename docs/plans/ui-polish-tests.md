@@ -4,6 +4,9 @@ Companion to `docs/plans/ui-polish.md`. No test runner: each test is exact
 browser steps + expected result, plus `node --check` on every touched JS file.
 Red first: before a chapter starts, run its group and confirm the tests fail.
 
+> **Automated (2026-11-24):** T0.1, T0.2, T0.4, T1 and T2 run in `tests/ui/`
+> (`npm test`, 3 engines). T0.3 and T0.5 stay manual. See `docs/plans/ui-tests.md`.
+
 ## 1. Coverage map
 
 | Plan step | Test group | Can run |

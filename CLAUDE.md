@@ -40,9 +40,9 @@ as it is; the brief removes the `data-stub` forms and `initAuthStubs()` (`src/co
 - Produce only work that can be looked at and verified — no unreviewable side
   effects (live data writes, deploys, external publishing) without explicit
   instruction.
-- **Done means:** `node --check` passes on every touched JS file, the app was
-  actually loaded (`npx serve .`) and the changed flow exercised, **and** the
-  handoff lists the exact manual steps the developer should click to verify.
+- **Done means:** `node --check` passes on every touched JS file, `npm test` is
+  green in all 3 engines, the app was actually loaded (`npx serve .`) and the
+  changed flow exercised, **and** the handoff lists the exact manual steps the developer should click to verify.
 - Code must stay legible to a junior developer: obvious over clever.
 - **Platform contract.** This repo is part of the BaiGanio platform (BGAPI, Keycloak,
   the websites). Files in `docs/briefs/` hold contracts other repos depend on:
@@ -56,10 +56,14 @@ as it is; the brief removes the `data-stub` forms and `initAuthStubs()` (`src/co
 ```bash
 npx serve .                       # serve locally (or just open index.html)
 node --check src/ui/cosmic.js     # syntax-check any touched JS file
+npm ci && npx playwright install  # once: test tooling + browsers
+npm test                          # UI tests: Chromium, Firefox, WebKit
 ```
 
-That is the whole toolchain — no build, no bundler, no tests, no lint. A syntax
-error blanks the entire page, which is why `node --check` is non-negotiable.
+The app has no build, no bundler, no lint. Test tooling (Playwright) lives in
+`package.json` devDependencies, `playwright.config.js` and `tests/`; nothing in
+`index.html`, `src/` or `styles/` may depend on it. A syntax error blanks the
+entire page, which is why `node --check` is non-negotiable.
 
 ## Tech Stack
 
@@ -70,7 +74,10 @@ error blanks the entire page, which is why `node --check` is non-negotiable.
 - **Backend**: none yet — static site with a mock `CATALOG`; BGAPI comes with the brief
 - **Data & imagery**: NASA images API (`images-api.nasa.gov`) today; ESA and other
   free open catalogs planned as parse-and-import sources
-- **Hosting**: GitHub Pages — a push to `master` is a deploy
+- **Testing**: Playwright Test, offline (NASA + CDN served from local files) — see
+  `docs/plans/ui-tests.md`
+- **Hosting**: GitHub Pages via `.github/workflows/ui-tests.yml` — a push to `master`
+  deploys only after the tests pass (needs Pages Source = "GitHub Actions")
 
 ## Configuration
 
@@ -145,7 +152,8 @@ Every plan MUST have a companion test file at `docs/plans/<slug>-tests.md`, prod
 alongside the plan. When the plan is executed, its verification criteria are validated
 **before** the implementation is considered complete — verify-first, not verify-after.
 In this repo a "test" is usually a provable browser behavior (exact steps + expected
-result) plus `node --check` on touched files, since there is no test runner.
+result) plus `node --check` on touched files; automate it in `tests/ui/` (Playwright)
+when it can be measured.
 
 **Test file structure** (`docs/plans/<slug>-tests.md`):
 
