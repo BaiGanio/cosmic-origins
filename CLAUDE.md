@@ -28,10 +28,10 @@ product surface that makes both worth looking at.
 
 Direction (approved 2026-11-24, see `docs/briefs/cosmic-origins-platform.md`): the
 backend moves off Firebase to the BaiGanio platform — data from BGAPI
-(`https://api.baiganio.io/api/cosmic`), login and sign-up via Keycloak (client
-`cosmic-origins-web`). Only objects with a real photo are shown; image files stay on
-NASA/ESA/ESO/NOIRLab servers. Until that lands, leave the `CATALOG` mock shape,
-the `data-stub` forms and `src/core/auth.js` as they are.
+(`https://api.baiganio.io/api/cosmic`). **No user accounts** for now: no login, no
+sign-up; favorites stay in `localStorage`. Only objects with a real photo are shown; image files stay on
+NASA/ESA/ESO/NOIRLab servers. Until that lands, leave the `CATALOG` mock shape
+as it is; the `data-stub` forms and `src/core/auth.js` will be removed by the brief.
 
 ## Co-pilot Contract
 
@@ -44,6 +44,12 @@ the `data-stub` forms and `src/core/auth.js` as they are.
   actually loaded (`npx serve .`) and the changed flow exercised, **and** the
   handoff lists the exact manual steps the developer should click to verify.
 - Code must stay legible to a junior developer: obvious over clever.
+- **Platform contract.** This repo is part of the BaiGanio platform (BGAPI, Keycloak,
+  the websites). Files in `docs/briefs/` hold contracts other repos depend on:
+  endpoints, data shapes, roles, client IDs, URLs, CORS origins. If a change would
+  alter or break one, stop and tell Lyuben. The contract changes first in the
+  platform plan (baiganio-platform, private), then here. Never edit a brief to fit
+  your change.
 
 ## Quick Start
 

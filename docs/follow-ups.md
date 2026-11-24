@@ -11,11 +11,11 @@
    [`plans/real-data-pipeline.md`](plans/real-data-pipeline.md) (free open
    catalogs → PostgreSQL → API on the Pi 5 k3s cluster).
 2. *(unknown — lost in reconstruction)*
-3. **Auth**: replace the `data-stub` login/register forms with real auth. Note:
-   long-term direction is Keycloak on the developer's own infrastructure, not
-   Firebase (see plan above).
-4. **Server-side favorites**: migrate localStorage `co-favs` to per-user storage
-   behind auth (task 3 first).
+3. **Auth — LATER STAGE.** No user accounts for now (decided 2026-11-24). The
+   brief removes Firebase auth and the `data-stub` forms. Accounts may come back
+   later with Keycloak (baiganio-platform `plans/cosmic-origins/README.md` §14).
+4. **Server-side favorites — LATER STAGE.** Favorites stay in `localStorage` `co-favs`
+   (storing slugs). Server sync needs accounts (task 3).
 5. *(unknown — lost in reconstruction)*
 6. *(unknown — lost in reconstruction)*
 7. **Legacy removal**: drop jQuery, Chart.js, `src/ui/food-cost.js`, old
@@ -25,9 +25,13 @@
 ## New follow-ups (from real-data-pipeline plan, out of its scope)
 
 - **API rate limiter** on the Pi-hosted API.
-- **Keycloak** in front of the API / app auth (replaces tasks 3's Firebase route).
 - **Data & imagery credits**: attribution section in README + app footer
   (CC-BY-SA sources: OpenNGC, HYG).
+- **Hosting: Cloudflare Pages later?** Stays on GitHub Pages for now. Decide later: own
+  address, own headers (CSP, cache). Touches Keycloak redirect URI, BGAPI CORS, DNS.
+  See baiganio-platform `plans/cosmic-origins/README.md` Q7.
+- **Self-host fonts and CDN scripts (privacy).** Google Fonts and jsDelivr get the visitor IP.
+  Part of the brief, Part B step 7.
 - **Scale trigger (search on the server).** The site loads one catalog snapshot
   (`GET /api/cosmic/catalog`) and searches in the browser. When the catalog passes
   20,000 objects, or the snapshot passes 1 MB after gzip, move search to BGAPI: paged
