@@ -27,7 +27,9 @@ for (const width of [1440, 390]) {
 test("the ignore list only skips image-decode messages", () => {
   expect(isIgnoredConsoleError("Image corrupt or truncated.")).toBe(true);
   expect(isIgnoredConsoleError("The image could not be decoded.")).toBe(true);
+  expect(isIgnoredConsoleError("THREE.WebGLRenderer: Error creating WebGL context.")).toBe(true);
   expect(isIgnoredConsoleError("TypeError: x is undefined")).toBe(false);
+  expect(isIgnoredConsoleError("THREE.WebGLRenderer: some other problem")).toBe(false);
 });
 
 test("the watcher catches a real console error", async ({ page, consoleErrors }) => {

@@ -2,8 +2,10 @@
 // entrance waits for the picture (with a 1.5 s safety net).
 const { test, expect, VIEWPORTS, openGallery } = require("../helpers/app");
 
-// Runs in the page before any app code: every animation frame, write down
-// whether the gallery could be seen.
+// Runs in the page before any app code: write down whether the gallery could
+// be seen, on every animation frame AND on every class change in the page.
+// (Some browsers, like WebKit on Linux, run very few frames while the page is
+// hidden, so frames alone are not enough.)
 function installFrameRecorder() {
   window.testFrames = [];
   function galleryCanBeSeen() {
@@ -18,6 +20,8 @@ function installFrameRecorder() {
     if (window.testFrames.length < 2000) requestAnimationFrame(recordFrame);
   }
   requestAnimationFrame(recordFrame);
+  new MutationObserver(() => window.testFrames.push(galleryCanBeSeen()))
+    .observe(document, { attributes: true, attributeFilter: ["class"], subtree: true });   // "document" exists even before <html> does
 }
 
 test.use({ viewport: VIEWPORTS[1440] });
@@ -30,7 +34,7 @@ for (const id of ["m31", "crab"]) {
     await expect(page.locator("#detailTitle")).toBeVisible();
     const frames = await page.evaluate(() => window.testFrames);
     expect(frames.length).toBeGreaterThanOrEqual(2);
-    expect(frames.filter(Boolean).length, "frames where the gallery could be seen").toBe(0);
+    expect(frames.filter(Boolean).length, "moments where the gallery could be seen").toBe(0);
   });
 }
 

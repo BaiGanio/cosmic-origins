@@ -136,8 +136,14 @@ Found while building (2026-11-24):
   under full parallel load a single early read failed once in Firefox.
 - Desktop numbers (all 3 engines agree): open = sidebar 248, 4 columns,
   hero 1192; collapsed = sidebar 72, 4 columns, hero 1368.
-- No ignore pattern was needed: 0 console errors in all 3 engines with the
-  local JPEG and the WebGL starfield on.
+- On a Mac: 0 console errors in all 3 engines. On the GitHub CI server
+  (Linux, no graphics card) Firefox cannot start WebGL; three.js logs 2 errors
+  and the app uses its 2D starfield. Both exact messages are in the ignore
+  list. Local proof: Firefox with `webgl.disabled` → all green.
+- WebKit on Linux runs almost no animation frames while the page is hidden.
+  The no-flash recorder also samples on every class change (MutationObserver
+  on `document`, because `<html>` does not exist yet when it starts).
+- CI runs one job per browser, side by side (was one job for all, ~9 min).
 - Red checks done by hand: always-rebuild `renderGrid()` → no-rebuild test
   fails ("same picture elements"); `loadPicture` calling `ready()` at once →
   slow-picture tests fail ("panel had is-waiting"). File restored after.

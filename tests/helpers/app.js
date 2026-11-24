@@ -28,6 +28,11 @@ const NASA_HOSTS = ["images-assets.nasa.gov", "images-api.nasa.gov"];
 const IGNORED_CONSOLE_ERRORS = [
   /decod/i,                          // "Image could not be decoded", "decode error"
   /Image corrupt or truncated/i,     // Firefox wording for a bad image file
+  // A machine with no graphics card (like the GitHub CI server) cannot start
+  // WebGL. three.js says so, and the app switches to its 2D starfield. That is
+  // the planned fallback, not a bug. Exact three.js wording only.
+  /^THREE\.WebGLRenderer: A WebGL context could not be created/,
+  /^THREE\.WebGLRenderer: Error creating WebGL context\.$/,
 ];
 
 function isIgnoredConsoleError(text) {
