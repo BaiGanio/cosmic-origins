@@ -52,13 +52,22 @@ for (const width of [1440, 390]) {
       await expect(visibleCards(page)).toHaveCount(14);
     });
 
-    test("T2.4 'All' clicked twice keeps every category on", async ({ page }) => {
+    test("T2.4 'All' is a switch: clears every category, then turns all back on", async ({ page }) => {
       const categoryPills = page.locator(".pill[data-cat]");
-      for (let i = 0; i < 2; i++) {
-        await page.locator("#pillAll").click();
-        for (const p of await categoryPills.all()) await expect(p).toHaveAttribute("aria-pressed", "true");
-        await expect(visibleCards(page)).toHaveCount(14);
-      }
+      // 1st click (all were on): everything off, a helpful empty state
+      await page.locator("#pillAll").click();
+      for (const p of await categoryPills.all()) await expect(p).toHaveAttribute("aria-pressed", "false");
+      await expect(page.locator("#pillAll")).toHaveAttribute("aria-pressed", "false");
+      await expect(visibleCards(page)).toHaveCount(0);
+      await expect(count(page)).toHaveText("0 of 14 objects");
+      await expect(page.locator("#emptyState")).toContainText("No category picked");
+      // pick just one after clearing
+      await pill(page, "nebula").click();
+      await expect(visibleCards(page)).toHaveCount(2);
+      // 2nd click (not all on): everything on again
+      await page.locator("#pillAll").click();
+      for (const p of await categoryPills.all()) await expect(p).toHaveAttribute("aria-pressed", "true");
+      await expect(visibleCards(page)).toHaveCount(14);
     });
 
     test("T2.4 edge: 3 off, then 'All' turns all back on", async ({ page }) => {

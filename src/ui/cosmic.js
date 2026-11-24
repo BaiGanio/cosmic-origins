@@ -258,6 +258,9 @@ function starfield3D(canvas) {
       sprite.scale.set(n.size, n.size, 1);
       sprite.userData.phase = i * 2.1;
       sprite.userData.baseOpacity = n.opacity;
+      sprite.userData.home = { x: n.x, y: n.y };          // the cloud drifts around this spot
+      sprite.userData.startRotation = sprite.material.rotation;
+      sprite.userData.isBand = n.look === looks.milkyway;  // Milky Way haze stays on its band
       return sprite;
     });
   }
@@ -462,6 +465,10 @@ function starfield3D(canvas) {
   window.addEventListener("resize", resize);
   resize();
 
+  const NEBULA_DRIFT = 80;        // how far a gas cloud wanders: about 60 px on a 900 px screen,
+                                  // one loop in about 40 s, so it moves about 10 px per second
+  const NEBULA_SWIRL = 0.000018;  // swirl speed in radians per ms (about 1° per second)
+
   let z = 0;
   renderer.setAnimationLoop((t) => {
     if (document.body.classList.contains("low-ambience")) return;
@@ -484,9 +491,15 @@ function starfield3D(canvas) {
       layer.material.opacity = layer.userData.baseOpacity * (0.85 + 0.15 * twinkle);
     });
     nebulae.forEach((nebula) => {
-      const breathe = Math.sin(t / 5000 + nebula.userData.phase);
-      nebula.material.opacity = nebula.userData.baseOpacity * (0.8 + 0.2 * breathe);
-      nebula.material.rotation += 0.00008;        // gas slowly swirls
+      const cloud = nebula.userData;
+      const breathe = Math.sin(t / 5000 + cloud.phase);
+      nebula.material.opacity = cloud.baseOpacity * (0.8 + 0.2 * breathe);
+      if (cloud.isBand) return;
+      /* gas clouds move on their own (not only with the mouse):
+         a slow loop around their home spot, and a slow swirl */
+      nebula.position.x = cloud.home.x + Math.sin(t / 6000 + cloud.phase) * NEBULA_DRIFT;
+      nebula.position.y = cloud.home.y + Math.cos(t / 8000 + cloud.phase) * NEBULA_DRIFT * 0.6;
+      nebula.material.rotation = cloud.startRotation + t * NEBULA_SWIRL;
     });
     galaxies.forEach((galaxy) => {
       galaxy.userData.disc.rotation.z = t * galaxy.userData.spin;
@@ -593,6 +606,9 @@ function countText(shown, total) {
 
 /* Which message to show when no card is left */
 function emptyHTML() {
+  if (state.active.size === 0) {
+    return "<strong>No category picked</strong>Tap a category above, or tap All to show everything.";
+  }
   if (state.favOnly && state.favs.size === 0) {
     return "<strong>No favorites yet</strong>Tap ☆ on a card to keep it here.";
   }
@@ -668,7 +684,7 @@ function initHero() {
 }
 
 /* ------------------------------------------------------------
-   5. FILTER PILLS — multi-select; "All" turns every category back on
+   5. FILTER PILLS — multi-select; "All" is a switch: all on ↔ all off
    ------------------------------------------------------------ */
 function syncPills() {
   $$(".pill[data-cat]").forEach(p =>
@@ -679,8 +695,12 @@ function syncPills() {
 }
 
 function initFilters() {
+  /* "All": when every category is on, clear them all (so you can pick just
+     one). Otherwise turn every category on. */
   $("#pillAll").addEventListener("click", () => {
-    state.active = new Set(Object.keys(CATEGORY_LABELS));   // a reset: never turns all off
+    const allCategories = Object.keys(CATEGORY_LABELS);
+    const allOn = state.active.size === allCategories.length;
+    state.active = allOn ? new Set() : new Set(allCategories);
     syncPills(); renderGrid();
   });
   $("#pillFav").addEventListener("click", () => {

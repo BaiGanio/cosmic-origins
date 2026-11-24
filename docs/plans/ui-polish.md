@@ -93,9 +93,12 @@ and the detail data table are cut off.
    Works when the count matches the number of cards after every filter/search.
 2.2 **Remove the Search button.** Search already runs on every key press.
    Works when typing filters the grid live and no Search button exists.
-2.3 **"All" pill = reset.** Click "All" turns every category on. It never turns
-   all off (today it does, and the grid goes empty).
-   Works when clicking "All" twice still shows every object.
+2.3 **"All" pill = switch.** All on → click clears every category (so you can
+   pick just one). Anything else → click turns every category on. With none
+   picked, the empty state says "No category picked".
+   Works when "All" clears, a pill then shows only its category, and "All"
+   again shows every object. *(Changed 2026-11-24 at Lyuben's request; was
+   "never turns all off".)*
 2.4 **Favorites-only toggle** (star pill at the end of the pill row). Shows only
    objects whose id is in `co-favs`. Empty result shows a friendly empty state
    ("No favorites yet — tap ☆ on a card").
