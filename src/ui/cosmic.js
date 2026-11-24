@@ -130,7 +130,14 @@ function initStarfield() {
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (!canvas || reduced) return;
   if (window.THREE) {
-    try { return starfield3D(canvas); } catch (e) { /* fall through */ }
+    try {
+      return starfield3D(canvas);
+    } catch (e) {
+      /* a failed WebGL start can lock the canvas, so the 2D field gets a fresh one */
+      const fresh = canvas.cloneNode();
+      canvas.replaceWith(fresh);
+      return starfield2D(fresh);
+    }
   }
   starfield2D(canvas);
 }
@@ -139,66 +146,238 @@ function starfield3D(canvas) {
   const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(62, 1, 0.1, 1200);
+  const camera = new THREE.PerspectiveCamera(62, 1, 0.1, 1400);
+  const DEPTH = 900;
 
-  /* star cloud: 2600 points in a long tube the camera travels through */
-  const N = 2600, DEPTH = 900;
-  const pos = new Float32Array(N * 3);
-  const col = new Float32Array(N * 3);
-  const tints = [
-    [0.81, 0.89, 0.96],   // ice white-blue (most stars)
-    [0.81, 0.89, 0.96],
-    [0.81, 0.89, 0.96],
-    [0.49, 0.83, 0.91],   // ion cyan
-    [1.0, 0.77, 0.42],    // signal amber
+  /* real star colors, from hot blue to cool red; white and yellow are most common */
+  const STAR_COLORS = [
+    [0.66, 0.75, 1.0],    // blue (O/B)
+    [0.82, 0.87, 1.0],    // blue-white (A)
+    [1.0, 1.0, 1.0],      // white (F)
+    [1.0, 1.0, 1.0],
+    [1.0, 0.96, 0.86],    // yellow-white (G, like the Sun)
+    [1.0, 0.96, 0.86],
+    [1.0, 0.85, 0.65],    // orange (K)
+    [1.0, 0.68, 0.48],    // red (M)
   ];
-  for (let i = 0; i < N; i++) {
-    pos[i * 3]     = (Math.random() - 0.5) * 700;
-    pos[i * 3 + 1] = (Math.random() - 0.5) * 500;
-    pos[i * 3 + 2] = -Math.random() * DEPTH;
-    const t = tints[(Math.random() * tints.length) | 0];
-    const dim = 0.45 + Math.random() * 0.55;
-    col[i * 3] = t[0] * dim; col[i * 3 + 1] = t[1] * dim; col[i * 3 + 2] = t[2] * dim;
-  }
-  const geo = new THREE.BufferGeometry();
-  geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
-  geo.setAttribute("color", new THREE.BufferAttribute(col, 3));
-  const stars = new THREE.Points(geo, new THREE.PointsMaterial({
-    size: 1.6, vertexColors: true, sizeAttenuation: true,
-    transparent: true, opacity: 0.85, depthWrite: false,
-    blending: THREE.AdditiveBlending,
-  }));
-  scene.add(stars);
 
-  /* nebula glow: big soft radial-gradient sprites, additive, very low opacity */
-  function glowTexture(r, g, b) {
+  /* near space: three star layers the camera falls through.
+     Each layer has its own size and its own slow twinkle. */
+  const near = new THREE.Group();
+  scene.add(near);
+  const layers = [
+    makeStarLayer({ count: 3000, size: 1.6, opacity: 0.75, map: starTexture() }),
+    makeStarLayer({ count: 700,  size: 3.2, opacity: 0.9,  map: starTexture() }),
+    makeStarLayer({ count: 45,   size: 9,   opacity: 1.0,  map: brightStarTexture() }),
+  ];
+  layers.forEach((layer, i) => {
+    layer.userData.phase = i * 1.7;
+    layer.userData.baseOpacity = layer.material.opacity;
+    near.add(layer);
+  });
+
+  /* deep sky: the Milky Way band, nebula clouds and far galaxies.
+     This group moves with the camera, so it looks infinitely far away. */
+  const deep = new THREE.Group();
+  scene.add(deep);
+  deep.add(makeMilkyWayStars(6000));
+  const clouds = makeCloudSprites();
+  clouds.forEach((cloud) => deep.add(cloud));
+  makeGalaxySprites().forEach((galaxy) => deep.add(galaxy));
+
+  /* ---------- builders ---------- */
+
+  function makeStarLayer({ count, size, opacity, map }) {
+    const pos = new Float32Array(count * 3);
+    const col = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
+      pos[i * 3]     = (Math.random() - 0.5) * 700;
+      pos[i * 3 + 1] = (Math.random() - 0.5) * 500;
+      pos[i * 3 + 2] = -Math.random() * DEPTH;
+      setStarColor(col, i, 0.5 + Math.random() * 0.5);
+    }
+    return makePoints(pos, col, size, opacity, map);
+  }
+
+  function makeMilkyWayStars(count) {
+    const pos = new Float32Array(count * 3);
+    const col = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
+      const x = (Math.random() - 0.5) * 2800;
+      pos[i * 3]     = x;
+      pos[i * 3 + 1] = bandCenterY(x) + bellRandom() * 140;   // packed near the band line
+      pos[i * 3 + 2] = -1000 - Math.random() * 150;
+      setStarColor(col, i, 0.35 + Math.random() * 0.5);
+    }
+    return makePoints(pos, col, 3.5, 0.8, starTexture());
+  }
+
+  function makeCloudSprites() {
+    const sprites = [];
+    const colors = [
+      [190, 170, 150],   // warm star haze (Milky Way core)
+      [150, 160, 200],   // cool blue haze
+      [200, 90, 120],    // hydrogen pink (emission nebula)
+      [90, 130, 200],    // blue reflection nebula
+    ];
+    for (let i = 0; i < 11; i++) {
+      const x = (Math.random() - 0.5) * 2400;
+      const rgb = i < 7 ? colors[i % 2] : colors[2 + (i % 2)];   // most clouds sit on the band
+      const onBand = i < 7;
+      const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
+        map: cloudTexture(...rgb), transparent: true, depthWrite: false,
+        blending: THREE.AdditiveBlending, opacity: onBand ? 0.16 : 0.12,
+        rotation: Math.random() * Math.PI * 2,
+      }));
+      const y = onBand ? bandCenterY(x) + bellRandom() * 60 : (Math.random() - 0.5) * 900;
+      const size = onBand ? 420 + Math.random() * 300 : 260 + Math.random() * 200;
+      sprite.position.set(x, y, -1100);
+      sprite.scale.set(size * 1.4, size, 1);
+      sprite.userData.phase = i * 2.1;
+      sprite.userData.baseOpacity = sprite.material.opacity;
+      sprites.push(sprite);
+    }
+    return sprites;
+  }
+
+  function makeGalaxySprites() {
+    const sprites = [];
+    for (let i = 0; i < 5; i++) {
+      const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
+        map: galaxyTexture(), transparent: true, depthWrite: false,
+        blending: THREE.AdditiveBlending, opacity: 0.45 + Math.random() * 0.3,
+        rotation: Math.random() * Math.PI * 2,
+      }));
+      const size = 22 + Math.random() * 35;
+      sprite.position.set((Math.random() - 0.5) * 2000, (Math.random() - 0.5) * 1100, -1050);
+      sprite.scale.set(size, size, 1);
+      sprites.push(sprite);
+    }
+    return sprites;
+  }
+
+  function makePoints(pos, col, size, opacity, map) {
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+    geo.setAttribute("color", new THREE.BufferAttribute(col, 3));
+    return new THREE.Points(geo, new THREE.PointsMaterial({
+      size, map, vertexColors: true, sizeAttenuation: true,
+      transparent: true, opacity, depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    }));
+  }
+
+  /* ---------- helpers ---------- */
+
+  function setStarColor(col, i, brightness) {
+    const c = STAR_COLORS[(Math.random() * STAR_COLORS.length) | 0];
+    col[i * 3]     = c[0] * brightness;
+    col[i * 3 + 1] = c[1] * brightness;
+    col[i * 3 + 2] = c[2] * brightness;
+  }
+
+  /* the Milky Way is a gently tilted line across the sky */
+  function bandCenterY(x) { return x * -0.32 + 60; }
+
+  /* a random number near 0, rarely far from it (a rough bell curve) */
+  function bellRandom() { return Math.random() + Math.random() + Math.random() - 1.5; }
+
+  function newCanvas(size) {
     const c = document.createElement("canvas");
-    c.width = c.height = 256;
+    c.width = c.height = size;
+    return c;
+  }
+
+  /* a soft round dot: bright core, glow that fades out */
+  function starTexture() {
+    const c = newCanvas(64);
     const x = c.getContext("2d");
-    const grad = x.createRadialGradient(128, 128, 0, 128, 128, 128);
-    grad.addColorStop(0, `rgba(${r},${g},${b},0.55)`);
-    grad.addColorStop(0.4, `rgba(${r},${g},${b},0.18)`);
-    grad.addColorStop(1, "rgba(0,0,0,0)");
+    const grad = x.createRadialGradient(32, 32, 0, 32, 32, 32);
+    grad.addColorStop(0, "rgba(255,255,255,1)");
+    grad.addColorStop(0.15, "rgba(255,255,255,0.85)");
+    grad.addColorStop(0.4, "rgba(255,255,255,0.18)");
+    grad.addColorStop(1, "rgba(255,255,255,0)");
     x.fillStyle = grad;
-    x.fillRect(0, 0, 256, 256);
+    x.fillRect(0, 0, 64, 64);
     return new THREE.CanvasTexture(c);
   }
-  const nebulae = [];
-  [
-    { rgb: [70, 110, 200],  p: [-220, 90, -420], s: 620 },   // blue drift
-    { rgb: [150, 70, 140],  p: [260, -120, -560], s: 720 },  // magenta drift
-    { rgb: [200, 140, 70],  p: [60, 160, -700], s: 560 },    // faint amber
-  ].forEach((n, i) => {
-    const sp = new THREE.Sprite(new THREE.SpriteMaterial({
-      map: glowTexture(...n.rgb), transparent: true, opacity: 0.10,
-      blending: THREE.AdditiveBlending, depthWrite: false,
-    }));
-    sp.position.set(...n.p);
-    sp.scale.set(n.s, n.s, 1);
-    sp.userData.phase = i * 2.1;
-    scene.add(sp);
-    nebulae.push(sp);
-  });
+
+  /* a bright star: round glow plus four thin light spikes, like telescope photos */
+  function brightStarTexture() {
+    const c = newCanvas(128);
+    const x = c.getContext("2d");
+    const glow = x.createRadialGradient(64, 64, 0, 64, 64, 40);
+    glow.addColorStop(0, "rgba(255,255,255,1)");
+    glow.addColorStop(0.1, "rgba(255,255,255,0.9)");
+    glow.addColorStop(0.35, "rgba(255,255,255,0.15)");
+    glow.addColorStop(1, "rgba(255,255,255,0)");
+    x.fillStyle = glow;
+    x.fillRect(0, 0, 128, 128);
+    drawSpike(x, 0, 64, 128, 64);     // horizontal
+    drawSpike(x, 64, 0, 64, 128);     // vertical
+    return new THREE.CanvasTexture(c);
+  }
+  function drawSpike(x, x1, y1, x2, y2) {
+    const grad = x.createLinearGradient(x1, y1, x2, y2);
+    grad.addColorStop(0, "rgba(255,255,255,0)");
+    grad.addColorStop(0.5, "rgba(255,255,255,0.7)");
+    grad.addColorStop(1, "rgba(255,255,255,0)");
+    x.strokeStyle = grad;
+    x.lineWidth = 1.5;
+    x.beginPath();
+    x.moveTo(x1, y1);
+    x.lineTo(x2, y2);
+    x.stroke();
+  }
+
+  /* a cloud: many soft blobs piled up, so it has an uneven, gassy shape */
+  function cloudTexture(r, g, b) {
+    const c = newCanvas(256);
+    const x = c.getContext("2d");
+    for (let i = 0; i < 40; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const dist = Math.random() * 45;
+      const cx = 128 + Math.cos(angle) * dist;
+      const cy = 128 + Math.sin(angle) * dist;
+      const radius = 20 + Math.random() * 55;        // dist + radius stays inside the canvas
+      const blob = x.createRadialGradient(cx, cy, 0, cx, cy, radius);
+      blob.addColorStop(0, `rgba(${r},${g},${b},0.12)`);
+      blob.addColorStop(1, `rgba(${r},${g},${b},0)`);
+      x.fillStyle = blob;
+      x.fillRect(0, 0, 256, 256);
+    }
+    return new THREE.CanvasTexture(c);
+  }
+
+  /* a far galaxy: a tilted oval with a warm core and a blue spiral haze */
+  function galaxyTexture() {
+    const c = newCanvas(128);
+    const x = c.getContext("2d");
+    const tilt = 0.3 + Math.random() * 0.6;          // 1 = face-on, small = edge-on
+    x.translate(64, 64);
+    x.scale(1, tilt);
+    /* spiral arms: small dots along two curves */
+    for (let arm = 0; arm < 2; arm++) {
+      for (let k = 0; k < 120; k++) {
+        const a = k / 18 + arm * Math.PI;
+        const d = 6 + k * 0.42;
+        x.fillStyle = "rgba(170,190,255,0.05)";
+        x.beginPath();
+        x.arc(Math.cos(a) * d + bellRandom() * 8, Math.sin(a) * d + bellRandom() * 8, 5, 0, Math.PI * 2);
+        x.fill();
+      }
+    }
+    const core = x.createRadialGradient(0, 0, 0, 0, 0, 60);
+    core.addColorStop(0, "rgba(255,240,215,0.95)");
+    core.addColorStop(0.12, "rgba(255,225,190,0.5)");
+    core.addColorStop(0.5, "rgba(170,180,230,0.12)");
+    core.addColorStop(1, "rgba(0,0,0,0)");
+    x.fillStyle = core;
+    x.fillRect(-64, -64 / tilt, 128, 128 / tilt);
+    return new THREE.CanvasTexture(c);
+  }
+
+  /* ---------- motion ---------- */
 
   const mouse = { x: 0, y: 0 };
   window.addEventListener("mousemove", (e) => {
@@ -224,12 +403,15 @@ function starfield3D(canvas) {
     camera.position.x += (mouse.x * 14 - camera.position.x) * 0.02;
     camera.position.y += (-mouse.y * 10 - camera.position.y) * 0.02;
     camera.lookAt(camera.position.x * 0.6, camera.position.y * 0.6, z - 200);
-    stars.rotation.z = t / 220000;                // barely-there roll
-    nebulae.forEach((n) => {
-      n.position.x += Math.sin(t / 9000 + n.userData.phase) * 0.02;
-      n.material.opacity = 0.085 + 0.035 * Math.sin(t / 6000 + n.userData.phase);
-      /* keep nebulae ahead of the falling camera */
-      if (n.position.z > z - 80) n.position.z -= DEPTH / 2;
+    near.rotation.z = t / 220000;                 // barely-there roll
+    deep.position.z = z;                          // deep sky stays far away
+    layers.forEach((layer) => {
+      const twinkle = Math.sin(t / 2500 + layer.userData.phase);
+      layer.material.opacity = layer.userData.baseOpacity * (0.85 + 0.15 * twinkle);
+    });
+    clouds.forEach((cloud) => {
+      const breathe = Math.sin(t / 6000 + cloud.userData.phase);
+      cloud.material.opacity = cloud.userData.baseOpacity * (0.8 + 0.2 * breathe);
     });
     renderer.render(scene, camera);
   });
@@ -257,9 +439,11 @@ function starfield2D(canvas) {
         if (s.x > w + 2) s.x = -2;
         const twinkle = 0.55 + 0.45 * Math.sin(t / 1400 + s.tw);
         ctx.globalAlpha = 0.25 + 0.55 * s.z * twinkle;
-        ctx.fillStyle = s.z > 0.75 ? "#cfe4f4" : "#8fa8c4";
-        ctx.fillRect(s.x + mouse.x * 6 * s.z, s.y + mouse.y * 6 * s.z,
-          s.z > 0.75 ? 1.6 : 1, s.z > 0.75 ? 1.6 : 1);
+        ctx.fillStyle = s.z > 0.75 ? "#fff6e8" : "#cfd8ea";
+        ctx.beginPath();                          // round dots, not squares
+        ctx.arc(s.x + mouse.x * 6 * s.z, s.y + mouse.y * 6 * s.z,
+          s.z > 0.75 ? 1.1 : 0.6, 0, Math.PI * 2);
+        ctx.fill();
       }
       ctx.globalAlpha = 1;
     }

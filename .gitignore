@@ -10,9 +10,7 @@
 *.userosscache
 *.sln.docstates
 *.claude/
-
-*.codewhale/
-*.claude/
+me.txt
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
