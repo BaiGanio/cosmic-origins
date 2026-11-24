@@ -14,6 +14,15 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" rel="stylesheet">
   <link href="styles/cosmic.css" rel="stylesheet">
+  <script>
+    /* Opening a link to one object (#obj/...)? Keep the page dark until the
+       detail view is ready, so the gallery does not flash up first.
+       Safety net: show the page anyway after 3 seconds. */
+    if (location.hash.indexOf("#obj/") === 0) {
+      document.documentElement.classList.add("opening-detail");
+      setTimeout(function () { document.documentElement.classList.remove("opening-detail"); }, 3000);
+    }
+  </script>
 </head>
 <body>
 
@@ -124,6 +133,10 @@
             <h2 class="detail-title" id="detailTitle"></h2>
             <div class="detail-desig" id="detailDesig"></div>
           </div>
+          <button class="scroll-hint" id="scrollHint" aria-label="Scroll down to the telemetry">
+            <span>Telemetry</span>
+            <i class="bi bi-chevron-down" aria-hidden="true"></i>
+          </button>
         </div>
         <div class="detail-content">
           <dl class="telemetry" id="telemetry"></dl>

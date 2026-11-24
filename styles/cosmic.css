@@ -618,23 +618,17 @@ a:hover { text-decoration: underline; }
   overflow-y: auto;
   background: var(--void);
 }
-.detail-overlay.is-active { display: block; animation: viewin var(--t-med) var(--ease-hud); }
+/* no fade on the whole overlay: a fade lets the gallery show through.
+   The photo and title have their own entrance (see ENTRANCE below). */
+.view.detail-overlay.is-active { display: block; animation: none; }   /* ".view" so it beats the general .view.is-active fade further down */
 body.detail-open { overflow: hidden; }
-
-/* scan sweep fired once when the observation opens */
-.detail-overlay.is-scanning::before {
-  content: "";
-  position: fixed; left: 0; right: 0; top: 0;
-  height: 3px;
-  background: linear-gradient(90deg, transparent, var(--ion), transparent);
-  animation: scan 900ms var(--ease-hud) forwards;
-  z-index: 60;
-}
-@keyframes scan { from { top: 0; opacity: 1; } to { top: 100%; opacity: 0; } }
+/* set by the script in index.html <head> while a #obj/ link opens */
+html.opening-detail body { visibility: hidden; }
 
 .detail-hero {
   position: relative;
-  height: 76vh;
+  height: 100vh;                     /* full screen: the photo is the main thing */
+  height: 100dvh;                    /* phones: ignore the browser's address bar */
   min-height: 420px;
   overflow: hidden;
   background: var(--deep);
@@ -644,6 +638,46 @@ body.detail-open { overflow: hidden; }
   width: 100%; height: 100%;
   object-fit: cover;
   animation: kenburns 26s ease-in-out infinite alternate;
+}
+
+/* ENTRANCE — plays every time an object opens, also when you switch
+   to another object through the related rail.
+   1. the picture comes into focus out of a bright blur
+   2. the title rises, then the data cells arrive one by one */
+/* while the picture loads, the page waits dark */
+.detail-overlay.is-waiting .detail-hero img,
+.detail-overlay.is-waiting .detail-caption,
+.detail-overlay.is-waiting .scroll-hint,
+.detail-overlay.is-waiting .detail-content { opacity: 0; }
+.detail-hero img.is-arriving {
+  animation:
+    imageIn calc(var(--t-slow) * 2) var(--ease-hud),
+    kenburns 26s ease-in-out calc(var(--t-slow) * 2) infinite alternate;
+}
+@keyframes imageIn {
+  from { opacity: 0; transform: scale(1.18); filter: blur(18px) brightness(1.8); }
+  to   { opacity: 1; transform: scale(1);    filter: none; }
+}
+.detail-overlay.is-entering .detail-caption {
+  animation: riseIn calc(var(--t-slow) * 1.5) var(--ease-hud) 150ms both;
+}
+.detail-overlay.is-entering .telemetry > div {
+  animation: riseIn var(--t-slow) var(--ease-hud) both;
+  animation-delay: calc(300ms + var(--i, 0) * 70ms);
+}
+.detail-overlay.is-entering #relatedWrap {
+  animation: riseIn var(--t-slow) var(--ease-hud) 850ms both;
+}
+/* The hint only fades in (no movement), after the title has landed.
+   "backwards" (not "both"): once the fade ends it lets go, so the
+   hint can still fade out when the reader scrolls. */
+.detail-overlay.is-entering .scroll-hint {
+  animation: fadeIn var(--t-slow) var(--ease-hud) 800ms backwards;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes riseIn {
+  from { opacity: 0; transform: translateY(40px); }
+  to   { opacity: 1; transform: none; }
 }
 .detail-hero .hero-scrim {
   background:
@@ -672,11 +706,15 @@ body.detail-open { overflow: hidden; }
   z-index: 2;
 }
 
+/* the title sits in the same centered column as the content below it */
 .detail-caption {
   position: absolute;
-  left: var(--pad, 32px); bottom: 26px;
+  left: 0; right: 0; bottom: 84px;   /* leaves room for the scroll hint under it */
   z-index: 2;
-  max-width: 760px;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 var(--pad, 32px);
+  text-align: center;
 }
 .detail-title {
   font-family: var(--f-display);
@@ -694,15 +732,47 @@ body.detail-open { overflow: hidden; }
   color: var(--signal);
 }
 
+/* scroll hint: tells people the data is below the full-screen photo */
+.scroll-hint {
+  position: absolute;
+  left: 0; right: 0; bottom: 22px;
+  margin: 0 auto;                    /* centered without transform, so animations can't shift it */
+  width: max-content;
+  z-index: 2;
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  background: none;
+  border: 0;
+  color: var(--ion);
+  font-family: var(--f-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity var(--t-med) var(--ease-hud);
+}
+.scroll-hint .bi {
+  font-size: 18px;
+  animation: hintBob 1.8s var(--ease-hud) infinite;
+}
+@keyframes hintBob {
+  0%, 100% { transform: translateY(0);   opacity: 0.55; }
+  50%      { transform: translateY(6px); opacity: 1; }
+}
+.scroll-hint:hover { color: var(--text-hi); }
+/* gone once the reader has started scrolling */
+.scroll-hint.is-hidden { opacity: 0; pointer-events: none; }
+/* small screens: the title fills the bottom left, so keep only the arrow */
+
 .detail-content {
   padding: 26px var(--pad, 32px) 72px;
   max-width: 1080px;
+  margin: 0 auto;                    /* centered column, not stuck to the left */
 }
 
 /* telemetry readout table */
 .telemetry {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(4, 1fr);   /* 8 cells = 2 full rows, no empty gaps */
   gap: 1px;
   background: var(--hairline);
   border: 1px solid var(--hairline);
@@ -710,26 +780,48 @@ body.detail-open { overflow: hidden; }
   overflow: hidden;
   margin: 14px 0 18px;
 }
-.telemetry > div { background: var(--deep); padding: 10px 12px; }
+.telemetry > div { background: var(--deep); padding: 14px 18px; }
 .telemetry dt {
   font-family: var(--f-mono);
-  font-size: 8.5px;
+  font-size: 11px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--text-mute);
-  margin: 0 0 3px;
+  color: var(--text-lo);             /* a step brighter, so the labels are readable */
+  margin: 0 0 6px;
 }
 .telemetry dd {
   font-family: var(--f-mono);
-  font-size: 13px;
+  font-size: 17px;                   /* same size as the description text */
   color: var(--signal);
   margin: 0;
 }
 
+/* description: printed letter by letter like a terminal.
+   The see-through "ghost" copy holds the full size, so nothing below
+   jumps while the text types; the "live" copy is drawn on top of it. */
 .detail-desc {
-  color: var(--text-lo);
-  font-size: 14.5px;
-  max-width: 68ch;
+  position: relative;
+  color: var(--text-hi);
+  font-size: 17px;
+  line-height: 1.75;                 /* full width of the table above it */
+  margin: 26px 0 30px;
+  cursor: default;
+}
+.type-ghost { color: transparent; }
+.type-live  { position: absolute; inset: 0; }
+.type-live::after {                  /* the block cursor */
+  content: "";
+  display: inline-block;
+  width: 0.55em; height: 1.1em;
+  margin-left: 3px;
+  vertical-align: -0.18em;
+  background: var(--ion);
+  animation: blink 1s steps(1) infinite;
+}
+.type-live.is-done::after { animation: blink 1s steps(1) 3 forwards; }   /* blinks 3 times, then goes */
+@keyframes blink {
+  0%, 49%   { opacity: 1; }
+  50%, 100% { opacity: 0; }
 }
 
 .related-label {
@@ -739,6 +831,7 @@ body.detail-open { overflow: hidden; }
   text-transform: uppercase;
   color: var(--text-mute);
   margin: 20px 0 10px;
+  text-align: center;
 }
 .related-rail {
   display: flex;
@@ -746,6 +839,9 @@ body.detail-open { overflow: hidden; }
   overflow-x: auto;
   padding-bottom: 8px;
 }
+/* auto margins center the row, and still let it scroll when there are many */
+.related-item:first-child { margin-left: auto; }
+.related-item:last-child  { margin-right: auto; }
 .related-item {
   flex: 0 0 130px;
   cursor: pointer;
@@ -839,6 +935,8 @@ body.detail-open { overflow: hidden; }
   .topbar { flex-direction: column; gap: 4px; align-items: flex-start; }
 }
 @media (max-width: 576px) {
+  .detail-live { display: none; }    /* no room next to the back button */
+  .telemetry { grid-template-columns: repeat(2, 1fr); }
   .search-row { flex-direction: column; }
   .uao-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
 }

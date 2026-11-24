@@ -143,11 +143,19 @@ function initStarfield() {
 }
 
 function starfield3D(canvas) {
-  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false });
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(62, 1, 0.1, 1400);
   const DEPTH = 900;
+
+  /* A "seeded" random number maker: it always gives the same numbers in the
+     same order. So every browser, on every visit, draws the exact same sky. */
+  let seed = 20261124;
+  function random() {
+    seed = (seed * 16807) % 2147483647;
+    return (seed - 1) / 2147483646;           // a number from 0 to 1
+  }
 
   /* real star colors, from hot blue to cool red; white and yellow are most common */
   const STAR_COLORS = [
@@ -161,8 +169,7 @@ function starfield3D(canvas) {
     [1.0, 0.68, 0.48],    // red (M)
   ];
 
-  /* near space: three star layers the camera falls through.
-     Each layer has its own size and its own slow twinkle. */
+  /* near space: three star layers the camera falls through */
   const near = new THREE.Group();
   scene.add(near);
   const layers = [
@@ -176,14 +183,15 @@ function starfield3D(canvas) {
     near.add(layer);
   });
 
-  /* deep sky: the Milky Way band, nebula clouds and far galaxies.
-     This group moves with the camera, so it looks infinitely far away. */
+  /* deep sky: Milky Way, nebulae and galaxies, far behind the near stars.
+     The group travels with the camera, so it never comes closer. */
   const deep = new THREE.Group();
   scene.add(deep);
   deep.add(makeMilkyWayStars(6000));
-  const clouds = makeCloudSprites();
-  clouds.forEach((cloud) => deep.add(cloud));
-  makeGalaxySprites().forEach((galaxy) => deep.add(galaxy));
+  const nebulae = makeNebulae();
+  nebulae.forEach((nebula) => deep.add(nebula));
+  const galaxies = makeGalaxies();
+  galaxies.forEach((galaxy) => deep.add(galaxy));
 
   /* ---------- builders ---------- */
 
@@ -191,10 +199,10 @@ function starfield3D(canvas) {
     const pos = new Float32Array(count * 3);
     const col = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
-      pos[i * 3]     = (Math.random() - 0.5) * 700;
-      pos[i * 3 + 1] = (Math.random() - 0.5) * 500;
-      pos[i * 3 + 2] = -Math.random() * DEPTH;
-      setStarColor(col, i, 0.5 + Math.random() * 0.5);
+      pos[i * 3]     = (random() - 0.5) * 700;
+      pos[i * 3 + 1] = (random() - 0.5) * 500;
+      pos[i * 3 + 2] = -random() * DEPTH;
+      setStarColor(col, i, 0.5 + random() * 0.5);
     }
     return makePoints(pos, col, size, opacity, map);
   }
@@ -203,57 +211,13 @@ function starfield3D(canvas) {
     const pos = new Float32Array(count * 3);
     const col = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
-      const x = (Math.random() - 0.5) * 2800;
+      const x = (random() - 0.5) * 2800;
       pos[i * 3]     = x;
       pos[i * 3 + 1] = bandCenterY(x) + bellRandom() * 140;   // packed near the band line
-      pos[i * 3 + 2] = -1000 - Math.random() * 150;
-      setStarColor(col, i, 0.35 + Math.random() * 0.5);
+      pos[i * 3 + 2] = -1050 - random() * 100;
+      setStarColor(col, i, 0.35 + random() * 0.5);
     }
     return makePoints(pos, col, 3.5, 0.8, starTexture());
-  }
-
-  function makeCloudSprites() {
-    const sprites = [];
-    const colors = [
-      [190, 170, 150],   // warm star haze (Milky Way core)
-      [150, 160, 200],   // cool blue haze
-      [200, 90, 120],    // hydrogen pink (emission nebula)
-      [90, 130, 200],    // blue reflection nebula
-    ];
-    for (let i = 0; i < 11; i++) {
-      const x = (Math.random() - 0.5) * 2400;
-      const rgb = i < 7 ? colors[i % 2] : colors[2 + (i % 2)];   // most clouds sit on the band
-      const onBand = i < 7;
-      const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
-        map: cloudTexture(...rgb), transparent: true, depthWrite: false,
-        blending: THREE.AdditiveBlending, opacity: onBand ? 0.16 : 0.12,
-        rotation: Math.random() * Math.PI * 2,
-      }));
-      const y = onBand ? bandCenterY(x) + bellRandom() * 60 : (Math.random() - 0.5) * 900;
-      const size = onBand ? 420 + Math.random() * 300 : 260 + Math.random() * 200;
-      sprite.position.set(x, y, -1100);
-      sprite.scale.set(size * 1.4, size, 1);
-      sprite.userData.phase = i * 2.1;
-      sprite.userData.baseOpacity = sprite.material.opacity;
-      sprites.push(sprite);
-    }
-    return sprites;
-  }
-
-  function makeGalaxySprites() {
-    const sprites = [];
-    for (let i = 0; i < 5; i++) {
-      const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
-        map: galaxyTexture(), transparent: true, depthWrite: false,
-        blending: THREE.AdditiveBlending, opacity: 0.45 + Math.random() * 0.3,
-        rotation: Math.random() * Math.PI * 2,
-      }));
-      const size = 22 + Math.random() * 35;
-      sprite.position.set((Math.random() - 0.5) * 2000, (Math.random() - 0.5) * 1100, -1050);
-      sprite.scale.set(size, size, 1);
-      sprites.push(sprite);
-    }
-    return sprites;
   }
 
   function makePoints(pos, col, size, opacity, map) {
@@ -267,10 +231,66 @@ function starfield3D(canvas) {
     }));
   }
 
+  /* nebulae: colored gas clouds. Each one gets its own random cloud shape. */
+  function makeNebulae() {
+    const looks = {
+      hydrogen: { core: [255, 120, 160], rim: [120, 50, 160] },   // pink emission gas
+      oxygen:   { core: [130, 235, 235], rim: [40, 90, 210] },    // teal emission gas
+      dust:     { core: [255, 190, 130], rim: [170, 60, 80] },    // warm glowing dust
+      milkyway: { core: [235, 225, 210], rim: [110, 100, 140] },  // star haze of our galaxy
+    };
+    const list = [
+      { look: looks.hydrogen, x: -620, y: 300,  size: 620, opacity: 0.75 },
+      { look: looks.oxygen,   x: 640,  y: -260, size: 560, opacity: 0.7 },
+      { look: looks.dust,     x: 120,  y: -470, size: 420, opacity: 0.6 },
+      { look: looks.hydrogen, x: 880,  y: 380,  size: 380, opacity: 0.6 },
+      { look: looks.milkyway, x: -250, y: bandCenterY(-250), size: 900, opacity: 0.25 },
+      { look: looks.milkyway, x: 450,  y: bandCenterY(450),  size: 800, opacity: 0.2 },
+    ];
+    return list.map((n, i) => {
+      const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
+        map: nebulaTexture(n.look), transparent: true, depthWrite: false,
+        blending: THREE.AdditiveBlending, opacity: n.opacity,
+        rotation: random() * Math.PI * 2,
+      }));
+      sprite.position.set(n.x, n.y, -1000);
+      sprite.scale.set(n.size, n.size, 1);
+      sprite.userData.phase = i * 2.1;
+      sprite.userData.baseOpacity = n.opacity;
+      return sprite;
+    });
+  }
+
+  /* galaxies: a flat disc picture, tilted in 3D, spinning around its own center */
+  function makeGalaxies() {
+    const list = [
+      /* low on the screen: the hero picture covers the top part of the sky */
+      { x: -620, y: -440, size: 240, tiltX: 0.9,  tiltY: 0.3,   spin: 0.00004 },
+      { x: 780,  y: -400, size: 210, tiltX: 0.45, tiltY: -0.4,  spin: -0.00005 },
+      { x: 120,  y: -500, size: 170, tiltX: 1.25, tiltY: 0.15,  spin: 0.00006 },  // almost edge-on
+      { x: 1100, y: 150,  size: 150, tiltX: 0.3,  tiltY: 0.6,   spin: -0.00007 },
+    ];
+    return list.map((g) => {
+      const disc = new THREE.Mesh(
+        new THREE.PlaneGeometry(g.size, g.size),
+        new THREE.MeshBasicMaterial({
+          map: galaxyTexture(), transparent: true, depthWrite: false,
+          blending: THREE.AdditiveBlending, side: THREE.DoubleSide,
+        })
+      );
+      const holder = new THREE.Group();        // holds the tilt; the disc spins inside it
+      holder.position.set(g.x, g.y, -950);
+      holder.rotation.set(g.tiltX, g.tiltY, 0);
+      holder.add(disc);
+      holder.userData = { disc, spin: g.spin };
+      return holder;
+    });
+  }
+
   /* ---------- helpers ---------- */
 
   function setStarColor(col, i, brightness) {
-    const c = STAR_COLORS[(Math.random() * STAR_COLORS.length) | 0];
+    const c = STAR_COLORS[(random() * STAR_COLORS.length) | 0];
     col[i * 3]     = c[0] * brightness;
     col[i * 3 + 1] = c[1] * brightness;
     col[i * 3 + 2] = c[2] * brightness;
@@ -280,12 +300,106 @@ function starfield3D(canvas) {
   function bandCenterY(x) { return x * -0.32 + 60; }
 
   /* a random number near 0, rarely far from it (a rough bell curve) */
-  function bellRandom() { return Math.random() + Math.random() + Math.random() - 1.5; }
+  function bellRandom() { return random() + random() + random() - 1.5; }
+
+  function mixColor(a, b, amount) { return a + (b - a) * amount; }
 
   function newCanvas(size) {
     const c = document.createElement("canvas");
     c.width = c.height = size;
     return c;
+  }
+
+  /* Smooth random "cloud" noise. Random numbers sit on a grid and are
+     blended smoothly between grid points. Then finer and finer copies are
+     added on top, which gives the wispy detail of real gas clouds. */
+  function makeCloudNoise() {
+    const GRID = 32;
+    const values = Array.from({ length: GRID * GRID }, () => random());
+    const valueAt = (x, y) => values[(y % GRID) * GRID + (x % GRID)];
+    function smoothValue(x, y) {
+      const x0 = Math.floor(x), y0 = Math.floor(y);
+      const fx = x - x0, fy = y - y0;
+      const sx = fx * fx * (3 - 2 * fx);          // ease the blend so there are no hard lines
+      const sy = fy * fy * (3 - 2 * fy);
+      const top    = mixColor(valueAt(x0, y0),     valueAt(x0 + 1, y0),     sx);
+      const bottom = mixColor(valueAt(x0, y0 + 1), valueAt(x0 + 1, y0 + 1), sx);
+      return mixColor(top, bottom, sy);
+    }
+    return function cloudNoise(x, y) {
+      let total = 0, strength = 0.5, scale = 1;
+      for (let layer = 0; layer < 5; layer++) {
+        total += smoothValue(x * scale, y * scale) * strength;
+        strength /= 2;
+        scale *= 2;
+      }
+      return total;                                // about 0 to 1
+    };
+  }
+
+  /* a nebula picture: noise decides where the gas is, it fades to nothing
+     before the picture edge (so no square edges), core color in the middle */
+  function nebulaTexture(look) {
+    const SIZE = 256;
+    const c = newCanvas(SIZE);
+    const ctx = c.getContext("2d");
+    const image = ctx.createImageData(SIZE, SIZE);
+    const gasNoise = makeCloudNoise();
+    const colorNoise = makeCloudNoise();
+    for (let y = 0; y < SIZE; y++) {
+      for (let x = 0; x < SIZE; x++) {
+        const dx = (x / SIZE) * 2 - 1, dy = (y / SIZE) * 2 - 1;
+        const fromCenter = Math.sqrt(dx * dx + dy * dy);
+        const fade = Math.max(0, 1 - fromCenter * 1.15);   // 0 well before the edge
+        const gas = Math.max(0, gasNoise(x / 36, y / 36) - 0.35) * 2.4;
+        const alpha = Math.min(1, gas * fade * fade * 1.8);
+        const toCore = Math.min(1, fade * 0.8 + colorNoise(x / 50, y / 50) * 0.5);
+        const i = (y * SIZE + x) * 4;
+        image.data[i]     = mixColor(look.rim[0], look.core[0], toCore);
+        image.data[i + 1] = mixColor(look.rim[1], look.core[1], toCore);
+        image.data[i + 2] = mixColor(look.rim[2], look.core[2], toCore);
+        image.data[i + 3] = alpha * 255;
+      }
+    }
+    ctx.putImageData(image, 0, 0);
+    return new THREE.CanvasTexture(c);
+  }
+
+  /* a face-on spiral galaxy: soft arms of blue stars, pink star-forming
+     spots, and a warm bright core */
+  function galaxyTexture() {
+    const c = newCanvas(256);
+    const x = c.getContext("2d");
+    x.translate(128, 128);
+    const ARMS = 2 + ((random() * 2) | 0);
+    const halo = x.createRadialGradient(0, 0, 0, 0, 0, 120);
+    halo.addColorStop(0, "rgba(190,200,255,0.25)");
+    halo.addColorStop(1, "rgba(190,200,255,0)");
+    x.fillStyle = halo;
+    x.fillRect(-128, -128, 256, 256);
+    for (let arm = 0; arm < ARMS; arm++) {
+      for (let k = 0; k < 700; k++) {
+        const along = k / 700;                       // 0 at the core, 1 at the arm tip
+        const angle = along * 5.5 + (arm * Math.PI * 2) / ARMS;
+        const dist = 12 + along * 100;
+        const spread = 4 + along * 10;                // arms get wider further out
+        const px = Math.cos(angle) * dist + bellRandom() * spread;
+        const py = Math.sin(angle) * dist + bellRandom() * spread;
+        const pinkSpot = random() < 0.03;
+        x.fillStyle = pinkSpot ? "rgba(255,130,170,0.5)" : "rgba(185,205,255,0.09)";
+        x.beginPath();
+        x.arc(px, py, pinkSpot ? 1.4 : 3 + random() * 5, 0, Math.PI * 2);
+        x.fill();
+      }
+    }
+    const core = x.createRadialGradient(0, 0, 0, 0, 0, 55);
+    core.addColorStop(0, "rgba(255,245,225,1)");
+    core.addColorStop(0.15, "rgba(255,225,185,0.7)");
+    core.addColorStop(0.6, "rgba(255,210,170,0.1)");
+    core.addColorStop(1, "rgba(255,210,170,0)");
+    x.fillStyle = core;
+    x.fillRect(-128, -128, 256, 256);
+    return new THREE.CanvasTexture(c);
   }
 
   /* a soft round dot: bright core, glow that fades out */
@@ -330,56 +444,10 @@ function starfield3D(canvas) {
     x.stroke();
   }
 
-  /* a cloud: many soft blobs piled up, so it has an uneven, gassy shape */
-  function cloudTexture(r, g, b) {
-    const c = newCanvas(256);
-    const x = c.getContext("2d");
-    for (let i = 0; i < 40; i++) {
-      const angle = Math.random() * Math.PI * 2;
-      const dist = Math.random() * 45;
-      const cx = 128 + Math.cos(angle) * dist;
-      const cy = 128 + Math.sin(angle) * dist;
-      const radius = 20 + Math.random() * 55;        // dist + radius stays inside the canvas
-      const blob = x.createRadialGradient(cx, cy, 0, cx, cy, radius);
-      blob.addColorStop(0, `rgba(${r},${g},${b},0.12)`);
-      blob.addColorStop(1, `rgba(${r},${g},${b},0)`);
-      x.fillStyle = blob;
-      x.fillRect(0, 0, 256, 256);
-    }
-    return new THREE.CanvasTexture(c);
-  }
-
-  /* a far galaxy: a tilted oval with a warm core and a blue spiral haze */
-  function galaxyTexture() {
-    const c = newCanvas(128);
-    const x = c.getContext("2d");
-    const tilt = 0.3 + Math.random() * 0.6;          // 1 = face-on, small = edge-on
-    x.translate(64, 64);
-    x.scale(1, tilt);
-    /* spiral arms: small dots along two curves */
-    for (let arm = 0; arm < 2; arm++) {
-      for (let k = 0; k < 120; k++) {
-        const a = k / 18 + arm * Math.PI;
-        const d = 6 + k * 0.42;
-        x.fillStyle = "rgba(170,190,255,0.05)";
-        x.beginPath();
-        x.arc(Math.cos(a) * d + bellRandom() * 8, Math.sin(a) * d + bellRandom() * 8, 5, 0, Math.PI * 2);
-        x.fill();
-      }
-    }
-    const core = x.createRadialGradient(0, 0, 0, 0, 0, 60);
-    core.addColorStop(0, "rgba(255,240,215,0.95)");
-    core.addColorStop(0.12, "rgba(255,225,190,0.5)");
-    core.addColorStop(0.5, "rgba(170,180,230,0.12)");
-    core.addColorStop(1, "rgba(0,0,0,0)");
-    x.fillStyle = core;
-    x.fillRect(-64, -64 / tilt, 128, 128 / tilt);
-    return new THREE.CanvasTexture(c);
-  }
-
   /* ---------- motion ---------- */
 
-  const mouse = { x: 0, y: 0 };
+  const mouse = { x: 0, y: 0 };    // where the cursor is: -0.5 to 0.5
+  const look = { x: 0, y: 0 };     // follows the cursor slowly, so motion is smooth
   window.addEventListener("mousemove", (e) => {
     mouse.x = e.clientX / window.innerWidth - 0.5;
     mouse.y = e.clientY / window.innerHeight - 0.5;
@@ -398,20 +466,29 @@ function starfield3D(canvas) {
     if (document.body.classList.contains("low-ambience")) return;
     z -= 0.045;                                   // slow fall through space
     if (z < -DEPTH / 2) z = 0;
-    camera.position.z = z;
-    /* faint parallax lean toward the cursor */
-    camera.position.x += (mouse.x * 14 - camera.position.x) * 0.02;
-    camera.position.y += (-mouse.y * 10 - camera.position.y) * 0.02;
-    camera.lookAt(camera.position.x * 0.6, camera.position.y * 0.6, z - 200);
+
+    /* the camera slides and turns toward the cursor: near stars shift
+       a lot, the deep sky shifts less, so you feel the depth */
+    look.x += (mouse.x - look.x) * 0.05;
+    look.y += (mouse.y - look.y) * 0.05;
+    camera.position.set(look.x * 60, -look.y * 40, z);
+    camera.rotation.set(-look.y * 0.12, -look.x * 0.18, 0);
+
     near.rotation.z = t / 220000;                 // barely-there roll
     deep.position.z = z;                          // deep sky stays far away
+    deep.rotation.z = t / 400000;                 // the whole sky turns very slowly
+
     layers.forEach((layer) => {
       const twinkle = Math.sin(t / 2500 + layer.userData.phase);
       layer.material.opacity = layer.userData.baseOpacity * (0.85 + 0.15 * twinkle);
     });
-    clouds.forEach((cloud) => {
-      const breathe = Math.sin(t / 6000 + cloud.userData.phase);
-      cloud.material.opacity = cloud.userData.baseOpacity * (0.8 + 0.2 * breathe);
+    nebulae.forEach((nebula) => {
+      const breathe = Math.sin(t / 5000 + nebula.userData.phase);
+      nebula.material.opacity = nebula.userData.baseOpacity * (0.8 + 0.2 * breathe);
+      nebula.material.rotation += 0.00008;        // gas slowly swirls
+    });
+    galaxies.forEach((galaxy) => {
+      galaxy.userData.disc.rotation.z = t * galaxy.userData.spin;
     });
     renderer.render(scene, camera);
   });
@@ -593,11 +670,19 @@ function openDetail(id) {
   const obj = CATALOG.find(o => o.id === id);
   if (!obj) return;
   const img = $("#detailImg");
-  img.src = obj.imageUrl;
+  const panel = $("#view-detail");
+  /* Clean up the last object first:
+     - drop the old picture, or the browser keeps showing it while the new one loads
+     - drop the old entrance classes, or the browser replays them the moment the
+       page shows again (that would fade in the old picture) */
+  img.removeAttribute("src");
+  img.classList.remove("is-arriving");
+  panel.classList.remove("is-entering");
+  panel.classList.add("is-waiting");
   img.alt = obj.name;
   $("#detailTitle").textContent = obj.name;
   $("#detailDesig").textContent = obj.designation;
-  $("#detailDesc").textContent = obj.description;
+  prepareTyping($("#detailDesc"), obj.description);
 
   const rows = [
     ["Category", CATEGORY_LABELS[obj.category] || obj.category],
@@ -609,8 +694,9 @@ function openDetail(id) {
     ["Magnitude", obj.magnitude],
     ["First recorded", obj.discovered],
   ];
-  $("#telemetry").innerHTML = rows.map(([k, v]) =>
-    `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("");
+  /* --i is each cell's position; the CSS uses it to bring the cells in one by one */
+  $("#telemetry").innerHTML = rows.map(([k, v], i) =>
+    `<div style="--i:${i}"><dt>${k}</dt><dd>${v}</dd></div>`).join("");
 
   const related = CATALOG.filter(o => o.category === obj.category && o.id !== obj.id);
   $("#relatedRail").innerHTML = related.map(o =>
@@ -621,11 +707,109 @@ function openDetail(id) {
   $("#relatedWrap").style.display = related.length ? "block" : "none";
 
   showView("detail");
-  const panel = $("#view-detail");
   panel.scrollTop = 0;
-  panel.classList.remove("is-scanning");
-  void panel.offsetWidth;                       // restart the scan sweep
-  panel.classList.add("is-scanning");
+  /* Everything stays hidden (is-waiting); once the picture is here, the
+     whole entrance plays together, the same in every browser. */
+  loadPicture(img, obj.imageUrl, () => {
+    panel.classList.remove("is-waiting");
+    replayAnimation(panel, "is-entering");    // title and data slide in
+    replayAnimation(img, "is-arriving");      // picture comes into focus
+  });
+}
+
+/* ------------------------------------------------------------
+   TYPED DESCRIPTION — the text prints letter by letter, like a
+   terminal, when it scrolls into view. Click it to show it all.
+   ------------------------------------------------------------ */
+const TYPE_SPEED_MS = 18;                       // time between two letters
+let typingTimer = null;
+let typingWatcher = null;
+
+function initTyping() {
+  const desc = $("#detailDesc");
+  typingWatcher = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) startTyping(desc);
+  }, { threshold: 0.5 });
+  desc.addEventListener("click", () => finishTyping(desc));
+}
+
+/* Put the new text in place, not typed yet. The ghost copy is the full
+   text (it keeps the size and is what screen readers read); the live
+   copy starts empty and is hidden from screen readers. */
+function prepareTyping(el, text) {
+  clearInterval(typingTimer);
+  el.innerHTML = "";
+  const ghost = document.createElement("span");
+  ghost.className = "type-ghost";
+  ghost.textContent = text;
+  const live = document.createElement("span");
+  live.className = "type-live";
+  live.setAttribute("aria-hidden", "true");
+  el.append(ghost, live);
+  el.dataset.typing = "ready";
+  /* watch again, so a text that is already on screen also starts typing */
+  typingWatcher.unobserve(el);
+  typingWatcher.observe(el);
+}
+
+function startTyping(el) {
+  if (el.dataset.typing !== "ready") return;    // already typing or done
+  el.dataset.typing = "running";
+  const text = el.querySelector(".type-ghost").textContent;
+  const live = el.querySelector(".type-live");
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduced) { finishTyping(el); return; }
+  let shown = 0;
+  typingTimer = setInterval(() => {
+    shown += 1;
+    live.textContent = text.slice(0, shown);
+    if (shown >= text.length) finishTyping(el);
+  }, TYPE_SPEED_MS);
+}
+
+function finishTyping(el) {
+  clearInterval(typingTimer);
+  el.querySelector(".type-live").textContent = el.querySelector(".type-ghost").textContent;
+  el.querySelector(".type-live").classList.add("is-done");
+  el.dataset.typing = "done";
+}
+
+/* The arrow at the bottom of the photo: a click scrolls down to the data,
+   and the arrow hides once the reader has scrolled a little. */
+function initScrollHint() {
+  const panel = $("#view-detail");
+  const hint = $("#scrollHint");
+  hint.addEventListener("click", () => {
+    $(".detail-content").scrollIntoView({ behavior: "smooth" });
+  });
+  panel.addEventListener("scroll", () => {
+    hint.classList.toggle("is-hidden", panel.scrollTop > 40);
+  }, { passive: true });
+}
+
+/* Take a class off, make the browser notice, put it back:
+   this plays the class's CSS animation again from the start. */
+function replayAnimation(el, className) {
+  el.classList.remove(className);
+  void el.offsetWidth;                        // forces the browser to notice the removal
+  el.classList.add(className);
+}
+
+/* Load a picture, then call whenReady exactly once: when it has loaded,
+   when it fails, or after 1.5 s on a slow network (never leave the page empty). */
+function loadPicture(img, url, whenReady) {
+  let done = false;
+  const ready = () => {
+    if (done || img.dataset.wanted !== url) return;   // already ran, or the user moved on
+    done = true;
+    whenReady();
+  };
+  img.dataset.wanted = url;
+  img.onload = ready;
+  img.onerror = ready;
+  setTimeout(ready, 1500);
+  img.src = url;
+  if (img.complete) ready();                   // already in the browser cache
 }
 
 /* ------------------------------------------------------------
@@ -644,6 +828,7 @@ function showView(name) {
 
 function route() {
   const h = location.hash.replace("#", "") || "gallery";
+  document.documentElement.classList.remove("opening-detail");   // see the script in index.html <head>
   if (h.startsWith("obj/")) { openDetail(h.slice(4)); return; }
   showView(ROUTES.includes(h) && h !== "detail" ? h : "gallery");
 }
@@ -710,6 +895,8 @@ function initDelegation() {
     const card = e.target.closest(".uao-card, .related-item");
     if (card) { e.preventDefault(); location.hash = "obj/" + card.dataset.id; }
   });
+  initScrollHint();
+  initTyping();
   $("#detailBack").addEventListener("click", () => {
     location.hash = lastRoute === "gallery" ? "" : lastRoute;
     showView(lastRoute);
