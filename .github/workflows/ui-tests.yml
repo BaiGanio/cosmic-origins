@@ -1,0 +1,60 @@
+# UI tests in Chromium, Firefox and WebKit on every pull request and every
+# push to master. On master, the site deploys ONLY when the tests pass.
+#
+# Needs: Settings → Pages → Build and deployment → Source = "GitHub Actions".
+# (With "Deploy from a branch", Pages would deploy master by itself, tests or not.)
+name: UI tests and deploy
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium firefox webkit
+      - run: npm test
+        env:
+          CI: "true"
+      - name: Keep the report when a test fails
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14
+
+  deploy:
+    needs: test                      # no green tests → no deploy
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .                    # the same files Pages serves today
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -369,6 +369,23 @@ a:hover { text-decoration: underline; }
 }
 .pill[aria-pressed="true"]::before { content: "▣ "; }
 .pill[aria-pressed="false"]::before { content: "▢ "; opacity: 0.5; }
+.pill--fav[aria-pressed="false"]::before { content: "☆ "; opacity: 1; }
+.pill--fav[aria-pressed="true"]::before  { content: "★ "; }
+.pill--fav[aria-pressed="true"] {             /* favorites toggle uses the star color */
+  color: var(--fav);
+  border-color: var(--fav);
+  background: var(--signal-dim);
+}
+
+/* "14 objects" / "3 of 14 objects" — a data readout, so mono + signal amber */
+.result-count {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--signal);
+  margin: -12px 0 12px;
+}
 
 /* ---------------- hero: full-bleed featured observation ----------------
    Edge-to-edge imagery with a slow Ken Burns drift — the "window
@@ -937,8 +954,21 @@ html.opening-detail body { visibility: hidden; }
 @media (max-width: 576px) {
   .detail-live { display: none; }    /* no room next to the back button */
   .telemetry { grid-template-columns: repeat(2, 1fr); }
-  .search-row { flex-direction: column; }
   .uao-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+
+  /* pills: one line that you swipe sideways, instead of 4 wrapped lines */
+  .pill-row {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    scrollbar-width: none;           /* Firefox: hide the scrollbar */
+  }
+  .pill-row::-webkit-scrollbar { display: none; }   /* Chrome, Safari */
+  .pill { flex: 0 0 auto; white-space: nowrap; }
+
+  /* hero: dots go under the caption, so they never sit on the button */
+  .hero-caption { bottom: 40px; right: var(--pad); }
+  .hero-dots { left: var(--pad); right: auto; bottom: 18px; }
 }
 
 /* ============================================================

@@ -113,6 +113,7 @@ const CATEGORY_LABELS = {
 const state = {
   active: new Set(Object.keys(CATEGORY_LABELS)),   // all on
   query: "",
+  favOnly: false,                                   // "★ Favorites" pill; starts off on every visit
   favs: new Set(JSON.parse(localStorage.getItem("co-favs") || "[]")),
 };
 
@@ -553,14 +554,15 @@ function frameHTML(obj, small) {
 }
 
 function cardHTML(obj) {
-  const favCount = obj.favorites + (state.favs.has(obj.id) ? 1 : 0);
-  const favCls = state.favs.has(obj.id) ? " is-fav" : "";
+  const isFav = state.favs.has(obj.id);
+  const favCls = isFav ? " is-fav" : "";
   return `<article class="uao-card brackets" data-id="${obj.id}" tabindex="0"
             role="button" aria-label="Open ${obj.name} telemetry">
     <div style="position:relative">
       ${frameHTML(obj)}
-      <button class="uao-fav${favCls}" data-fav="${obj.id}" aria-label="Favorite ${obj.name}">
-        <i class="bi bi-star${state.favs.has(obj.id) ? "-fill" : ""}"></i>${favCount}
+      <button class="uao-fav${favCls}" data-fav="${obj.id}" aria-pressed="${isFav}"
+              aria-label="Favorite ${obj.name}">
+        <i class="bi bi-star${isFav ? "-fill" : ""}"></i>
       </button>
     </div>
     <div class="uao-meta">
@@ -574,14 +576,46 @@ function cardHTML(obj) {
   </article>`;
 }
 
+/* Does this object pass the current filters, search and favorites toggle? */
+function isVisible(obj) {
+  const q = state.query.toLowerCase();
+  const matchesSearch = !q ||
+    obj.name.toLowerCase().includes(q) || obj.designation.toLowerCase().includes(q);
+  const matchesFavs = !state.favOnly || state.favs.has(obj.id);
+  return state.active.has(obj.category) && matchesSearch && matchesFavs;
+}
+
+/* "14 objects" when nothing is hidden, "3 of 14 objects" when something is */
+function countText(shown, total) {
+  const word = total === 1 ? "object" : "objects";
+  return shown === total ? total + " " + word : shown + " of " + total + " " + word;
+}
+
+/* Which message to show when no card is left */
+function emptyHTML() {
+  if (state.favOnly && state.favs.size === 0) {
+    return "<strong>No favorites yet</strong>Tap ☆ on a card to keep it here.";
+  }
+  return "<strong>No objects in range</strong>" +
+    "Adjust the category filters or clear the search query to widen the scan.";
+}
+
+/* The cards are built one time only. After that, renderGrid() only shows or
+   hides them. If we rebuilt them on every click, every picture would load
+   again and the whole grid would flicker. */
 function renderGrid() {
   const grid = $("#uaoGrid");
-  const q = state.query.toLowerCase();
-  const items = CATALOG.filter(o =>
-    state.active.has(o.category) &&
-    (!q || o.name.toLowerCase().includes(q) || o.designation.toLowerCase().includes(q)));
-  grid.innerHTML = items.map(cardHTML).join("");
-  $("#emptyState").style.display = items.length ? "none" : "block";
+  if (!grid.children.length) grid.innerHTML = CATALOG.map(cardHTML).join("");
+
+  const items = CATALOG.filter(isVisible);
+  $$(".uao-card", grid).forEach(card => {
+    const obj = CATALOG.find(o => o.id === card.dataset.id);
+    card.hidden = !isVisible(obj);
+  });
+  $("#resultCount").textContent = countText(items.length, CATALOG.length);
+  const empty = $("#emptyState");
+  empty.innerHTML = emptyHTML();
+  empty.style.display = items.length ? "none" : "block";
 }
 
 /* ------------------------------------------------------------
@@ -634,19 +668,23 @@ function initHero() {
 }
 
 /* ------------------------------------------------------------
-   5. FILTER PILLS — multi-select; "All" reflects & drives the rest
+   5. FILTER PILLS — multi-select; "All" turns every category back on
    ------------------------------------------------------------ */
 function syncPills() {
   $$(".pill[data-cat]").forEach(p =>
     p.setAttribute("aria-pressed", String(state.active.has(p.dataset.cat))));
   $("#pillAll").setAttribute("aria-pressed",
     String(state.active.size === Object.keys(CATEGORY_LABELS).length));
+  $("#pillFav").setAttribute("aria-pressed", String(state.favOnly));
 }
 
 function initFilters() {
   $("#pillAll").addEventListener("click", () => {
-    const all = Object.keys(CATEGORY_LABELS);
-    state.active = state.active.size === all.length ? new Set() : new Set(all);
+    state.active = new Set(Object.keys(CATEGORY_LABELS));   // a reset: never turns all off
+    syncPills(); renderGrid();
+  });
+  $("#pillFav").addEventListener("click", () => {
+    state.favOnly = !state.favOnly;
     syncPills(); renderGrid();
   });
   $$(".pill[data-cat]").forEach(p => p.addEventListener("click", () => {
@@ -654,11 +692,9 @@ function initFilters() {
     state.active.has(c) ? state.active.delete(c) : state.active.add(c);
     syncPills(); renderGrid();
   }));
+  /* search runs on every key press, so there is no Search button */
   const input = $("#searchInput");
-  const run = () => { state.query = input.value.trim(); renderGrid(); };
-  input.addEventListener("input", run);
-  $("#searchBtn").addEventListener("click", run);
-  input.addEventListener("keydown", e => { if (e.key === "Enter") run(); });
+  input.addEventListener("input", () => { state.query = input.value.trim(); renderGrid(); });
 }
 
 /* ------------------------------------------------------------
@@ -876,6 +912,13 @@ function initShell() {
 /* ------------------------------------------------------------
    9. EVENT DELEGATION — cards, favorites, related items
    ------------------------------------------------------------ */
+/* Update one star button in place (filled or empty) */
+function updateStar(button, isFav) {
+  button.classList.toggle("is-fav", isFav);
+  button.setAttribute("aria-pressed", String(isFav));
+  button.querySelector("i").className = "bi bi-star" + (isFav ? "-fill" : "");
+}
+
 function initDelegation() {
   document.addEventListener("click", (e) => {
     const fav = e.target.closest("[data-fav]");
@@ -884,7 +927,8 @@ function initDelegation() {
       const id = fav.dataset.fav;
       state.favs.has(id) ? state.favs.delete(id) : state.favs.add(id);
       localStorage.setItem("co-favs", JSON.stringify([...state.favs]));
-      renderGrid();
+      updateStar(fav, state.favs.has(id));
+      renderGrid();                      // only needed when "Favorites" is on
       return;
     }
     const card = e.target.closest(".uao-card, .related-item");

@@ -31,7 +31,7 @@ backend moves to the BaiGanio platform — data from BGAPI
 (`https://api.baiganio.io/api/cosmic`). **No user accounts** for now: no login, no
 sign-up; favorites stay in `localStorage`. Only objects with a real photo are shown; image files stay on
 NASA/ESA/ESO/NOIRLab servers. Until that lands, leave the `CATALOG` mock shape
-as it is; the `data-stub` forms and `src/core/auth.js` will be removed by the brief.
+as it is; the brief removes the `data-stub` forms and `initAuthStubs()` (`src/core/auth.js` is already gone).
 
 ## Co-pilot Contract
 

@@ -1,0 +1,19 @@
+{
+  "name": "cosmic-origins-tests",
+  "private": true,
+  "description": "Test tooling only. The app itself has no build and no dependencies.",
+  "scripts": {
+    "test": "playwright test",
+    "test:chromium": "playwright test --project=chromium",
+    "test:firefox": "playwright test --project=firefox",
+    "test:webkit": "playwright test --project=webkit",
+    "test:report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.1",
+    "bootstrap": "5.3.2",
+    "bootstrap-icons": "1.13.1",
+    "serve": "^14.2.8",
+    "three": "0.147.0"
+  }
+}

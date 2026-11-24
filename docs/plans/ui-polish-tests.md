@@ -55,7 +55,7 @@ Red first: before a chapter starts, run its group and confirm the tests fail.
 |---|---|---|---|
 | T2.1 | Load gallery | Count reads "14 objects" in mono amber | — |
 | T2.2 | Turn off Galaxies | Count reads "12 of 14 objects"; 12 cards | Type "zzz": "0 of 14", empty state shown |
-| T2.3 | Look for a Search button | None. Typing "orion" filters live | Clear field → all back |
+| T2.3 | Look for a Search button | None. Typing "orion" filters live: Orion Nebula + Betelgeuse ("α Orionis" matches) = 2 cards | Clear field → all back |
 | T2.4 | Click "All" twice | All 8 pills on both times; 14 cards | Turn 3 off, click All → all on |
 | T2.5 | Star Andromeda and Europa, click ★ favorites pill | Exactly 2 cards; count "2 of 14 objects" | Un-star one while toggle is on → 1 card |
 | T2.6 | Clear all stars, toggle ★ on | Empty state: "No favorites yet — tap ☆ on a card" | — |

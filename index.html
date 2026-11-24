@@ -101,7 +101,6 @@
           <input class="search-input" id="searchInput" type="search"
                  placeholder="Search designation — Andromeda, M 16, Kepler-186f"
                  aria-label="Search objects">
-          <button class="search-btn" id="searchBtn">Search</button>
         </div>
 
         <div class="pill-row" role="group" aria-label="Category filters">
@@ -113,13 +112,12 @@
           <button class="pill" data-cat="exoplanet" aria-pressed="true">Exoplanets</button>
           <button class="pill" data-cat="solar_system" aria-pressed="true">Solar System</button>
           <button class="pill" data-cat="exotic" aria-pressed="true">Exotic</button>
+          <button class="pill pill--fav" id="pillFav" aria-pressed="false">Favorites</button>
         </div>
 
+        <div class="result-count" id="resultCount" aria-live="polite"></div>
         <div class="uao-grid" id="uaoGrid"></div>
-        <div class="empty-state" id="emptyState" style="display:none">
-          <strong>No objects in range</strong>
-          Adjust the category filters or clear the search query to widen the scan.
-        </div>
+        <div class="empty-state" id="emptyState" style="display:none"></div>
       </section>
 
       <!-- ---------- DETAIL VIEWER: full-screen observation ---------- -->

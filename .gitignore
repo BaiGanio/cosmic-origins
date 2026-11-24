@@ -353,3 +353,8 @@ MigrationBackup/
 
 # Local scratch: raw data downloads (tools/import). Docs go in docs/, never here.
 var/
+
+# Test tooling (Playwright)
+node_modules/
+test-results/
+playwright-report/
