@@ -26,9 +26,12 @@ developers**: clarity and easy-to-understand code are core values. When trade-of
 collide, real data and readable code win; the immersive full-bleed imagery is the
 product surface that makes both worth looking at.
 
-Direction (planned, see `var/plans/real-data-pipeline.md`): the backend moves off
-Firestore to the developer's own infrastructure — PostgreSQL + a small API on a
-Raspberry Pi 5 k3s cluster, later fronted by Keycloak and a rate limiter.
+Direction (approved 2026-11-24, see `docs/briefs/cosmic-origins-platform.md`): the
+backend moves off Firebase to the BaiGanio platform — data from BGAPI
+(`https://api.baiganio.io/api/cosmic`), login and sign-up via Keycloak (client
+`cosmic-origins-web`). Only objects with a real photo are shown; image files stay on
+NASA/ESA/ESO/NOIRLab servers. Until that lands, leave the `CATALOG` mock shape,
+the `data-stub` forms and `src/core/auth.js` as they are.
 
 ## Co-pilot Contract
 
@@ -197,7 +200,9 @@ gitignored, so these exist locally only.
 | Topic | File |
 |-------|------|
 | Roadmap: wiring the redesign to real services | `var/follow-ups.md` (reconstructed 2026-07-10 — original was lost; `var/` is not backed up by git) |
-| Plan: free catalogs → own DB → k3s on Pi 5 | `var/plans/real-data-pipeline.md` + `-tests.md` |
+| Brief: move to BGAPI + Keycloak (contract, steps, checks) | `docs/briefs/cosmic-origins-platform.md` |
+| Data sources, licenses, image rules | `docs/data-sources.md` |
+| Old plan, partly superseded (fetch/normalize steps still apply) | `var/plans/real-data-pipeline.md` + `-tests.md` |
 | Design-system notes (tokens, type roles, motion) | token block at top of `styles/cosmic.css` (the follow-ups copy was lost) |
 | Data model reference | `README.md` § Data Model, `src/models/UniversalAstronomicalObject.js` |
 | Legacy landing pages (do not extend) | ~~`var/index-legacy.html`, `var/index-old.html`~~ lost with `var/`; legacy code still in `src/` per the coupling map |

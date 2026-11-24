@@ -1,0 +1,136 @@
+# Brief: Cosmic Origins on BGAPI and Keycloak (cosmic-origins)
+
+> Status: APPROVED 2026-11-24. Copied from baiganio-platform `plans/cosmic-origins/brief-cosmic-origins.md`.
+> If the contract below must change, tell Lyuben: the master plan changes first.
+> Master plan: baiganio-platform `plans/cosmic-origins/README.md` (private).
+> This brief has all you need. You do not need the platform repo.
+
+## Goal
+
+Replace Firebase and the mock `CATALOG` with the platform:
+- **Data** comes from BGAPI (`https://api.baiganio.io/api/cosmic`).
+- **Login and sign-up** go through Keycloak (client `cosmic-origins-web`).
+- **Images** are links to NASA and ESA servers. We store no image files.
+
+Read `CLAUDE.md` first. Its rules hold: never commit, `node --check` every
+touched file, load the app and click the changed flow, code a junior can read.
+This brief replaces the DB, API and k3s steps of `var/plans/real-data-pipeline.md`.
+Its fetch and normalize steps stay, with the new target shape below.
+
+## Part A: import scripts (`tools/import/`, Node, runs on the Mac)
+
+Sources, filters and licenses: `docs/data-sources.md`. That file is the source of truth.
+
+1. `fetch-sources.js`: download raw files to `var/data/` (gitignored).
+   Write to a temp name, rename when done. Safe to run twice.
+2. `normalize-<source>.js`: one per source. Output: objects in the shape below.
+3. `enrich-images.js`: find **real photos** only. No concept art, ever.
+   - Search `images-api.nasa.gov` by name + aliases + category word (no key, no `Authorization` header).
+   - Drop results whose title or keywords contain "artist", "illustration", "concept",
+     "rendering" or "animation". Drop any URL in `tools/import/image-blocklist.json`.
+   - Add hand-picked photos from `tools/import/hero-images.json` (ESA/Hubble, ESA/Webb, ESO, NOIRLab).
+   - **An object with no photo left is not uploaded.** Write it to `var/data/no-image.json`
+     (slug, name, category, what was searched). This list shows where to look for photos later.
+4. `upload.js`: get a token, then send batches of max 1000 to `POST /import`.
+   Print `inserted / updated / rejected` and the count in `no-image.json`. Stop on a 401 or 403. Wait on a 429 (read `Retry-After`).
+
+Config is from environment variables only. Never commit a secret.
+
+| Variable | Dev value | Real value |
+|---|---|---|
+| `KEYCLOAK_ISSUER` | `http://localhost:8080/realms/baiganio-dev` | `https://auth.baiganio.io/realms/baiganio` |
+| `COSMIC_IMPORTER_CLIENT_ID` | `cosmic-importer` | `cosmic-importer` |
+| `COSMIC_IMPORTER_SECRET` | `cosmic-importer-secret` | from Lyuben, shell only |
+| `BGAPI_BASE_URL` | `https://localhost:44364` | `https://api.baiganio.io` |
+
+Token: `POST {issuer}/protocol/openid-connect/token` with `grant_type=client_credentials`.
+
+## Part B: website
+
+1. `src/core/api-config.js`: issuer, client ID and API URL. Pick dev values when
+   `location.hostname` is `localhost`. Run locally with `npx serve -l 4300 .`
+   (Keycloak allows only port 4300 for this client).
+2. **Auth.** Remove Firebase (`firebase-config.js`, `auth.js` Firebase calls,
+   `firestoreImport.js`, SDK script tags). Use Keycloak with PKCE:
+   - Log in: Keycloak login page. Sign up: Keycloak sign-up page.
+   - The `data-stub` forms in `index.html` become buttons that go to those pages.
+   - Change `index.html`, `initAuthStubs()` and `src/core/auth.js` together (coupling map).
+   - Library: decided by a trial first (see below).
+3. **Catalog.** `renderGrid()` stays the one render entry. Load pages from
+   `GET /objects`, filters from `GET /categories`, details from `GET /objects/{slug}`.
+   If BGAPI does not answer, show the mock `CATALOG` and a small notice, so the page never goes blank.
+   Loading and error states use the design tokens (`--ion`, `--signal`, `--ease-hud`).
+4. **Favorites.** Logged out: `localStorage` `co-favs`, as today. Logged in:
+   `GET/PUT/DELETE /favorites` with the access token. On 401, get a new token or log in again.
+   At the first login, send each `co-favs` entry with `PUT`, then clear `co-favs`.
+5. **Credits.** Detail panel shows each image's `credit` + `license` + `sourcePage`
+   and each `sources` entry. Footer links to a credits section (CC-BY-SA needs it).
+6. Remove the `Authorization` header and key from `src/ui/nasa.js`.
+
+## Contract
+
+**Keycloak**
+
+| Item | Value |
+|---|---|
+| Issuer, dev / real | `http://localhost:8080/realms/baiganio-dev` / `https://auth.baiganio.io/realms/baiganio` |
+| Client | `cosmic-origins-web` (public, PKCE S256) |
+| Redirect URI, dev / real | `http://localhost:4300/` / `https://baiganio.github.io/cosmic-origins/` |
+| Dev test user | `dev-cosmic` / `DevPass123!` |
+
+**BGAPI** (base `/api/cosmic`, errors are ProblemDetails, 429 has `Retry-After`)
+
+| Method and path | Who |
+|---|---|
+| `GET /objects?category=&q=&page=1&pageSize=24` → `{ items, page, pageSize, total }` | everyone |
+| `GET /objects/{slug}` → object | everyone |
+| `GET /categories` → `[{ category, count }]` | everyone |
+| `GET /favorites` → `["slug", ...]` | logged in |
+| `PUT /favorites/{slug}`, `DELETE /favorites/{slug}` → 204 | logged in |
+| `POST /import` → `{ inserted, updated, rejected }` | `cosmic-importer` only |
+
+**Object shape** (also the new UAO model in `src/models/UniversalAstronomicalObject.js`):
+
+```json
+{
+  "slug": "messier-31", "name": "Andromeda Galaxy", "aliases": ["M 31", "NGC 224"],
+  "category": "galaxy", "subcategory": "spiral", "constellation": "Andromeda",
+  "ra": "00h 42m 44.3s", "dec": "+41° 16′ 09″", "distanceLy": 2537000, "magnitude": 3.44,
+  "discovered": "964", "description": "", "tags": ["local-group"],
+  "facts":   [{ "key": "diameter", "label": "Diameter", "value": "152000", "unit": "ly" }],
+  "images":  [{ "url": "https://images-assets.nasa.gov/...", "thumbUrl": "...", "credit": "NASA/JPL-Caltech",
+                "license": "public-domain", "sourcePage": "https://images.nasa.gov/details/..." }],
+  "sources": [{ "catalog": "OpenNGC", "catalogId": "NGC0224", "license": "CC-BY-SA-4.0", "url": "https://github.com/mattiaverga/OpenNGC" }],
+  "updatedAt": "2026-11-24T10:00:00Z"
+}
+```
+
+- `slug`: lowercase `a-z 0-9 -`, max 80, never changes. Make it from the main catalog ID (`messier-31`, `ngc-1976`, `kepler-22-b`).
+- `category`: `galaxy, nebula, cluster, star, exoplanet, solar_system, exotic` (the website's groups).
+- Every object has at least 1 image. BGAPI rejects an object with none.
+- Image hosts BGAPI accepts: `images-assets.nasa.gov`, `cdn.esahubble.org`, `cdn.esawebb.org`, `cdn.eso.org`, `noirlab.edu`.
+
+## Works when
+
+1. `node --check` passes on every touched file.
+2. Part A: `upload.js` against local BGAPI prints `rejected: 0`. A second run prints `inserted: 0`.
+3. Part B, at `http://localhost:4300/`:
+   - Logged out: the grid shows real objects from BGAPI. Filters and search work. No Firebase request in the Network tab.
+   - "Sign up" opens the Keycloak sign-up page. After sign-up you are back on the site and logged in.
+   - Log in as `dev-cosmic`. Add a favorite. Reload. It is still there. Log out and in. It is still there.
+   - Stop BGAPI. Reload. The mock catalog shows with a notice. The page is not blank.
+   - Every image in the detail panel shows its credit and license.
+   - Every card has a real photo. No card shows a placeholder image.
+
+## Open questions (ask Lyuben)
+
+- **Login library, decided by a trial.** Before part B, build the same small flow twice on a
+  throwaway branch: log in, sign up, `GET /favorites`, renew the token, log out.
+  A: `keycloak-js` (official, ES module). B: a small hand-written PKCE file.
+  Compare lines of code, how easy it is to read, token renewal, 401 handling, and fit with
+  the no-build global scripts. Show both to Lyuben. He picks.
+
+## Doc updates (confirm with Lyuben first, per `CLAUDE.md`)
+
+`README.md` (architecture, credits, import how-to), `CLAUDE.md` (stack, config,
+database, coupling map: API shape ↔ UAO model), `var/follow-ups.md` (tasks 1, 3, 4 superseded).
