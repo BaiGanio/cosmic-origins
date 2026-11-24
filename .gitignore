@@ -352,3 +352,6 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+
+# Local scratch: raw data downloads (tools/import). Docs go in docs/, never here.
+var/

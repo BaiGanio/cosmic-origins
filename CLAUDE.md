@@ -64,7 +64,7 @@ error blanks the entire page, which is why `node --check` is non-negotiable.
 - **Data & imagery**: NASA images API (`images-api.nasa.gov`) today; ESA and other
   free open catalogs planned as parse-and-import sources
 - **Hosting**: GitHub Pages — a push to `master` is a deploy
-- **Legacy, slated for removal** (see `var/follow-ups.md` task 7): jQuery, Chart.js,
+- **Legacy, slated for removal** (see `docs/follow-ups.md` task 7): jQuery, Chart.js,
   `src/ui/food-cost.js`, old stylesheets and handwriting fonts
 
 ## Configuration
@@ -86,7 +86,7 @@ single normalization target every source catalog gets parsed into. Seed data via
 
 Current state: the redesigned shell (`src/ui/cosmic.js`) renders a mock `CATALOG`
 const whose fields mirror the UAO model; wiring it to Firestore is task 1 in
-`var/follow-ups.md`. Favorites live client-side in localStorage (key `co-favs`)
+`docs/follow-ups.md`. Favorites live client-side in localStorage (key `co-favs`)
 until auth and server-side favorites land (tasks 3–4).
 
 ## Module Coupling Map
@@ -131,8 +131,8 @@ directly, so review-before-commit is also review-before-deploy.
 ## Plans
 
 When asked to write or design a plan — architecture, feature design, data-import
-strategy, refactor roadmap — produce a plan document at `var/plans/<slug>.md`
-(kebab-case slugs; `var/` is gitignored — plans are working documents, not shipped code).
+strategy, refactor roadmap — produce a plan document at `docs/plans/<slug>.md`
+(kebab-case slugs; committed, so the team can read them and they cannot be lost).
 
 ### Plan structure
 Every plan must include:
@@ -149,13 +149,13 @@ Every plan must include:
 
 ### TDD — Tests First
 
-Every plan MUST have a companion test file at `var/plans/<slug>-tests.md`, produced
+Every plan MUST have a companion test file at `docs/plans/<slug>-tests.md`, produced
 alongside the plan. When the plan is executed, its verification criteria are validated
 **before** the implementation is considered complete — verify-first, not verify-after.
 In this repo a "test" is usually a provable browser behavior (exact steps + expected
 result) plus `node --check` on touched files, since there is no test runner.
 
-**Test file structure** (`var/plans/<slug>-tests.md`):
+**Test file structure** (`docs/plans/<slug>-tests.md`):
 
 1. **Coverage map** — table mapping each plan step to a test group, so nothing falls
    through the cracks
@@ -175,7 +175,7 @@ expectations → confirm the coverage map still holds.
 Right-size the model to the task. The developer is on a fixed monthly plan — batch
 questions, prefer one-shot execution over iterative back-and-forth.
 
-1. **Cheap capable model** — the routine wiring/cleanup tasks in `var/follow-ups.md`
+1. **Cheap capable model** — the routine wiring/cleanup tasks in `docs/follow-ups.md`
    are deliberately scoped as small, self-contained sessions for inexpensive models.
 2. **Frontier model** — design one-shots, architecture, and anything touching the
    design system's look and feel, batched into a single session.
@@ -187,25 +187,25 @@ Only two docs exist; keep them honest:
 | Change type | Files to update |
 |-------------|-----------------|
 | Feature, behavior, or dependency change | `README.md` |
-| Progress on or deviation from a roadmap task | `var/follow-ups.md` (mark DONE, adjust scope) |
+| Progress on or deviation from a roadmap task | `docs/follow-ups.md` (mark DONE, adjust scope) |
 
 **Always confirm with the developer before writing doc updates.** State which files
 need changes and why; wait for confirmation. Never silently modify documentation.
 
 ## Reference Files
 
-Deep-dive docs live here — read on demand, not every turn. Note: `var/` is
-gitignored, so these exist locally only.
+Deep-dive docs live in `docs/` — read on demand, not every turn. `var/` is
+gitignored local scratch (raw downloads in `var/data/`); never put docs there.
 
 | Topic | File |
 |-------|------|
-| Roadmap: wiring the redesign to real services | `var/follow-ups.md` (reconstructed 2026-07-10 — original was lost; `var/` is not backed up by git) |
+| Roadmap: wiring the redesign to real services | `docs/follow-ups.md` (reconstructed 2026-07-10 — the original was lost) |
 | Brief: move to BGAPI + Keycloak (contract, steps, checks) | `docs/briefs/cosmic-origins-platform.md` |
 | Data sources, licenses, image rules | `docs/data-sources.md` |
-| Old plan, partly superseded (fetch/normalize steps still apply) | `var/plans/real-data-pipeline.md` + `-tests.md` |
+| Old plan, partly superseded (fetch/normalize steps still apply) | `docs/plans/real-data-pipeline.md` + `-tests.md` |
 | Design-system notes (tokens, type roles, motion) | token block at top of `styles/cosmic.css` (the follow-ups copy was lost) |
 | Data model reference | `README.md` § Data Model, `src/models/UniversalAstronomicalObject.js` |
-| Legacy landing pages (do not extend) | ~~`var/index-legacy.html`, `var/index-old.html`~~ lost with `var/`; legacy code still in `src/` per the coupling map |
+| Legacy landing pages (do not extend) | ~~`var/index-legacy.html`, `var/index-old.html`~~ lost; legacy code still in `src/` per the coupling map |
 
 ## Maintaining This File
 

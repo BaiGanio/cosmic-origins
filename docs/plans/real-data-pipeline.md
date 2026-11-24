@@ -1,5 +1,9 @@
 # Plan: Real Data Pipeline — free catalogs → own database → k3s on Raspberry Pi 5
 
+> **PARTLY SUPERSEDED 2026-11-24** by `docs/briefs/cosmic-origins-platform.md`: BGAPI replaces
+> the own DB, API and k3s steps (4-6); Keycloak replaces Firebase. Steps 1-3 (fetch,
+> normalize, images) still apply, with the new object shape and image rules.
+
 > Companion tests: [`real-data-pipeline-tests.md`](real-data-pipeline-tests.md)
 > Status: DRAFT — awaiting developer review
 > Created: 2026-07-10
@@ -156,4 +160,4 @@ server-side favorites, removing the legacy jQuery stack.
 |------|--------|
 | `README.md` | New architecture section (API + Pi/k3s), data sources & credits table, local ETL instructions |
 | `CLAUDE.md` | Tech stack (PostgreSQL/Fastify/k3s alongside the legacy Firestore note), Configuration (`api-config.js`), Database section rewrite, coupling map row: API JSON shape ↔ UAO model |
-| `var/follow-ups.md` | Mark Firestore-wiring task superseded by this plan; add Keycloak + rate-limiter follow-ups |
+| `docs/follow-ups.md` | Mark Firestore-wiring task superseded by this plan; add Keycloak + rate-limiter follow-ups |

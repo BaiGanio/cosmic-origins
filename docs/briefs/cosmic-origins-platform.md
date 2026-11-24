@@ -14,7 +14,7 @@ Replace Firebase and the mock `CATALOG` with the platform:
 
 Read `CLAUDE.md` first. Its rules hold: never commit, `node --check` every
 touched file, load the app and click the changed flow, code a junior can read.
-This brief replaces the DB, API and k3s steps of `var/plans/real-data-pipeline.md`.
+This brief replaces the DB, API and k3s steps of `docs/plans/real-data-pipeline.md`.
 Its fetch and normalize steps stay, with the new target shape below.
 
 ## Part A: import scripts (`tools/import/`, Node, runs on the Mac)
@@ -32,7 +32,9 @@ Sources, filters and licenses: `docs/data-sources.md`. That file is the source o
    - **An object with no photo left is not uploaded.** Write it to `var/data/no-image.json`
      (slug, name, category, what was searched). This list shows where to look for photos later.
 4. `upload.js`: get a token, then send batches of max 1000 to `POST /import`.
-   Print `inserted / updated / rejected` and the count in `no-image.json`. Stop on a 401 or 403. Wait on a 429 (read `Retry-After`).
+   Print `inserted / updated / rejected` and the count in `no-image.json`.
+   Also print the object count and the gzip size of the catalog. Warn at 16,000
+   objects or 800 KB (80% of the scale trigger: 20k objects or 1 MB). Stop on a 401 or 403. Wait on a 429 (read `Retry-After`).
 
 Config is from environment variables only. Never commit a secret.
 
@@ -56,8 +58,9 @@ Token: `POST {issuer}/protocol/openid-connect/token` with `grant_type=client_cre
    - The `data-stub` forms in `index.html` become buttons that go to those pages.
    - Change `index.html`, `initAuthStubs()` and `src/core/auth.js` together (coupling map).
    - Library: decided by a trial first (see below).
-3. **Catalog.** `renderGrid()` stays the one render entry. Load pages from
-   `GET /objects`, filters from `GET /categories`, details from `GET /objects/{slug}`.
+3. **Catalog.** `renderGrid()` stays the one render entry. Load the whole short list
+   once from `GET /catalog`. Filter by category and search by name and aliases **in the
+   browser**. Load details from `GET /objects/{slug}` when a card opens.
    If BGAPI does not answer, show the mock `CATALOG` and a small notice, so the page never goes blank.
    Loading and error states use the design tokens (`--ion`, `--signal`, `--ease-hud`).
 4. **Favorites.** Logged out: `localStorage` `co-favs`, as today. Logged in:
@@ -66,6 +69,8 @@ Token: `POST {issuer}/protocol/openid-connect/token` with `grant_type=client_cre
 5. **Credits.** Detail panel shows each image's `credit` + `license` + `sourcePage`
    and each `sources` entry. Footer links to a credits section (CC-BY-SA needs it).
 6. Remove the `Authorization` header and key from `src/ui/nasa.js`.
+7. **Metrics.** Add the Cloudflare Web Analytics beacon `<script>` to `index.html`
+   (token from Lyuben; it is public). No cookies, so no cookie banner.
 
 ## Contract
 
@@ -82,9 +87,8 @@ Token: `POST {issuer}/protocol/openid-connect/token` with `grant_type=client_cre
 
 | Method and path | Who |
 |---|---|
-| `GET /objects?category=&q=&page=1&pageSize=24` → `{ items, page, pageSize, total }` | everyone |
+| `GET /catalog` → `{ version, count, items }`, all objects, short form | everyone |
 | `GET /objects/{slug}` → object | everyone |
-| `GET /categories` → `[{ category, count }]` | everyone |
 | `GET /favorites` → `["slug", ...]` | logged in |
 | `PUT /favorites/{slug}`, `DELETE /favorites/{slug}` → 204 | logged in |
 | `POST /import` → `{ inserted, updated, rejected }` | `cosmic-importer` only |
@@ -107,6 +111,8 @@ Token: `POST {issuer}/protocol/openid-connect/token` with `grant_type=client_cre
 
 - `slug`: lowercase `a-z 0-9 -`, max 80, never changes. Make it from the main catalog ID (`messier-31`, `ngc-1976`, `kepler-22-b`).
 - `category`: `galaxy, nebula, cluster, star, exoplanet, solar_system, exotic` (the website's groups).
+- `/catalog` item: `slug, name, aliases, category, subcategory, constellation, magnitude, distanceLy, thumbUrl, credit`.
+- Scale trigger: past 20k objects or 1 MB gzip, search moves to the server (master plan §11).
 - Every object has at least 1 image. BGAPI rejects an object with none.
 - Image hosts BGAPI accepts: `images-assets.nasa.gov`, `cdn.esahubble.org`, `cdn.esawebb.org`, `cdn.eso.org`, `noirlab.edu`.
 
@@ -115,7 +121,8 @@ Token: `POST {issuer}/protocol/openid-connect/token` with `grant_type=client_cre
 1. `node --check` passes on every touched file.
 2. Part A: `upload.js` against local BGAPI prints `rejected: 0`. A second run prints `inserted: 0`.
 3. Part B, at `http://localhost:4300/`:
-   - Logged out: the grid shows real objects from BGAPI. Filters and search work. No Firebase request in the Network tab.
+   - Logged out: the grid shows real objects from BGAPI. Filters and search work with **no** extra network request. No Firebase request in the Network tab.
+   - The Cloudflare Web Analytics beacon loads.
    - "Sign up" opens the Keycloak sign-up page. After sign-up you are back on the site and logged in.
    - Log in as `dev-cosmic`. Add a favorite. Reload. It is still there. Log out and in. It is still there.
    - Stop BGAPI. Reload. The mock catalog shows with a notice. The page is not blank.
@@ -133,4 +140,4 @@ Token: `POST {issuer}/protocol/openid-connect/token` with `grant_type=client_cre
 ## Doc updates (confirm with Lyuben first, per `CLAUDE.md`)
 
 `README.md` (architecture, credits, import how-to), `CLAUDE.md` (stack, config,
-database, coupling map: API shape ↔ UAO model), `var/follow-ups.md` (tasks 1, 3, 4 superseded).
+database, coupling map: API shape ↔ UAO model), `docs/follow-ups.md` (tasks 1, 3, 4 superseded).
