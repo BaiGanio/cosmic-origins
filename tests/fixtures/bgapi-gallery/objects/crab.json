@@ -1,0 +1,28 @@
+{
+  "slug": "crab",
+  "name": "Crab Pulsar",
+  "aliases": [
+    "PSR B0531+21"
+  ],
+  "category": "exotic",
+  "subcategory": "neutron star",
+  "constellation": "Taurus",
+  "magnitude": 16.5,
+  "distanceLy": 6500,
+  "ra": "05h 34m 32s",
+  "dec": "+22° 00′ 52″",
+  "discovered": "1968",
+  "description": "The collapsed core of the supernova witnessed in 1054 AD: a city-sized star spinning 30 times per second, sweeping beams of radiation across space and energizing the entire Crab Nebula around it.",
+  "tags": [],
+  "facts": [],
+  "images": [
+    {
+      "url": "https://images-assets.nasa.gov/image/PIA03606/PIA03606~large.jpg",
+      "thumbUrl": "https://images-assets.nasa.gov/image/PIA03606/PIA03606~thumb.jpg",
+      "credit": "NASA",
+      "license": "public-domain",
+      "sourcePage": "https://images-assets.nasa.gov/image/PIA03606/PIA03606~orig.jpg"
+    }
+  ],
+  "sources": []
+}

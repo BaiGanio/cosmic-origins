@@ -1,0 +1,29 @@
+{
+  "slug": "betelgeuse",
+  "name": "Betelgeuse",
+  "aliases": [
+    "α Orionis",
+    "HD 39801"
+  ],
+  "category": "star",
+  "subcategory": "red supergiant",
+  "constellation": "Orion",
+  "magnitude": 0.5,
+  "distanceLy": 548,
+  "ra": "05h 55m 10s",
+  "dec": "+07° 24′ 25″",
+  "discovered": "antiquity",
+  "description": "A red supergiant so large that, placed at the Sun's position, its surface would extend past the orbit of Mars. Its Great Dimming of 2019–2020 was traced to an ejected dust cloud. A supernova candidate on astronomical timescales.",
+  "tags": [],
+  "facts": [],
+  "images": [
+    {
+      "url": "https://images-assets.nasa.gov/image/PIA16680/PIA16680~orig.jpg",
+      "thumbUrl": "https://images-assets.nasa.gov/image/PIA16680/PIA16680~thumb.jpg",
+      "credit": "NASA",
+      "license": "public-domain",
+      "sourcePage": "https://images-assets.nasa.gov/image/PIA16680/PIA16680~orig.jpg"
+    }
+  ],
+  "sources": []
+}

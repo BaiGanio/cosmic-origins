@@ -1,0 +1,29 @@
+{
+  "slug": "proxima",
+  "name": "Proxima Centauri",
+  "aliases": [
+    "α Cen C",
+    "GJ 551"
+  ],
+  "category": "star",
+  "subcategory": "red dwarf",
+  "constellation": "Centaurus",
+  "magnitude": 11.13,
+  "distanceLy": 4.246,
+  "ra": "14h 29m 43s",
+  "dec": "−62° 40′ 46″",
+  "discovered": "1915",
+  "description": "The closest star to the Sun — a small, cool red dwarf that flares violently despite its size. It hosts at least two planets, including Proxima b, an Earth-mass world orbiting within the star's habitable zone.",
+  "tags": [],
+  "facts": [],
+  "images": [
+    {
+      "url": "https://images-assets.nasa.gov/image/GSFC_20171208_Archive_e000968/GSFC_20171208_Archive_e000968~large.jpg",
+      "thumbUrl": "https://images-assets.nasa.gov/image/GSFC_20171208_Archive_e000968/GSFC_20171208_Archive_e000968~thumb.jpg",
+      "credit": "NASA",
+      "license": "public-domain",
+      "sourcePage": "https://images-assets.nasa.gov/image/GSFC_20171208_Archive_e000968/GSFC_20171208_Archive_e000968~orig.jpg"
+    }
+  ],
+  "sources": []
+}

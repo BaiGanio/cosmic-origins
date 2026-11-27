@@ -1,0 +1,29 @@
+{
+  "slug": "messier-42",
+  "name": "Orion Nebula",
+  "aliases": [
+    "M 42",
+    "NGC 1976"
+  ],
+  "category": "nebula",
+  "subcategory": "diffuse nebula",
+  "constellation": "Orion",
+  "magnitude": 4,
+  "distanceLy": 1344,
+  "ra": "05h 35m 17s",
+  "dec": "−05° 23′ 28″",
+  "discovered": "1610",
+  "description": "The brightest nebula in Earth's sky and the closest region of massive star formation. The Trapezium cluster at its heart illuminates the surrounding gas; over 700 stars in various stages of formation have been identified within it.",
+  "tags": [],
+  "facts": [],
+  "images": [
+    {
+      "url": "https://images-assets.nasa.gov/image/PIA01322/PIA01322~large.jpg",
+      "thumbUrl": "https://images-assets.nasa.gov/image/PIA01322/PIA01322~thumb.jpg",
+      "credit": "NASA",
+      "license": "public-domain",
+      "sourcePage": "https://images-assets.nasa.gov/image/PIA01322/PIA01322~orig.jpg"
+    }
+  ],
+  "sources": []
+}

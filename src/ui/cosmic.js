@@ -1,16 +1,14 @@
 /* ============================================================
    COSMIC ORIGINS — application shell
    Data comes from BGAPI (src/core/api-config.js has the address).
-   If BGAPI does not answer, the mock catalog below is shown.
+   If BGAPI does not answer, the page shows a short notice and no cards.
    The plan for BGAPI is in docs/briefs/cosmic-origins-platform.md.
    ============================================================ */
 "use strict";
 
 /* ------------------------------------------------------------
-   1. MOCK CATALOG
-   Fields mirror src/models/UniversalAstronomicalObject.js so a
-   later pass can swap this array for BGAPI data.
-   ph = placeholder tint per category.
+   1. CATEGORIES
+   ph = placeholder tint per category (shown while a picture loads).
    ------------------------------------------------------------ */
 const CATEGORY_TINTS = {
   galaxy:       "rgba(120, 90, 200, 0.26)",
@@ -22,104 +20,6 @@ const CATEGORY_TINTS = {
   exotic:       "rgba(160, 200, 230, 0.20)",
 };
 
-const CATALOG = [
-  { id: "messier-31", name: "Andromeda", designation: "M 31 · NGC 224", category: "galaxy", subcategory: "spiral galaxy",
-    constellation: "Andromeda", ra: "00h 42m 44s", dec: "+41° 16′ 09″", distance: "2.537 Mly", magnitude: "3.44", discovered: "964 AD",
-    imageUrl: "", favorites: 0,
-    description: "The nearest major galaxy to the Milky Way and the largest member of the Local Group. On a collision course with our own galaxy, expected to merge in roughly 4.5 billion years. Visible to the naked eye from dark sites as a faint smudge spanning six full moons of sky." },
-  { id: "messier-83", name: "Southern Pinwheel", designation: "M 83 · NGC 5236", category: "galaxy", subcategory: "barred spiral",
-    constellation: "Hydra", ra: "13h 37m 01s", dec: "−29° 51′ 57″", distance: "15.21 Mly", magnitude: "7.54", discovered: "1752",
-    imageUrl: "", favorites: 0,
-    description: "A grand-design barred spiral seen nearly face-on, one of the closest and brightest of its kind. It has hosted six observed supernovae, more than almost any other galaxy, and its arms blaze with pink star-forming regions." },
-  { id: "messier-16", name: "Eagle Nebula", designation: "M 16 · NGC 6611", category: "nebula", subcategory: "emission nebula",
-    constellation: "Serpens", ra: "18h 18m 48s", dec: "−13° 49′ 00″", distance: "5,700 ly", magnitude: "6.0", discovered: "1745",
-    imageUrl: "", favorites: 0,
-    description: "Home of the Pillars of Creation — towers of cold gas and dust several light-years tall, sculpted by ultraviolet radiation from the young hot stars of the embedded cluster. An active stellar nursery where new suns are condensing right now." },
-  { id: "messier-42", name: "Orion Nebula", designation: "M 42 · NGC 1976", category: "nebula", subcategory: "diffuse nebula",
-    constellation: "Orion", ra: "05h 35m 17s", dec: "−05° 23′ 28″", distance: "1,344 ly", magnitude: "4.0", discovered: "1610",
-    imageUrl: "", favorites: 0,
-    description: "The brightest nebula in Earth's sky and the closest region of massive star formation. The Trapezium cluster at its heart illuminates the surrounding gas; over 700 stars in various stages of formation have been identified within it." },
-  { id: "messier-45", name: "Pleiades", designation: "M 45 · Seven Sisters", category: "cluster", subcategory: "open cluster",
-    constellation: "Taurus", ra: "03h 47m 24s", dec: "+24° 07′ 00″", distance: "444 ly", magnitude: "1.6", discovered: "antiquity",
-    imageUrl: "", favorites: 0,
-    description: "A young open cluster of hot blue stars less than 100 million years old, drifting through a chance cloud of interstellar dust that reflects their light as a blue haze. Among the nearest clusters and the most obvious to the naked eye." },
-  { id: "ngc-5139", name: "Omega Centauri", designation: "NGC 5139", category: "cluster", subcategory: "globular cluster",
-    constellation: "Centaurus", ra: "13h 26m 47s", dec: "−47° 28′ 46″", distance: "17,090 ly", magnitude: "3.9", discovered: "1677",
-    imageUrl: "", favorites: 0,
-    description: "The largest known globular cluster of the Milky Way: roughly ten million stars packed into a sphere 150 light-years across. Possibly the stripped core of a dwarf galaxy consumed by our own long ago." },
-  { id: "betelgeuse", name: "Betelgeuse", designation: "α Orionis · HD 39801", category: "star", subcategory: "red supergiant",
-    constellation: "Orion", ra: "05h 55m 10s", dec: "+07° 24′ 25″", distance: "548 ly", magnitude: "0.50 (var)", discovered: "antiquity",
-    imageUrl: "", favorites: 0,
-    description: "A red supergiant so large that, placed at the Sun's position, its surface would extend past the orbit of Mars. Its Great Dimming of 2019–2020 was traced to an ejected dust cloud. A supernova candidate on astronomical timescales." },
-  { id: "proxima", name: "Proxima Centauri", designation: "α Cen C · GJ 551", category: "star", subcategory: "red dwarf",
-    constellation: "Centaurus", ra: "14h 29m 43s", dec: "−62° 40′ 46″", distance: "4.246 ly", magnitude: "11.13", discovered: "1915",
-    imageUrl: "", favorites: 0,
-    description: "The closest star to the Sun — a small, cool red dwarf that flares violently despite its size. It hosts at least two planets, including Proxima b, an Earth-mass world orbiting within the star's habitable zone." },
-  { id: "trappist1e", name: "TRAPPIST-1e", designation: "2MASS J23062928-0502285 e", category: "exoplanet", subcategory: "terrestrial",
-    constellation: "Aquarius", ra: "23h 06m 29s", dec: "−05° 02′ 29″", distance: "40.7 ly", magnitude: "—", discovered: "2017",
-    imageUrl: "", favorites: 0,
-    description: "The fourth of seven Earth-sized worlds around the ultracool dwarf TRAPPIST-1, and the most likely to hold liquid water: rocky, slightly smaller than Earth, receiving stellar energy comparable to our own planet." },
-  { id: "kepler186f", name: "Kepler-186f", designation: "KOI-571.05", category: "exoplanet", subcategory: "terrestrial",
-    constellation: "Cygnus", ra: "19h 54m 36s", dec: "+43° 57′ 18″", distance: "579 ly", magnitude: "—", discovered: "2014",
-    imageUrl: "", favorites: 0,
-    description: "The first Earth-sized planet ever confirmed in the habitable zone of another star. It circles a red dwarf every 130 days at the outer edge of the zone, where water could persist if a suitable atmosphere exists." },
-  { id: "jupiter", name: "Jupiter", designation: "Sol V", category: "solar_system", subcategory: "gas giant",
-    constellation: "—", ra: "ephemeris", dec: "ephemeris", distance: "5.20 AU", magnitude: "−2.94", discovered: "antiquity",
-    imageUrl: "", favorites: 0,
-    description: "The Solar System's giant: more than twice the mass of all other planets combined. Its Great Red Spot is a storm wider than Earth that has raged for centuries, and its four Galilean moons form a planetary system in miniature." },
-  { id: "europa", name: "Europa", designation: "Jupiter II", category: "solar_system", subcategory: "icy moon",
-    constellation: "—", ra: "ephemeris", dec: "ephemeris", distance: "5.20 AU", magnitude: "5.29", discovered: "1610",
-    imageUrl: "", favorites: 0,
-    description: "An ice-shelled moon hiding a global saltwater ocean with more liquid water than all of Earth's seas. Tidal flexing keeps the ocean liquid, making Europa one of the most promising places to search for life beyond Earth." },
-  { id: "sgra", name: "Sagittarius A*", designation: "Sgr A*", category: "exotic", subcategory: "supermassive black hole",
-    constellation: "Sagittarius", ra: "17h 45m 40s", dec: "−29° 00′ 28″", distance: "26,673 ly", magnitude: "—", discovered: "1974",
-    imageUrl: "", favorites: 0,
-    description: "The supermassive black hole at the center of the Milky Way, 4.3 million times the mass of the Sun. Imaged directly by the Event Horizon Telescope in 2022 as a glowing ring of superheated plasma around a shadow." },
-  { id: "crab", name: "Crab Pulsar", designation: "PSR B0531+21", category: "exotic", subcategory: "neutron star",
-    constellation: "Taurus", ra: "05h 34m 32s", dec: "+22° 00′ 52″", distance: "6,500 ly", magnitude: "16.5", discovered: "1968",
-    imageUrl: "", favorites: 0,
-    description: "The collapsed core of the supernova witnessed in 1054 AD: a city-sized star spinning 30 times per second, sweeping beams of radiation across space and energizing the entire Crab Nebula around it." },
-];
-
-/* Verified NASA Image Library assets (images-assets.nasa.gov is a
-   stable, hotlink-friendly CDN; every URL below returned HTTP 200
-   at build time). Frames still degrade to the styled placeholder
-   if any ever vanish. */
-const IMAGES = {
-  "messier-31":  "https://images-assets.nasa.gov/image/PIA04921/PIA04921~large.jpg",
-  "messier-83":  "https://images-assets.nasa.gov/image/GSFC_20171208_Archive_e001262/GSFC_20171208_Archive_e001262~large.jpg",
-  "messier-16":  "https://images-assets.nasa.gov/image/PIA03096/PIA03096~large.jpg",
-  "messier-42":  "https://images-assets.nasa.gov/image/PIA01322/PIA01322~large.jpg",
-  "messier-45":  "https://images-assets.nasa.gov/image/PIA09262/PIA09262~large.jpg",
-  "ngc-5139":  "https://images-assets.nasa.gov/image/PIA13125/PIA13125~large.jpg",
-  betelgeuse: "https://images-assets.nasa.gov/image/PIA16680/PIA16680~orig.jpg",
-  proxima:    "https://images-assets.nasa.gov/image/GSFC_20171208_Archive_e000968/GSFC_20171208_Archive_e000968~large.jpg",
-  trappist1e: "https://images-assets.nasa.gov/image/PIA24371/PIA24371~large.jpg",
-  kepler186f: "https://images-assets.nasa.gov/image/PIA17999/PIA17999~large.jpg",
-  jupiter:    "https://images-assets.nasa.gov/image/PIA04866/PIA04866~large.jpg",
-  europa:     "https://images-assets.nasa.gov/image/PIA17043/PIA17043~large.jpg",
-  sgra:       "https://images-assets.nasa.gov/image/PIA12348/PIA12348~large.jpg",
-  crab:       "https://images-assets.nasa.gov/image/PIA03606/PIA03606~large.jpg",
-};
-CATALOG.forEach(prepareMockObject);
-
-/* Give a mock object the same fields an object from BGAPI has, so the
-   rest of the code does not care where an object came from. */
-function prepareMockObject(obj) {
-  obj.imageUrl = IMAGES[obj.id] || "";
-  obj.thumbUrl = obj.imageUrl.replace("~large.jpg", "~medium.jpg");   // the lighter NASA size
-  obj.aliases = obj.designation.split(" · ");
-  obj.credit = "NASA";
-  obj.facts = [];
-  obj.sources = [];
-  /* The mock has no image page, so the full-size NASA file stands in for it */
-  obj.images = obj.imageUrl
-    ? [{ url: obj.imageUrl, thumbUrl: obj.thumbUrl, credit: "NASA", license: "public-domain",
-         sourcePage: obj.imageUrl.replace("~large.jpg", "~orig.jpg") }]
-    : [];
-  obj.hasDetails = true;
-}
-
 const CATEGORY_LABELS = {
   galaxy: "Galaxies", nebula: "Nebulae", cluster: "Clusters", star: "Stars",
   exoplanet: "Exoplanets", solar_system: "Solar System", exotic: "Exotic",
@@ -128,17 +28,8 @@ const CATEGORY_LABELS = {
 /* ------------------------------------------------------------
    2. STATE
    ------------------------------------------------------------ */
-/* Old favorites were saved with the mock ids ("m31"). Now we save slugs. */
-const OLD_FAVORITE_IDS = {
-  m31: "messier-31", m83: "messier-83", m16: "messier-16",
-  m42: "messier-42", m45: "messier-45", ngc5139: "ngc-5139",
-};
-
 function loadFavorites() {
-  const saved = JSON.parse(localStorage.getItem("co-favs") || "[]");
-  const slugs = saved.map(id => OLD_FAVORITE_IDS[id] || id);
-  localStorage.setItem("co-favs", JSON.stringify(slugs));
-  return new Set(slugs);
+  return new Set(JSON.parse(localStorage.getItem("co-favs") || "[]"));
 }
 
 const state = {
@@ -148,10 +39,8 @@ const state = {
   favs: loadFavorites(),
 };
 
-/* The objects the page shows. They come from BGAPI ("api"), or from the
-   mock CATALOG above when BGAPI does not answer ("mock"). */
+/* The objects the page shows, from BGAPI's /catalog */
 let objects = [];
-let dataSource = "mock";
 
 const $  = (sel, root) => (root || document).querySelector(sel);
 const $$ = (sel, root) => Array.from((root || document).querySelectorAll(sel));
@@ -664,29 +553,17 @@ function showDataNotice(text) {
   notice.hidden = !text;
 }
 
-/* Load the whole catalog once. If BGAPI does not answer, use the mock,
-   so the page is never blank. */
-/* Show the mock CATALOG, with a small notice that says why */
-function useSampleData(notice) {
-  objects = CATALOG;
-  dataSource = "mock";
-  showDataNotice(notice);
-}
-
+/* Load the whole catalog once. If BGAPI does not answer, or has no
+   objects yet, the page says so in one line and shows no cards. */
 async function loadCatalog() {
   try {
     if (!API_BASE) throw new Error("No API address set");
     const data = await getJson("/catalog");
-    if (!data.items.length) {
-      /* BGAPI answers, but has no objects yet (nothing imported):
-         show the sample data, so the page is never empty */
-      useSampleData("Live catalog is empty · showing sample data");
-      return;
-    }
     objects = data.items.map(objectFromCatalogItem);
-    dataSource = "api";
+    if (!objects.length) showDataNotice("The catalog is empty · nothing imported yet");
   } catch (err) {
-    useSampleData("Live catalog not reachable · showing sample data");
+    objects = [];
+    showDataNotice("Catalog not reachable · try again later");
   }
 }
 
@@ -790,22 +667,22 @@ function renderGrid() {
     const obj = objects.find(o => o.id === card.dataset.id);
     card.hidden = !isVisible(obj);
   });
-  $("#resultCount").textContent = countText(items.length, objects.length);
+  /* No catalog at all: the notice above the grid already says why */
+  const noCatalog = objects.length === 0;
+  $("#resultCount").textContent = noCatalog ? "" : countText(items.length, objects.length);
   const empty = $("#emptyState");
   empty.innerHTML = emptyHTML();
-  empty.style.display = items.length ? "none" : "block";
+  empty.style.display = items.length || noCatalog ? "none" : "block";
 }
 
 /* ------------------------------------------------------------
    4b. HERO — full-bleed featured-observation carousel
    ------------------------------------------------------------ */
-const MOCK_FEATURED = ["messier-16", "jupiter", "messier-31", "sgra", "messier-45", "crab"];
 let heroIdx = 0, heroTimer = null;
 let FEATURED = [];             // the objects in the hero, set by initHero()
 
-/* Mock: the hand-picked list. BGAPI: the first 6 objects of the catalog. */
+/* The first 6 objects of the catalog */
 function pickFeatured() {
-  if (dataSource === "mock") return MOCK_FEATURED.map(id => objects.find(o => o.id === id));
   return objects.slice(0, 6);
 }
 
@@ -825,6 +702,10 @@ function heroPlay() {
 
 function initHero() {
   FEATURED = pickFeatured();
+  if (!FEATURED.length) {               // no catalog: no hero
+    $("#hero").hidden = true;
+    return;
+  }
   const slides = $("#heroSlides");
   /* If the big picture fails, try the thumbnail once, then give up */
   slides.innerHTML = FEATURED.map((obj, k) => `<div class="hero-slide${k === 0 ? " is-active" : ""}">
@@ -925,11 +806,6 @@ function closeDetail() {
    come from /objects/{slug} the first time the page opens. */
 async function openDetail(id) {
   let obj = objects.find(o => o.id === id);
-  if (dataSource === "mock") {
-    if (obj) showDetail(obj, "");
-    else showNotFound(id);
-    return;
-  }
   if (obj && obj.hasDetails) { showDetail(obj, ""); return; }
 
   try {
@@ -1180,10 +1056,19 @@ function showView(name) {
   if (leavingDetail) window.scrollTo(0, galleryScrollY);   // back where the reader was
 }
 
+/* The script in index.html <head> keeps the page dark while a #obj/ link
+   opens. Show the page again when the view is ready. */
+function showPage() {
+  document.documentElement.classList.remove("opening-detail");
+}
+
 function route() {
   const h = location.hash.replace("#", "");
-  document.documentElement.classList.remove("opening-detail");   // see the script in index.html <head>
-  if (h.startsWith("obj/")) { openDetail(h.slice(4)); return; }
+  if (h.startsWith("obj/")) {
+    openDetail(h.slice(4)).finally(showPage);   // the details come from BGAPI first
+    return;
+  }
+  showPage();
   showView("gallery");
 }
 

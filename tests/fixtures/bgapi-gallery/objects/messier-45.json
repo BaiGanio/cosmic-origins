@@ -1,0 +1,29 @@
+{
+  "slug": "messier-45",
+  "name": "Pleiades",
+  "aliases": [
+    "M 45",
+    "Seven Sisters"
+  ],
+  "category": "cluster",
+  "subcategory": "open cluster",
+  "constellation": "Taurus",
+  "magnitude": 1.6,
+  "distanceLy": 444,
+  "ra": "03h 47m 24s",
+  "dec": "+24° 07′ 00″",
+  "discovered": "antiquity",
+  "description": "A young open cluster of hot blue stars less than 100 million years old, drifting through a chance cloud of interstellar dust that reflects their light as a blue haze. Among the nearest clusters and the most obvious to the naked eye.",
+  "tags": [],
+  "facts": [],
+  "images": [
+    {
+      "url": "https://images-assets.nasa.gov/image/PIA09262/PIA09262~large.jpg",
+      "thumbUrl": "https://images-assets.nasa.gov/image/PIA09262/PIA09262~thumb.jpg",
+      "credit": "NASA",
+      "license": "public-domain",
+      "sourcePage": "https://images-assets.nasa.gov/image/PIA09262/PIA09262~orig.jpg"
+    }
+  ],
+  "sources": []
+}

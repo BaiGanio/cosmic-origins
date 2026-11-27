@@ -1,0 +1,28 @@
+{
+  "slug": "sgra",
+  "name": "Sagittarius A*",
+  "aliases": [
+    "Sgr A*"
+  ],
+  "category": "exotic",
+  "subcategory": "supermassive black hole",
+  "constellation": "Sagittarius",
+  "magnitude": null,
+  "distanceLy": 26673,
+  "ra": "17h 45m 40s",
+  "dec": "−29° 00′ 28″",
+  "discovered": "1974",
+  "description": "The supermassive black hole at the center of the Milky Way, 4.3 million times the mass of the Sun. Imaged directly by the Event Horizon Telescope in 2022 as a glowing ring of superheated plasma around a shadow.",
+  "tags": [],
+  "facts": [],
+  "images": [
+    {
+      "url": "https://images-assets.nasa.gov/image/PIA12348/PIA12348~large.jpg",
+      "thumbUrl": "https://images-assets.nasa.gov/image/PIA12348/PIA12348~thumb.jpg",
+      "credit": "NASA",
+      "license": "public-domain",
+      "sourcePage": "https://images-assets.nasa.gov/image/PIA12348/PIA12348~orig.jpg"
+    }
+  ],
+  "sources": []
+}
