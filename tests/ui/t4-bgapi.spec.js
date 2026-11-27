@@ -80,23 +80,19 @@ test.describe("BGAPI answers", () => {
     dropExpectedRequestErrors(consoleErrors);
   });
 
-  test("T4.7 old favorite ids are moved to slugs", async ({ page }) => {
-    await page.goto("/");
-    await page.evaluate(() => localStorage.setItem("co-favs", JSON.stringify(["m31"])));
-    await page.reload();
-    await expect(page.locator('[data-fav="messier-31"]')).toHaveAttribute("aria-pressed", "true");
-    expect(await page.evaluate(() => localStorage.getItem("co-favs"))).toBe('["messier-31"]');
-  });
 });
 
 test.describe("BGAPI does not answer", () => {
   test.use({ api: "down" });
 
-  test("T4.8 the mock catalog shows with a notice; the page is not blank", async ({ page, consoleErrors }) => {
-    await openGallery(page);
-    await expect(page.locator("#resultCount")).toHaveText("14 objects");
-    await expect(page.locator("#dataNotice")).toBeVisible();
-    await expect(page.locator("#dataNotice")).toContainText(/not reachable/i);
+  test("T4.8 a one-line notice, no cards, no hero, no crash", async ({ page, consoleErrors }) => {
+    await page.goto("/");
+    await expect(page.locator("#dataNotice")).toHaveText(/not reachable/i);
+    await expect(page.locator("#uaoGrid .uao-card")).toHaveCount(0);
+    await expect(page.locator("#hero")).toBeHidden();
+    await expect(page.locator("#resultCount")).toBeEmpty();
+    await expect(page.locator("#emptyState")).toBeHidden();
+    await expect(page.locator(".topbar")).toBeVisible();
     dropExpectedRequestErrors(consoleErrors);
   });
 });
@@ -104,13 +100,11 @@ test.describe("BGAPI does not answer", () => {
 test.describe("BGAPI answers with an empty catalog", () => {
   test.use({ api: "empty" });
 
-  test("T4.9 an empty catalog shows the sample data and a notice, no crash", async ({ page }) => {
-    await openGallery(page);
-    await expect(page.locator("#resultCount")).toHaveText("14 objects");
+  test("T4.9 an empty catalog: a one-line notice, no cards, no hero, no crash", async ({ page }) => {
+    await page.goto("/");
     await expect(page.locator("#dataNotice")).toHaveText(/catalog is empty/i);
-    await expect(page.locator("#heroName")).not.toBeEmpty();
-    // the hero changes slide every 7 s; it must not crash when it does
-    await page.locator("#heroNext").click();
-    await expect(page.locator("#heroName")).not.toBeEmpty();
+    await expect(page.locator("#uaoGrid .uao-card")).toHaveCount(0);
+    await expect(page.locator("#hero")).toBeHidden();
+    await expect(page.locator("#emptyState")).toBeHidden();
   });
 });

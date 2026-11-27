@@ -1,0 +1,35 @@
+{
+  "slug": "trappist1e",
+  "name": "TRAPPIST-1e",
+  "aliases": [
+    "2MASS J23062928-0502285 e"
+  ],
+  "category": "exoplanet",
+  "subcategory": "terrestrial",
+  "constellation": "Aquarius",
+  "magnitude": null,
+  "distanceLy": 40.7,
+  "ra": "23h 06m 29s",
+  "dec": "−05° 02′ 29″",
+  "discovered": "2017",
+  "description": "The fourth of seven Earth-sized worlds around the ultracool dwarf TRAPPIST-1, and the most likely to hold liquid water: rocky, slightly smaller than Earth, receiving stellar energy comparable to our own planet.",
+  "tags": [],
+  "facts": [
+    {
+      "key": "orbitalPeriod",
+      "label": "Orbital period",
+      "value": "6.10",
+      "unit": "days"
+    }
+  ],
+  "images": [
+    {
+      "url": "https://images-assets.nasa.gov/image/PIA24371/PIA24371~large.jpg",
+      "thumbUrl": "https://images-assets.nasa.gov/image/PIA24371/PIA24371~thumb.jpg",
+      "credit": "NASA",
+      "license": "public-domain",
+      "sourcePage": "https://images-assets.nasa.gov/image/PIA24371/PIA24371~orig.jpg"
+    }
+  ],
+  "sources": []
+}

@@ -18,6 +18,7 @@ async function onlyCategories(page, keep) {
 async function openFromGallery(page, id) {
   await page.locator('.uao-card[data-id="' + id + '"] .uao-name').click();
   await expect(page).toHaveURL(new RegExp("#obj/" + id + "$"));
+  await expect(page.locator("#view-detail")).toHaveClass(/is-active/);   // details come from BGAPI first
   await expect(page.locator("#view-detail")).not.toHaveClass(/is-waiting/);
 }
 
@@ -61,6 +62,7 @@ for (const width of [1440, 390]) {
       // moves from its hover effect), and then scrollBefore is wrong.
       await page.keyboard.press("Enter");
       await expect(page).toHaveURL(/#obj\/crab$/);
+      await expect(page.locator("#view-detail")).toHaveClass(/is-active/);
       await expect(page.locator("#view-detail")).not.toHaveClass(/is-waiting/);
       await page.keyboard.press("Escape");
 

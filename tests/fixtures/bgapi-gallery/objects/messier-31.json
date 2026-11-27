@@ -1,0 +1,29 @@
+{
+  "slug": "messier-31",
+  "name": "Andromeda",
+  "aliases": [
+    "M 31",
+    "NGC 224"
+  ],
+  "category": "galaxy",
+  "subcategory": "spiral galaxy",
+  "constellation": "Andromeda",
+  "magnitude": 3.44,
+  "distanceLy": 2537000,
+  "ra": "00h 42m 44s",
+  "dec": "+41° 16′ 09″",
+  "discovered": "964 AD",
+  "description": "The nearest major galaxy to the Milky Way and the largest member of the Local Group. On a collision course with our own galaxy, expected to merge in roughly 4.5 billion years. Visible to the naked eye from dark sites as a faint smudge spanning six full moons of sky.",
+  "tags": [],
+  "facts": [],
+  "images": [
+    {
+      "url": "https://images-assets.nasa.gov/image/PIA04921/PIA04921~large.jpg",
+      "thumbUrl": "https://images-assets.nasa.gov/image/PIA04921/PIA04921~thumb.jpg",
+      "credit": "NASA",
+      "license": "public-domain",
+      "sourcePage": "https://images-assets.nasa.gov/image/PIA04921/PIA04921~orig.jpg"
+    }
+  ],
+  "sources": []
+}

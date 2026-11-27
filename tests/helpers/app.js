@@ -5,10 +5,10 @@
 //    Bootstrap Icons come from node_modules (same versions as index.html);
 //    Google Fonts get an empty stylesheet. Any other outside request is
 //    blocked AND makes the test fail, so a new CDN cannot sneak in.
-//    BGAPI: by default there is none, so the app shows the mock catalog.
-//    test.use({ api: "fixture" }) gives a fake BGAPI with the files in
-//    tests/fixtures/bgapi/; test.use({ api: "down" }) gives one that never answers;
-//    test.use({ api: "empty" }) gives one whose catalog has no objects yet.
+//    BGAPI is always fake. By default it answers with the 14 objects in
+//    tests/fixtures/bgapi-gallery/. test.use({ api: "fixture" }) uses the 6 real
+//    Messier objects in tests/fixtures/bgapi/; test.use({ api: "down" }) gives a
+//    BGAPI that never answers; test.use({ api: "empty" }) one with no objects yet.
 // 2. Clean localStorage before the app runs (once per test; a reload keeps
 //    what the test itself saved).
 // 3. Console watch: any console error or page error fails the test, except
@@ -34,14 +34,18 @@ const IMAGE_HOSTS = [
 // The fake BGAPI. The app is told to use it through window.COSMIC_API_BASE.
 const FAKE_API_HOST = "bgapi.test";
 const FAKE_API_BASE = "https://" + FAKE_API_HOST + "/api/cosmic";
-const FIXTURES = path.join(__dirname, "..", "fixtures", "bgapi");
+// Which fixture folder each "api" option answers from
+const FIXTURE_FOLDERS = {
+  gallery: path.join(__dirname, "..", "fixtures", "bgapi-gallery"),
+  fixture: path.join(__dirname, "..", "fixtures", "bgapi"),
+};
 
 // Answer one fake BGAPI request from the fixture files
-function fakeApiAnswer(url) {
+function fakeApiAnswer(url, folder) {
   const apiPath = new URL(url).pathname.replace("/api/cosmic", "");
   const file = apiPath === "/catalog"
-    ? path.join(FIXTURES, "catalog.json")
-    : path.join(FIXTURES, "objects", path.basename(apiPath) + ".json");
+    ? path.join(folder, "catalog.json")
+    : path.join(folder, "objects", path.basename(apiPath) + ".json");
   if (fs.existsSync(file)) {
     return { status: 200, contentType: "application/json", body: fs.readFileSync(file),
              headers: { "access-control-allow-origin": "*" } };
@@ -84,8 +88,8 @@ const test = base.test.extend({
   // Delay for NASA picture responses, in ms. Change it with test.use({ imageDelayMs: 1000 }).
   imageDelayMs: [0, { option: true }],
 
-  // Which BGAPI the app sees: "none" (mock catalog), "fixture", "down" or "empty"
-  api: ["none", { option: true }],
+  // Which fake BGAPI the app sees: "gallery", "fixture", "down" or "empty"
+  api: ["gallery", { option: true }],
 
   // Each fake BGAPI request: its path, like "/api/cosmic/catalog"
   apiRequests: async ({}, use) => { await use([]); },
@@ -110,7 +114,7 @@ const test = base.test.extend({
         apiRequests.push(new URL(url).pathname);
         if (api === "down") return route.abort("connectionrefused");
         if (api === "empty") return route.fulfill(EMPTY_CATALOG_ANSWER);
-        return route.fulfill(fakeApiAnswer(url));
+        return route.fulfill(fakeApiAnswer(url, FIXTURE_FOLDERS[api]));
       }
 
       if (IMAGE_HOSTS.includes(host)) {
@@ -136,7 +140,7 @@ const test = base.test.extend({
 
     await context.addInitScript((apiBase) => {
       window.COSMIC_API_BASE = apiBase;
-    }, api === "none" ? "" : FAKE_API_BASE);
+    }, FAKE_API_BASE);
 
     await context.addInitScript(() => {
       if (!sessionStorage.getItem("test-storage-cleaned")) {
@@ -173,6 +177,7 @@ async function openGallery(page) {
 // Open one object's detail view and wait until the entrance has started
 async function openDetail(page, id) {
   await page.goto("/#obj/" + id);
+  await base.expect(page.locator("#view-detail")).toHaveClass(/is-active/);
   await base.expect(page.locator("#view-detail")).not.toHaveClass(/is-waiting/);
 }
 
