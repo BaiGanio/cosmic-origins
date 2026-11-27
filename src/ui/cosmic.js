@@ -1047,13 +1047,22 @@ function loadPicture(img, url, whenReady) {
    any other hash (also the old "#login" and "#register") shows
    the gallery. The 404 view is opened by openDetail().
    ------------------------------------------------------------ */
+/* Scroll to y at once. Bootstrap makes page scrolls smooth, and a smooth
+   scroll can stop half way (seen in WebKit) when the page changes under it. */
+function jumpTo(y) {
+  const root = document.documentElement;
+  root.style.scrollBehavior = "auto";
+  window.scrollTo(0, y);
+  root.style.scrollBehavior = "";
+}
+
 function showView(name) {
   const leavingDetail = document.body.classList.contains("detail-open") && name !== "detail";
   const enteringDetail = !document.body.classList.contains("detail-open") && name === "detail";
   if (enteringDetail) galleryScrollY = window.scrollY;
   $$(".view").forEach(v => v.classList.toggle("is-active", v.id === "view-" + name));
   document.body.classList.toggle("detail-open", name === "detail");
-  if (leavingDetail) window.scrollTo(0, galleryScrollY);   // back where the reader was
+  if (leavingDetail) jumpTo(galleryScrollY);   // back where the reader was
 }
 
 /* The script in index.html <head> keeps the page dark while a #obj/ link

@@ -832,9 +832,19 @@ html.opening-detail body { visibility: hidden; }
 /* ============================================================
    RESPONSIVE
    ============================================================ */
+/* Narrow screens: brand and Ambience always share line 1 (the brand name may
+   break onto 2 lines when the font is wide); the tagline gets line 2. */
 @media (max-width: 991px) {
-  .topbar { flex-wrap: wrap; row-gap: 8px; }
-  .topbar-eyebrow { order: 3; flex-basis: 100%; text-align: left; }   /* own line, under the bar */
+  .topbar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 12px;
+    row-gap: 8px;
+  }
+  .brand        { grid-column: 1; grid-row: 1; }
+  .ambience-btn { grid-column: 2; grid-row: 1; }
+  .topbar-eyebrow { grid-column: 1 / -1; grid-row: 2; text-align: left; }
+  .brand-name { white-space: normal; }
 }
 @media (max-width: 576px) {
   .detail-live { display: none; }    /* no room next to the back button */
