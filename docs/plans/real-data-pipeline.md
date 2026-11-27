@@ -1,6 +1,6 @@
 # Plan: Real Data Pipeline — free catalogs → own database → k3s on Raspberry Pi 5
 
-> **PARTLY SUPERSEDED 2026-11-24** by `docs/briefs/cosmic-origins-platform.md`: BGAPI replaces
+> **PARTLY SUPERSEDED 2026-11-24** by `docs/briefs/cosmic-origins.md`: BGAPI replaces
 > the own DB, API and k3s steps (4-6); Keycloak replaces Firebase. Steps 1-3 (fetch,
 > normalize, images) still apply, with the new object shape and image rules.
 

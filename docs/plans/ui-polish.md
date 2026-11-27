@@ -17,7 +17,7 @@ phone 390 px) on 2026-11-24. Developer picked all four groups (A–D).
 ## 2. Diagram
 
 Work is split into **chapters**. Chapters 1–3 do not need the brief
-(`docs/briefs/cosmic-origins-platform.md`) and can run **now**. Chapters 4–5
+(`docs/briefs/cosmic-origins.md`) and can run **now**. Chapters 4–5
 wait for brief Part B.
 
 ```mermaid

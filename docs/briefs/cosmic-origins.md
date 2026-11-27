@@ -1,7 +1,8 @@
 # Brief: Cosmic Origins on BGAPI (cosmic-origins)
 
-> Status: APPROVED 2026-11-24 (revised: no user accounts). Copied from baiganio-platform `plans/cosmic-origins/brief-cosmic-origins.md`.
-> If the contract below must change, tell Lyuben: the master plan changes first.
+> Status: APPROVED 2026-11-24. Revised 2026-11-27 (BaiGanio/baiganio-platform#1, #2, #3). Copied from baiganio-platform `plans/cosmic-origins/brief-cosmic-origins.md`. Do not edit it here.
+> To change it, open an issue in `BaiGanio/baiganio-platform` (template "Change request").
+> Master plan: baiganio-platform `plans/cosmic-origins/README.md` (private).
 > This brief has all you need. You do not need the platform repo.
 
 ## Goal
@@ -58,10 +59,11 @@ Token: `POST {issuer}/protocol/openid-connect/token` with `grant_type=client_cre
 3. **Catalog.** `renderGrid()` stays the one render entry. Load the whole short list
    once from `GET /catalog`. Filter by category and search by name and aliases **in the
    browser**. Load details from `GET /objects/{slug}` when a card opens.
-   If BGAPI does not answer, show the mock `CATALOG` and a small notice, so the page never goes blank.
+   If BGAPI does not answer, or has no objects, show a one-line notice and no cards. There is no mock catalog.
    Loading and error states use the design tokens (`--ion`, `--signal`, `--ease-hud`).
 4. **Favorites.** `localStorage` key `co-favs`, as today, storing `slug` values.
-   Map the old mock IDs (`m31` → `messier-31`) once, or drop them.
+   Old mock IDs are dropped. An object can be deleted in BGAPI: skip a favorite whose
+   slug is not in `/catalog`, and treat a 404 from `GET /objects/{slug}` as "gone", not as an error.
 5. **Credits.** Detail panel shows each image's `credit` + `license` + `sourcePage`
    and each `sources` entry. Footer links to a credits section (CC-BY-SA needs it).
 6. Remove the `Authorization` header and key from `src/ui/nasa.js`.
@@ -85,6 +87,7 @@ Token: `POST {issuer}/protocol/openid-connect/token` with `grant_type=client_cre
 | `GET /catalog` → `{ version, count, items }`, all objects, short form | everyone |
 | `GET /objects/{slug}` → object | everyone |
 | `POST /import` → `{ inserted, updated, rejected }` | `cosmic-importer` only |
+| `DELETE /objects/{slug}` → 204 | `cosmic-importer` only |
 
 **Object shape** (also the new UAO model in `src/models/UniversalAstronomicalObject.js`):
 
@@ -106,7 +109,7 @@ Token: `POST {issuer}/protocol/openid-connect/token` with `grant_type=client_cre
 - `category`: `galaxy, nebula, cluster, star, exoplanet, solar_system, exotic` (the website's groups).
 - `/catalog` item: `slug, name, aliases, category, subcategory, constellation, magnitude, distanceLy, thumbUrl, credit`.
 - Every object has at least 1 image. BGAPI rejects an object with none.
-- Image hosts BGAPI accepts: `images-assets.nasa.gov`, `cdn.esahubble.org`, `cdn.esawebb.org`, `cdn.eso.org`, `noirlab.edu`.
+- Image hosts BGAPI accepts: `images-assets.nasa.gov`, `cdn.esahubble.org`, `cdn.esawebb.org`, `cdn.eso.org`, `storage.noirlab.edu`.
 - Scale trigger: past 20k objects or 1 MB gzip, search moves to the server (master plan §11).
 
 ## Works when
@@ -118,7 +121,7 @@ Token: `POST {issuer}/protocol/openid-connect/token` with `grant_type=client_cre
    - Every card has a real photo. No card shows a placeholder image.
    - Add a favorite. Reload. It is still there.
    - Every image in the detail panel shows its credit and license.
-   - Stop BGAPI. Reload. The mock catalog shows with a notice. The page is not blank.
+   - Stop BGAPI. Reload. The top bar and the notice 'Catalog not reachable' show. No cards, no hero, no errors in the console.
    - Network tab: no request to Firebase, `fonts.googleapis.com`, `fonts.gstatic.com` or `cdn.jsdelivr.net`.
    - No login or sign-up button anywhere. No cookies set.
    - The Cloudflare Web Analytics beacon loads.

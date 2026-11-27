@@ -2,7 +2,7 @@
    COSMIC ORIGINS — application shell
    Data comes from BGAPI (src/core/api-config.js has the address).
    If BGAPI does not answer, the page shows a short notice and no cards.
-   The plan for BGAPI is in docs/briefs/cosmic-origins-platform.md.
+   The plan for BGAPI is in docs/briefs/cosmic-origins.md.
    ============================================================ */
 "use strict";
 

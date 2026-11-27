@@ -18,7 +18,7 @@ _A record of humanity's — and its machines' — discoveries across the univers
 ## Where it is going
 
 Data will come from BGAPI (`https://api.baiganio.io/api/cosmic`). Only objects with a real photo are shown. Image files stay on NASA, ESA, ESO and NOIRLab servers.
-Plan and contract: [docs/briefs/cosmic-origins-platform.md](docs/briefs/cosmic-origins-platform.md). Roadmap: [docs/follow-ups.md](docs/follow-ups.md).
+Plan and contract: [docs/briefs/cosmic-origins.md](docs/briefs/cosmic-origins.md). Roadmap: [docs/follow-ups.md](docs/follow-ups.md).
 
 ---
 

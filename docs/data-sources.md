@@ -1,6 +1,7 @@
 # Data sources
 
-> Status: APPROVED 2026-11-24. Copied from baiganio-platform `plans/cosmic-origins/data-sources.md`.
+> Status: APPROVED 2026-11-24. Revised 2026-11-27 (BaiGanio/baiganio-platform#2). Copied from baiganio-platform `plans/cosmic-origins/data-sources.md`. Do not edit it here.
+> To change it, open an issue in `BaiGanio/baiganio-platform` (template "Change request").
 > This file is the source of truth for where Cosmic Origins data comes from.
 > Licenses checked 2026-07-10 (old plan). Check again before the first real import.
 
@@ -30,9 +31,9 @@ uploaded, so expect about 1-3k objects. The rest go to `var/data/no-image.json`.
 | [ESA/Hubble](https://esahubble.org/images/) | hand-picked hero images | CC BY 4.0 | `cdn.esahubble.org` |
 | [ESA/Webb](https://esawebb.org/images/) | hand-picked hero images | CC BY 4.0 | `cdn.esawebb.org` |
 | [ESO](https://www.eso.org/public/images/) | hand-picked photos, many deep-sky objects | CC BY 4.0 | `cdn.eso.org` |
-| [NOIRLab](https://noirlab.edu/public/images/) | hand-picked photos, many deep-sky objects | CC BY 4.0 | `noirlab.edu` |
+| [NOIRLab](https://noirlab.edu/public/images/) | hand-picked photos, many deep-sky objects | CC BY 4.0 | `storage.noirlab.edu` |
 
-Check the real image hosts of ESO and NOIRLab before the first import. Change the BGAPI allow list if they differ.
+Image hosts checked 2026-11-24: ESO serves from `cdn.eso.org`. NOIRLab serves from `storage.noirlab.edu`, not `noirlab.edu` (BaiGanio/baiganio-platform#2). The `sourcePage` links stay on `noirlab.edu`.
 
 Drop a NASA result when its title or keywords contain: `artist`, `illustration`,
 `concept`, `rendering`, `animation`. Also drop every URL in `tools/import/image-blocklist.json`.

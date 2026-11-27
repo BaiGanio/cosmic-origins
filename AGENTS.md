@@ -26,12 +26,12 @@ developers**: clarity and easy-to-understand code are core values. When trade-of
 collide, real data and readable code win; the immersive full-bleed imagery is the
 product surface that makes both worth looking at.
 
-Direction (approved 2026-11-24, see `docs/briefs/cosmic-origins-platform.md`): the
+Direction (approved 2026-11-24, see `docs/briefs/cosmic-origins.md`): the
 backend moves to the BaiGanio platform — data from BGAPI
 (`https://api.baiganio.io/api/cosmic`). **No user accounts** for now: no login, no
 sign-up; favorites stay in `localStorage`. Only objects with a real photo are shown; image files stay on
 NASA/ESA/ESO/NOIRLab servers. All data comes from BGAPI; there is no mock catalog
-(change request for the brief: `docs/change-requests/2026-11-27-no-mock-fallback.md`). Open work is tracked as GitHub issues (see Issues below). Data import is BGAPI's job, not this repo's (#3 closed).
+(platform change request: BaiGanio/baiganio-platform#1). Open work is tracked as GitHub issues (see Issues below). Data import is BGAPI's job, not this repo's (#3 closed).
 
 ## Co-pilot Contract
 
@@ -45,11 +45,16 @@ NASA/ESA/ESO/NOIRLab servers. All data comes from BGAPI; there is no mock catalo
   changed flow exercised, **and** the handoff lists the exact manual steps the developer should click to verify.
 - Code must stay legible to a junior developer: obvious over clever.
 - **Platform contract.** This repo is part of the BaiGanio platform (BGAPI, Keycloak,
-  the websites). Files in `docs/briefs/` hold contracts other repos depend on:
-  endpoints, data shapes, roles, client IDs, URLs, CORS origins. If a change would
-  alter or break one, stop and tell Lyuben. The contract changes first in the
-  platform plan (baiganio-platform, private), then here. Never edit a brief to fit
-  your change.
+  the websites). `docs/briefs/<plan>.md` (one file per platform plan, e.g.
+  `docs/briefs/cosmic-origins.md`) holds a contract other repos depend on: endpoints,
+  data shapes, roles, client IDs, URLs, CORS origins. It is a copy of the platform
+  plan (baiganio-platform, private). Never edit a brief to fit your change.
+  If a change would alter or break the contract, or the code already differs from
+  it, stop and open a GitHub issue in `BaiGanio/baiganio-platform` with the
+  "Change request" template:
+  `gh issue create -R BaiGanio/baiganio-platform --template "Change request"`.
+  Do not write change-request files in this repo. The brief here changes only after
+  the platform plan changes.
 
 ## Quick Start
 
@@ -164,8 +169,8 @@ gitignored local scratch (raw downloads in `var/data/`); never put docs there.
 |-------|------|
 | Open work (what to do next) | GitHub issues: `gh issue list` (order rules: § Issues) |
 | Roadmap: later-stage ideas and history | `docs/follow-ups.md` (reconstructed 2026-07-10 — the original was lost) |
-| Brief: move to BGAPI + Keycloak (contract, steps, checks) | `docs/briefs/cosmic-origins-platform.md` |
-| Contract changes asked from the platform team (open until the brief is updated) | `docs/change-requests/` |
+| Brief: move to BGAPI + Keycloak (contract, steps, checks) | `docs/briefs/cosmic-origins.md` |
+| Contract changes asked from the platform team | GitHub issues in `BaiGanio/baiganio-platform` (label `from:cosmic-origins`) |
 | Data sources, licenses, image rules | `docs/data-sources.md` |
 | Old plan, partly superseded (fetch/normalize steps still apply) | `docs/plans/real-data-pipeline.md` + `-tests.md` |
 | Design-system notes (tokens, type roles, motion) | token block at top of `styles/cosmic.css` (the follow-ups copy was lost) |
