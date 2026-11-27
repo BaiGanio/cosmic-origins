@@ -79,7 +79,7 @@ for (const width of [1440, 390]) {
     });
 
     test("T2.5 favorites toggle shows exactly the starred cards", async ({ page }) => {
-      await star(page, "m31").click();
+      await star(page, "messier-31").click();
       await star(page, "europa").click();
       await page.locator("#pillFav").click();
       await expect(visibleCards(page)).toHaveCount(2);
@@ -98,12 +98,12 @@ for (const width of [1440, 390]) {
     });
 
     test("T2.7 a star survives a reload; the toggle starts off", async ({ page }) => {
-      await star(page, "m42").click();
-      await expect(star(page, "m42")).toHaveAttribute("aria-pressed", "true");
+      await star(page, "messier-42").click();
+      await expect(star(page, "messier-42")).toHaveAttribute("aria-pressed", "true");
       await page.reload();
       await expect(count(page)).toHaveText("14 objects");
-      await expect(star(page, "m42")).toHaveAttribute("aria-pressed", "true");
-      await expect(star(page, "m42").locator("i")).toHaveClass(/bi-star-fill/);
+      await expect(star(page, "messier-42")).toHaveAttribute("aria-pressed", "true");
+      await expect(star(page, "messier-42").locator("i")).toHaveClass(/bi-star-fill/);
       await expect(page.locator("#pillFav")).toHaveAttribute("aria-pressed", "false");
     });
 

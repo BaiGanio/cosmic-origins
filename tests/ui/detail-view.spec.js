@@ -26,7 +26,7 @@ function installFrameRecorder() {
 
 test.use({ viewport: VIEWPORTS[1440] });
 
-for (const id of ["m31", "crab"]) {
+for (const id of ["messier-31", "crab"]) {
   test("deep link #obj/" + id + " opens with no gallery flash", async ({ page }) => {
     await page.addInitScript(installFrameRecorder);
     await page.goto("/#obj/" + id);
@@ -63,7 +63,7 @@ test.describe("slow picture (1 s)", () => {
 
   test("deep link: the entrance waits for the picture", async ({ page, imageResponses }) => {
     await page.addInitScript(installClassRecorder);
-    await page.goto("/#obj/m31");
+    await page.goto("/#obj/messier-31");
     const panel = page.locator("#view-detail");
     await expect(panel).toHaveClass(/is-entering/);
     await expect(panel).not.toHaveClass(/is-waiting/);
@@ -78,7 +78,7 @@ test.describe("slow picture (1 s)", () => {
     expect(firstWaiting, "panel had is-waiting").toBeTruthy();
     expect(firstWaiting.captionOpacity).toBe("0");
     // 2. the entrance started only after the picture was sent
-    expect(picture, "m31 picture was requested").toBeTruthy();
+    expect(picture, "messier-31 picture was requested").toBeTruthy();
     expect(firstEntering.at).toBeGreaterThanOrEqual(picture.at);
     expect(firstEntering.at - firstWaiting.at).toBeGreaterThanOrEqual(900);
   });
@@ -86,7 +86,7 @@ test.describe("slow picture (1 s)", () => {
   test("card click: the entrance waits for the picture", async ({ page }) => {
     await page.addInitScript(installClassRecorder);
     await openGallery(page);
-    await page.locator('.uao-card[data-id="m42"] .uao-name').click();
+    await page.locator('.uao-card[data-id="messier-42"] .uao-name').click();
     const panel = page.locator("#view-detail");
     await expect(panel).toHaveClass(/is-entering/);
     expect(await page.locator("#detailImg").evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
@@ -103,7 +103,7 @@ test.describe("very slow picture (4 s)", () => {
 
   test("safety net: the entrance starts after about 1.5 s anyway", async ({ page }) => {
     await page.addInitScript(installClassRecorder);
-    await page.goto("/#obj/m31", { waitUntil: "domcontentloaded" });
+    await page.goto("/#obj/messier-31", { waitUntil: "domcontentloaded" });
     await expect(page.locator("#view-detail")).toHaveClass(/is-entering/, { timeout: 5000 });
     const log = await page.evaluate(() => window.testPanelLog);
     const waited = log.find(e => e.entering).at - log.find(e => e.waiting).at;

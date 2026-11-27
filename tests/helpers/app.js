@@ -1,10 +1,13 @@
 // Shared test setup for every UI test.
 //
 // What it does for each test:
-// 1. Offline: NASA pictures come from one local JPEG; Bootstrap, three.js and
+// 1. Offline: pictures (NASA, ESA, ESO, NOIRLab) come from one local JPEG; Bootstrap, three.js and
 //    Bootstrap Icons come from node_modules (same versions as index.html);
 //    Google Fonts get an empty stylesheet. Any other outside request is
 //    blocked AND makes the test fail, so a new CDN cannot sneak in.
+//    BGAPI: by default there is none, so the app shows the mock catalog.
+//    test.use({ api: "fixture" }) gives a fake BGAPI with the files in
+//    tests/fixtures/bgapi/; test.use({ api: "down" }) gives one that never answers.
 // 2. Clean localStorage before the app runs (once per test; a reload keeps
 //    what the test itself saved).
 // 3. Console watch: any console error or page error fails the test, except
@@ -22,7 +25,30 @@ const CDN_COPIES = {
   "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/": "node_modules/bootstrap-icons/",
   "https://cdn.jsdelivr.net/npm/three@0.147.0/": "node_modules/three/",
 };
-const NASA_HOSTS = ["images-assets.nasa.gov", "images-api.nasa.gov"];
+const IMAGE_HOSTS = [
+  "images-assets.nasa.gov", "images-api.nasa.gov",
+  "cdn.esahubble.org", "cdn.esawebb.org", "cdn.eso.org", "storage.noirlab.edu",
+];
+
+// The fake BGAPI. The app is told to use it through window.COSMIC_API_BASE.
+const FAKE_API_HOST = "bgapi.test";
+const FAKE_API_BASE = "https://" + FAKE_API_HOST + "/api/cosmic";
+const FIXTURES = path.join(__dirname, "..", "fixtures", "bgapi");
+
+// Answer one fake BGAPI request from the fixture files
+function fakeApiAnswer(url) {
+  const apiPath = new URL(url).pathname.replace("/api/cosmic", "");
+  const file = apiPath === "/catalog"
+    ? path.join(FIXTURES, "catalog.json")
+    : path.join(FIXTURES, "objects", path.basename(apiPath) + ".json");
+  if (fs.existsSync(file)) {
+    return { status: 200, contentType: "application/json", body: fs.readFileSync(file),
+             headers: { "access-control-allow-origin": "*" } };
+  }
+  return { status: 404, contentType: "application/problem+json",
+           headers: { "access-control-allow-origin": "*" },
+           body: JSON.stringify({ title: "The resource was not found.", status: 404 }) };
+}
 
 // Console messages we do not count as our bugs. Keep this list short.
 const IGNORED_CONSOLE_ERRORS = [
@@ -50,6 +76,12 @@ const test = base.test.extend({
   // Delay for NASA picture responses, in ms. Change it with test.use({ imageDelayMs: 1000 }).
   imageDelayMs: [0, { option: true }],
 
+  // Which BGAPI the app sees: "none" (mock catalog), "fixture" or "down"
+  api: ["none", { option: true }],
+
+  // Each fake BGAPI request: its path, like "/api/cosmic/catalog"
+  apiRequests: async ({}, use) => { await use([]); },
+
   // Each NASA picture response sent to the page: { url, at: Date.now() }
   imageResponses: async ({}, use) => { await use([]); },
 
@@ -59,14 +91,20 @@ const test = base.test.extend({
   // Console errors and page errors (already without the ignored ones). Must stay empty.
   consoleErrors: async ({}, use) => { await use([]); },
 
-  context: async ({ context, imageDelayMs, imageResponses, outsideRequests }, use) => {
+  context: async ({ context, imageDelayMs, imageResponses, outsideRequests, api, apiRequests }, use) => {
     await context.route("**/*", async (route) => {
       const url = route.request().url();
       const host = new URL(url).hostname;
 
       if (host === "localhost" || url.startsWith("data:")) return route.continue();
 
-      if (NASA_HOSTS.includes(host)) {
+      if (host === FAKE_API_HOST) {
+        apiRequests.push(new URL(url).pathname);
+        if (api === "down") return route.abort("connectionrefused");
+        return route.fulfill(fakeApiAnswer(url));
+      }
+
+      if (IMAGE_HOSTS.includes(host)) {
         if (imageDelayMs) await new Promise(r => setTimeout(r, imageDelayMs));
         imageResponses.push({ url, at: Date.now() });
         // the page may be closed already when a slow picture arrives
@@ -86,6 +124,10 @@ const test = base.test.extend({
       outsideRequests.push(url);
       return route.abort();
     });
+
+    await context.addInitScript((apiBase) => {
+      window.COSMIC_API_BASE = apiBase;
+    }, api === "none" ? "" : FAKE_API_BASE);
 
     await context.addInitScript(() => {
       if (!sessionStorage.getItem("test-storage-cleaned")) {

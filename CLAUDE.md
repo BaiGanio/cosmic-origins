@@ -71,7 +71,7 @@ entire page, which is why `node --check` is non-negotiable.
   `<script>` tags in `index.html` — no modules, load order matters
 - **UI**: Bootstrap 5.3 + Bootstrap Icons (CDN); design system in `styles/cosmic.css`
 - **3D**: three.js (CDN) — the starfield in `cosmic.js`
-- **Backend**: none yet — static site with a mock `CATALOG`; BGAPI comes with the brief
+- **Backend**: BGAPI `/api/cosmic` (local dev only so far); the mock `CATALOG` is the fallback when it does not answer
 - **Data & imagery**: NASA images API (`images-api.nasa.gov`) today; ESA and other
   free open catalogs planned as parse-and-import sources
 - **Testing**: Playwright Test, offline (NASA + CDN served from local files) — see
@@ -81,8 +81,9 @@ entire page, which is why `node --check` is non-negotiable.
 
 ## Configuration
 
-No env system and no secrets — everything is committed source. The BGAPI URL will
-live in `src/core/api-config.js` (brief Part B step 1).
+No env system and no secrets — everything is committed source. The BGAPI URL lives in
+`src/core/api-config.js` (localhost → `https://localhost:44364`; run `npx serve -l 4300 .`, the
+only port BGAPI's dev CORS allows). Tests fake BGAPI: `api` option in `tests/helpers/app.js`.
 
 ## Database
 

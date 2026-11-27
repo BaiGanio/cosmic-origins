@@ -115,6 +115,7 @@
           <button class="pill pill--fav" id="pillFav" aria-pressed="false">Favorites</button>
         </div>
 
+        <div class="data-notice" id="dataNotice" role="status" hidden></div>
         <div class="result-count" id="resultCount" aria-live="polite"></div>
         <div class="uao-grid" id="uaoGrid"></div>
         <div class="empty-state" id="emptyState" style="display:none"></div>
@@ -135,6 +136,7 @@
           <div class="detail-caption">
             <h2 class="detail-title" id="detailTitle"></h2>
             <div class="detail-desig" id="detailDesig"></div>
+            <div class="detail-credit" id="detailCredit"></div>
           </div>
           <button class="hero-nav hero-prev" id="detailPrev" aria-label="Previous object">‹</button>
           <button class="hero-nav hero-next" id="detailNext" aria-label="Next object">›</button>
@@ -144,12 +146,31 @@
           </button>
         </div>
         <div class="detail-content">
+          <p class="data-notice" id="detailNotice" role="status" hidden></p>
           <dl class="telemetry" id="telemetry"></dl>
           <p class="detail-desc" id="detailDesc"></p>
+          <div id="photoWrap">
+            <div class="section-label" id="photoLabel"></div>
+            <div class="photo-list" id="photoList"></div>
+          </div>
+          <div id="sourceWrap">
+            <div class="section-label">Data sources</div>
+            <ul class="source-list" id="sourceList"></ul>
+          </div>
           <div id="relatedWrap">
             <div class="related-label" id="relatedLabel"></div>
             <div class="related-rail" id="relatedRail"></div>
           </div>
+        </div>
+      </section>
+
+      <!-- ---------- NOT FOUND: a link to an object that does not exist ---------- -->
+      <section class="view" id="view-notfound" aria-label="Object not found">
+        <div class="auth-wrap brackets notfound">
+          <div class="auth-eyebrow">404 · no signal</div>
+          <h2 class="auth-title">Object not found</h2>
+          <p>The catalog has no object called <code id="notFoundSlug"></code>.</p>
+          <button class="search-btn" onclick="location.hash=''">Back to gallery</button>
         </div>
       </section>
 
@@ -200,6 +221,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+  <script src="src/core/api-config.js"></script>
   <script src="src/ui/cosmic.js"></script>
 </body>
 </html>

@@ -21,8 +21,8 @@ for (const width of [1440, 390]) {
         imgs.forEach((img, i) => { img.testMark = i; }));
 
       const steps = [
-        ["star Andromeda", page.locator('[data-fav="m31"]')],
-        ["un-star Andromeda", page.locator('[data-fav="m31"]')],
+        ["star Andromeda", page.locator('[data-fav="messier-31"]')],
+        ["un-star Andromeda", page.locator('[data-fav="messier-31"]')],
         ["Galaxies pill off", page.locator('.pill[data-cat="galaxy"]')],
         ["Galaxies pill on", page.locator('.pill[data-cat="galaxy"]')],
         ["All pill: clear all", page.locator("#pillAll")],

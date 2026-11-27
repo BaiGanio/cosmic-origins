@@ -1,7 +1,8 @@
 /* ============================================================
    COSMIC ORIGINS — application shell
-   Static build: mock catalog shaped like UniversalAstronomicalObject.
-   BGAPI wiring is described in docs/briefs/cosmic-origins-platform.md.
+   Data comes from BGAPI (src/core/api-config.js has the address).
+   If BGAPI does not answer, the mock catalog below is shown.
+   The plan for BGAPI is in docs/briefs/cosmic-origins-platform.md.
    ============================================================ */
 "use strict";
 
@@ -22,27 +23,27 @@ const CATEGORY_TINTS = {
 };
 
 const CATALOG = [
-  { id: "m31", name: "Andromeda", designation: "M 31 · NGC 224", category: "galaxy", subcategory: "spiral galaxy",
+  { id: "messier-31", name: "Andromeda", designation: "M 31 · NGC 224", category: "galaxy", subcategory: "spiral galaxy",
     constellation: "Andromeda", ra: "00h 42m 44s", dec: "+41° 16′ 09″", distance: "2.537 Mly", magnitude: "3.44", discovered: "964 AD",
     imageUrl: "", favorites: 0,
     description: "The nearest major galaxy to the Milky Way and the largest member of the Local Group. On a collision course with our own galaxy, expected to merge in roughly 4.5 billion years. Visible to the naked eye from dark sites as a faint smudge spanning six full moons of sky." },
-  { id: "m83", name: "Southern Pinwheel", designation: "M 83 · NGC 5236", category: "galaxy", subcategory: "barred spiral",
+  { id: "messier-83", name: "Southern Pinwheel", designation: "M 83 · NGC 5236", category: "galaxy", subcategory: "barred spiral",
     constellation: "Hydra", ra: "13h 37m 01s", dec: "−29° 51′ 57″", distance: "15.21 Mly", magnitude: "7.54", discovered: "1752",
     imageUrl: "", favorites: 0,
     description: "A grand-design barred spiral seen nearly face-on, one of the closest and brightest of its kind. It has hosted six observed supernovae, more than almost any other galaxy, and its arms blaze with pink star-forming regions." },
-  { id: "m16", name: "Eagle Nebula", designation: "M 16 · NGC 6611", category: "nebula", subcategory: "emission nebula",
+  { id: "messier-16", name: "Eagle Nebula", designation: "M 16 · NGC 6611", category: "nebula", subcategory: "emission nebula",
     constellation: "Serpens", ra: "18h 18m 48s", dec: "−13° 49′ 00″", distance: "5,700 ly", magnitude: "6.0", discovered: "1745",
     imageUrl: "", favorites: 0,
     description: "Home of the Pillars of Creation — towers of cold gas and dust several light-years tall, sculpted by ultraviolet radiation from the young hot stars of the embedded cluster. An active stellar nursery where new suns are condensing right now." },
-  { id: "m42", name: "Orion Nebula", designation: "M 42 · NGC 1976", category: "nebula", subcategory: "diffuse nebula",
+  { id: "messier-42", name: "Orion Nebula", designation: "M 42 · NGC 1976", category: "nebula", subcategory: "diffuse nebula",
     constellation: "Orion", ra: "05h 35m 17s", dec: "−05° 23′ 28″", distance: "1,344 ly", magnitude: "4.0", discovered: "1610",
     imageUrl: "", favorites: 0,
     description: "The brightest nebula in Earth's sky and the closest region of massive star formation. The Trapezium cluster at its heart illuminates the surrounding gas; over 700 stars in various stages of formation have been identified within it." },
-  { id: "m45", name: "Pleiades", designation: "M 45 · Seven Sisters", category: "cluster", subcategory: "open cluster",
+  { id: "messier-45", name: "Pleiades", designation: "M 45 · Seven Sisters", category: "cluster", subcategory: "open cluster",
     constellation: "Taurus", ra: "03h 47m 24s", dec: "+24° 07′ 00″", distance: "444 ly", magnitude: "1.6", discovered: "antiquity",
     imageUrl: "", favorites: 0,
     description: "A young open cluster of hot blue stars less than 100 million years old, drifting through a chance cloud of interstellar dust that reflects their light as a blue haze. Among the nearest clusters and the most obvious to the naked eye." },
-  { id: "ngc5139", name: "Omega Centauri", designation: "NGC 5139", category: "cluster", subcategory: "globular cluster",
+  { id: "ngc-5139", name: "Omega Centauri", designation: "NGC 5139", category: "cluster", subcategory: "globular cluster",
     constellation: "Centaurus", ra: "13h 26m 47s", dec: "−47° 28′ 46″", distance: "17,090 ly", magnitude: "3.9", discovered: "1677",
     imageUrl: "", favorites: 0,
     description: "The largest known globular cluster of the Milky Way: roughly ten million stars packed into a sphere 150 light-years across. Possibly the stripped core of a dwarf galaxy consumed by our own long ago." },
@@ -85,12 +86,12 @@ const CATALOG = [
    at build time). Frames still degrade to the styled placeholder
    if any ever vanish. */
 const IMAGES = {
-  m31:        "https://images-assets.nasa.gov/image/PIA04921/PIA04921~large.jpg",
-  m83:        "https://images-assets.nasa.gov/image/GSFC_20171208_Archive_e001262/GSFC_20171208_Archive_e001262~large.jpg",
-  m16:        "https://images-assets.nasa.gov/image/PIA03096/PIA03096~large.jpg",
-  m42:        "https://images-assets.nasa.gov/image/PIA01322/PIA01322~large.jpg",
-  m45:        "https://images-assets.nasa.gov/image/PIA09262/PIA09262~large.jpg",
-  ngc5139:    "https://images-assets.nasa.gov/image/PIA13125/PIA13125~large.jpg",
+  "messier-31":  "https://images-assets.nasa.gov/image/PIA04921/PIA04921~large.jpg",
+  "messier-83":  "https://images-assets.nasa.gov/image/GSFC_20171208_Archive_e001262/GSFC_20171208_Archive_e001262~large.jpg",
+  "messier-16":  "https://images-assets.nasa.gov/image/PIA03096/PIA03096~large.jpg",
+  "messier-42":  "https://images-assets.nasa.gov/image/PIA01322/PIA01322~large.jpg",
+  "messier-45":  "https://images-assets.nasa.gov/image/PIA09262/PIA09262~large.jpg",
+  "ngc-5139":  "https://images-assets.nasa.gov/image/PIA13125/PIA13125~large.jpg",
   betelgeuse: "https://images-assets.nasa.gov/image/PIA16680/PIA16680~orig.jpg",
   proxima:    "https://images-assets.nasa.gov/image/GSFC_20171208_Archive_e000968/GSFC_20171208_Archive_e000968~large.jpg",
   trappist1e: "https://images-assets.nasa.gov/image/PIA24371/PIA24371~large.jpg",
@@ -100,7 +101,24 @@ const IMAGES = {
   sgra:       "https://images-assets.nasa.gov/image/PIA12348/PIA12348~large.jpg",
   crab:       "https://images-assets.nasa.gov/image/PIA03606/PIA03606~large.jpg",
 };
-CATALOG.forEach(o => { o.imageUrl = IMAGES[o.id] || ""; });
+CATALOG.forEach(prepareMockObject);
+
+/* Give a mock object the same fields an object from BGAPI has, so the
+   rest of the code does not care where an object came from. */
+function prepareMockObject(obj) {
+  obj.imageUrl = IMAGES[obj.id] || "";
+  obj.thumbUrl = obj.imageUrl.replace("~large.jpg", "~medium.jpg");   // the lighter NASA size
+  obj.aliases = obj.designation.split(" · ");
+  obj.credit = "NASA";
+  obj.facts = [];
+  obj.sources = [];
+  /* The mock has no image page, so the full-size NASA file stands in for it */
+  obj.images = obj.imageUrl
+    ? [{ url: obj.imageUrl, thumbUrl: obj.thumbUrl, credit: "NASA", license: "public-domain",
+         sourcePage: obj.imageUrl.replace("~large.jpg", "~orig.jpg") }]
+    : [];
+  obj.hasDetails = true;
+}
 
 const CATEGORY_LABELS = {
   galaxy: "Galaxies", nebula: "Nebulae", cluster: "Clusters", star: "Stars",
@@ -110,12 +128,30 @@ const CATEGORY_LABELS = {
 /* ------------------------------------------------------------
    2. STATE
    ------------------------------------------------------------ */
+/* Old favorites were saved with the mock ids ("m31"). Now we save slugs. */
+const OLD_FAVORITE_IDS = {
+  m31: "messier-31", m83: "messier-83", m16: "messier-16",
+  m42: "messier-42", m45: "messier-45", ngc5139: "ngc-5139",
+};
+
+function loadFavorites() {
+  const saved = JSON.parse(localStorage.getItem("co-favs") || "[]");
+  const slugs = saved.map(id => OLD_FAVORITE_IDS[id] || id);
+  localStorage.setItem("co-favs", JSON.stringify(slugs));
+  return new Set(slugs);
+}
+
 const state = {
   active: new Set(Object.keys(CATEGORY_LABELS)),   // all on
   query: "",
   favOnly: false,                                   // "★ Favorites" pill; starts off on every visit
-  favs: new Set(JSON.parse(localStorage.getItem("co-favs") || "[]")),
+  favs: loadFavorites(),
 };
+
+/* The objects the page shows. They come from BGAPI ("api"), or from the
+   mock CATALOG above when BGAPI does not answer ("mock"). */
+let objects = [];
+let dataSource = "mock";
 
 const $  = (sel, root) => (root || document).querySelector(sel);
 const $$ = (sel, root) => Array.from((root || document).querySelectorAll(sel));
@@ -549,14 +585,120 @@ function starfield2D(canvas) {
 }
 
 /* ------------------------------------------------------------
+   3b. DATA FROM BGAPI — the catalog once at start, one object's
+   details when its page opens. API_BASE is in src/core/api-config.js.
+   ------------------------------------------------------------ */
+
+/* An error with the HTTP status, so the caller can tell a 404 from a 429 */
+class ApiError extends Error {
+  constructor(status, message) {
+    super(message);
+    this.status = status;
+  }
+}
+
+/* GET a JSON answer from BGAPI.
+   cache: "no-cache" makes the browser always ask BGAPI again, sending the
+   ETag it has. BGAPI answers 304 when nothing changed, and the browser
+   uses the copy it already has. */
+async function getJson(path) {
+  const res = await fetch(API_BASE + path, { cache: "no-cache" });
+  if (res.status === 429) {
+    const wait = res.headers.get("Retry-After") || "a few";
+    throw new ApiError(429, "Too many requests. Try again in " + wait + " seconds.");
+  }
+  if (!res.ok) throw new ApiError(res.status, "BGAPI answered " + res.status + ".");
+  return res.json();
+}
+
+/* "2,537,000 ly", or "48.01 Mly" for big numbers */
+function formatDistance(ly) {
+  if (ly == null) return "";
+  if (ly >= 1e6) return (ly / 1e6).toFixed(2) + " Mly";
+  return ly.toLocaleString("en-US", { maximumFractionDigits: 1 }) + " ly";
+}
+
+/* The bigger picture for the hero. ESA, ESO and NOIRLab use the same
+   folder names: thumb300y = small, screen = large. NASA uses ~thumb / ~large.
+   If the guess is wrong, the hero image falls back to the thumbnail. */
+function largerImageUrl(thumbUrl) {
+  return thumbUrl.replace("/thumb300y/", "/screen/").replace("~thumb.", "~large.");
+}
+
+/* One /catalog item → the object shape this page uses */
+function objectFromCatalogItem(item) {
+  return {
+    id: item.slug,
+    name: item.name,
+    aliases: item.aliases || [],
+    designation: (item.aliases || []).join(" · "),
+    category: item.category,
+    subcategory: item.subcategory || "",
+    constellation: item.constellation || "",
+    distance: formatDistance(item.distanceLy),
+    magnitude: item.magnitude == null ? "" : String(item.magnitude),
+    thumbUrl: item.thumbUrl,
+    imageUrl: largerImageUrl(item.thumbUrl),
+    credit: item.credit || "",
+    hasDetails: false,               // ra, dec, images … come from /objects/{slug}
+  };
+}
+
+/* Add the /objects/{slug} answer to the object we already have */
+function addDetails(obj, data) {
+  Object.assign(obj, objectFromCatalogItem({ ...data, thumbUrl: data.images[0].thumbUrl, credit: data.images[0].credit }));
+  obj.ra = data.ra || "";
+  obj.dec = data.dec || "";
+  obj.discovered = data.discovered || "";
+  obj.description = data.description || "";
+  obj.facts = data.facts || [];
+  obj.images = data.images;
+  obj.sources = data.sources || [];
+  obj.hasDetails = true;
+}
+
+/* Show a short message above the grid (or hide it when text is "") */
+function showDataNotice(text) {
+  const notice = $("#dataNotice");
+  notice.textContent = text;
+  notice.hidden = !text;
+}
+
+/* Load the whole catalog once. If BGAPI does not answer, use the mock,
+   so the page is never blank. */
+async function loadCatalog() {
+  try {
+    if (!API_BASE) throw new Error("No API address set");
+    const data = await getJson("/catalog");
+    objects = data.items.map(objectFromCatalogItem);
+    dataSource = "api";
+  } catch (err) {
+    objects = CATALOG;
+    dataSource = "mock";
+    showDataNotice("Live catalog not reachable · showing sample data");
+  }
+}
+
+/* Make text safe to put inside innerHTML (data from the API is not our code) */
+function escapeHtml(text) {
+  return String(text == null ? "" : text)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+
+/* Only http(s) links; anything else becomes an empty link */
+function safeUrl(url) {
+  return /^https?:\/\//.test(url || "") ? escapeHtml(url) : "";
+}
+
+/* ------------------------------------------------------------
    4. CARD GRID
    ------------------------------------------------------------ */
 function frameHTML(obj, small) {
   const tint = CATEGORY_TINTS[obj.category] || "rgba(80,110,180,0.22)";
-  /* cards load the lighter ~medium rendition; hero/detail use full */
-  const thumb = obj.imageUrl.replace("~large.jpg", "~medium.jpg");
-  const img = obj.imageUrl
-    ? `<img src="${thumb}" alt="${obj.name}" loading="lazy"
+  /* cards load the small thumbnail; hero and detail use the big picture */
+  const img = obj.thumbUrl
+    ? `<img src="${safeUrl(obj.thumbUrl)}" alt="${escapeHtml(obj.name + " — " + obj.credit)}" loading="lazy"
          onload="this.classList.add('is-loaded')" onerror="this.remove()">`
     : "";
   return `<div class="uao-frame">
@@ -569,31 +711,40 @@ function frameHTML(obj, small) {
 function cardHTML(obj) {
   const isFav = state.favs.has(obj.id);
   const favCls = isFav ? " is-fav" : "";
-  return `<article class="uao-card brackets" data-id="${obj.id}" tabindex="0"
-            role="button" aria-label="Open ${obj.name} telemetry">
+  const id = escapeHtml(obj.id);
+  const name = escapeHtml(obj.name);
+  const subTag = obj.subcategory ? `<span class="tag">${escapeHtml(obj.subcategory)}</span>` : "";
+  return `<article class="uao-card brackets" data-id="${id}" tabindex="0"
+            role="button" aria-label="Open ${name} telemetry">
     <div style="position:relative">
       ${frameHTML(obj)}
-      <button class="uao-fav${favCls}" data-fav="${obj.id}" aria-pressed="${isFav}"
-              aria-label="Favorite ${obj.name}">
+      <button class="uao-fav${favCls}" data-fav="${id}" aria-pressed="${isFav}"
+              aria-label="Favorite ${name}">
         <i class="bi bi-star${isFav ? "-fill" : ""}"></i>
       </button>
     </div>
     <div class="uao-meta">
-      <h3 class="uao-name">${obj.name}</h3>
-      <div class="uao-desig"><i>${obj.designation}</i></div>
+      <h3 class="uao-name">${name}</h3>
+      <div class="uao-desig"><i>${escapeHtml(obj.designation)}</i></div>
       <div class="uao-tags">
-        <span class="tag tag--cat">${CATEGORY_LABELS[obj.category] || obj.category}</span>
-        <span class="tag">${obj.subcategory}</span>
+        <span class="tag tag--cat">${escapeHtml(CATEGORY_LABELS[obj.category] || obj.category)}</span>
+        ${subTag}
       </div>
     </div>
   </article>`;
 }
 
 /* Does this object pass the current filters, search and favorites toggle? */
+/* Search looks in the name and the aliases. Spaces do not count,
+   so "M31" finds "M 31" and "m 31" finds "M31". */
+function matchesQuery(obj, query) {
+  const noSpaces = (text) => text.toLowerCase().replace(/\s+/g, "");
+  const q = noSpaces(query);
+  return [obj.name, ...obj.aliases].some(text => noSpaces(text).includes(q));
+}
+
 function isVisible(obj) {
-  const q = state.query.toLowerCase();
-  const matchesSearch = !q ||
-    obj.name.toLowerCase().includes(q) || obj.designation.toLowerCase().includes(q);
+  const matchesSearch = !state.query || matchesQuery(obj, state.query);
   const matchesFavs = !state.favOnly || state.favs.has(obj.id);
   return state.active.has(obj.category) && matchesSearch && matchesFavs;
 }
@@ -621,14 +772,14 @@ function emptyHTML() {
    again and the whole grid would flicker. */
 function renderGrid() {
   const grid = $("#uaoGrid");
-  if (!grid.children.length) grid.innerHTML = CATALOG.map(cardHTML).join("");
+  if (!grid.children.length) grid.innerHTML = objects.map(cardHTML).join("");
 
-  const items = CATALOG.filter(isVisible);
+  const items = objects.filter(isVisible);
   $$(".uao-card", grid).forEach(card => {
-    const obj = CATALOG.find(o => o.id === card.dataset.id);
+    const obj = objects.find(o => o.id === card.dataset.id);
     card.hidden = !isVisible(obj);
   });
-  $("#resultCount").textContent = countText(items.length, CATALOG.length);
+  $("#resultCount").textContent = countText(items.length, objects.length);
   const empty = $("#emptyState");
   empty.innerHTML = emptyHTML();
   empty.style.display = items.length ? "none" : "block";
@@ -637,16 +788,23 @@ function renderGrid() {
 /* ------------------------------------------------------------
    4b. HERO — full-bleed featured-observation carousel
    ------------------------------------------------------------ */
-const FEATURED = ["m16", "jupiter", "m31", "sgra", "m45", "crab"];
+const MOCK_FEATURED = ["messier-16", "jupiter", "messier-31", "sgra", "messier-45", "crab"];
 let heroIdx = 0, heroTimer = null;
+let FEATURED = [];             // the objects in the hero, set by initHero()
+
+/* Mock: the hand-picked list. BGAPI: the first 6 objects of the catalog. */
+function pickFeatured() {
+  if (dataSource === "mock") return MOCK_FEATURED.map(id => objects.find(o => o.id === id));
+  return objects.slice(0, 6);
+}
 
 function heroShow(i) {
   heroIdx = (i + FEATURED.length) % FEATURED.length;
-  const obj = CATALOG.find(o => o.id === FEATURED[heroIdx]);
+  const obj = FEATURED[heroIdx];
   $$(".hero-slide").forEach((s, k) => s.classList.toggle("is-active", k === heroIdx));
   $$(".hero-dot").forEach((d, k) => d.classList.toggle("is-active", k === heroIdx));
   $("#heroName").textContent = obj.name;
-  $("#heroDesig").textContent = obj.designation + " · " + obj.distance;
+  $("#heroDesig").textContent = [obj.designation, obj.distance].filter(Boolean).join(" · ");
 }
 
 function heroPlay() {
@@ -655,15 +813,16 @@ function heroPlay() {
 }
 
 function initHero() {
+  FEATURED = pickFeatured();
   const slides = $("#heroSlides");
-  slides.innerHTML = FEATURED.map((id, k) => {
-    const obj = CATALOG.find(o => o.id === id);
-    return `<div class="hero-slide${k === 0 ? " is-active" : ""}">
-      <img src="${obj.imageUrl}" alt="${obj.name}"
-           ${k === 0 ? "" : 'loading="lazy"'} onerror="this.remove()">
-    </div>`;
-  }).join("");
-  $("#heroDots").innerHTML = FEATURED.map((id, k) =>
+  /* If the big picture fails, try the thumbnail once, then give up */
+  slides.innerHTML = FEATURED.map((obj, k) => `<div class="hero-slide${k === 0 ? " is-active" : ""}">
+      <img src="${safeUrl(obj.imageUrl)}" alt="${escapeHtml(obj.name + " — " + obj.credit)}"
+           data-fallback="${safeUrl(obj.thumbUrl)}"
+           ${k === 0 ? "" : 'loading="lazy"'}
+           onerror="if (this.dataset.fallback && this.src !== this.dataset.fallback) this.src = this.dataset.fallback; else this.remove()">
+    </div>`).join("");
+  $("#heroDots").innerHTML = FEATURED.map((obj, k) =>
     `<button class="hero-dot${k === 0 ? " is-active" : ""}" data-hero="${k}"
        aria-label="Show observation ${k + 1}"></button>`).join("");
 
@@ -674,7 +833,7 @@ function initHero() {
     if (d) { heroShow(+d.dataset.hero); heroPlay(); }
   });
   $("#heroOpen").addEventListener("click", () =>
-    location.hash = objectLink(FEATURED[heroIdx]));
+    location.hash = objectLink(FEATURED[heroIdx].id));
   const hero = $("#hero");
   hero.addEventListener("mouseenter", () => clearInterval(heroTimer));
   hero.addEventListener("mouseleave", heroPlay);
@@ -729,11 +888,6 @@ function objectLink(id) {
   return "obj/" + id;
 }
 
-/* The full-size NASA file: "~orig.jpg" instead of "~large.jpg" */
-function originalImageUrl(obj) {
-  return obj.imageUrl.replace("~large.jpg", "~orig.jpg");
-}
-
 /* The id of the object that is open now, or "" */
 function openObjectId() {
   const h = location.hash.replace("#", "");
@@ -744,8 +898,8 @@ function openObjectId() {
    gallery shows now (same filters and search). Wraps at both ends. */
 function stepDetail(step) {
   const id = openObjectId();
-  let list = CATALOG.filter(isVisible);
-  if (!list.some(o => o.id === id)) list = CATALOG;    // opened from outside the list
+  let list = objects.filter(isVisible);
+  if (!list.some(o => o.id === id)) list = objects;    // opened from outside the list
   const i = list.findIndex(o => o.id === id);
   const next = list[(i + step + list.length) % list.length];
   if (next.id !== id) location.hash = objectLink(next.id);
@@ -757,25 +911,36 @@ function closeDetail() {
   showView(lastRoute);
 }
 
-function openDetail(id) {
-  const obj = CATALOG.find(o => o.id === id);
-  if (!obj) return;
-  const img = $("#detailImg");
-  const panel = $("#view-detail");
-  /* Clean up the last object first:
-     - drop the old picture, or the browser keeps showing it while the new one loads
-     - drop the old entrance classes, or the browser replays them the moment the
-       page shows again (that would fade in the old picture) */
-  img.removeAttribute("src");
-  img.classList.remove("is-arriving");
-  panel.classList.remove("is-entering");
-  panel.classList.add("is-waiting");
-  img.alt = obj.name;
-  $("#detailImgLink").href = originalImageUrl(obj);
-  $("#detailTitle").textContent = obj.name;
-  $("#detailDesig").textContent = obj.designation;
-  prepareTyping($("#detailDesc"), obj.description);
+/* Open one object's page. With BGAPI, the details (all photos, ra, dec …)
+   come from /objects/{slug} the first time the page opens. */
+async function openDetail(id) {
+  let obj = objects.find(o => o.id === id);
+  if (dataSource === "mock") {
+    if (obj) showDetail(obj, "");
+    else showNotFound(id);
+    return;
+  }
+  if (obj && obj.hasDetails) { showDetail(obj, ""); return; }
 
+  try {
+    const data = await getJson("/objects/" + encodeURIComponent(id));
+    if (!obj) {                       // not in the catalog we loaded (a newer import)
+      obj = objectFromCatalogItem({ ...data, thumbUrl: data.images[0].thumbUrl, credit: data.images[0].credit });
+      objects.push(obj);
+    }
+    addDetails(obj, data);
+    if (openObjectId() !== id) return;          // the reader moved on while we waited
+    showDetail(obj, "");
+  } catch (err) {
+    if (openObjectId() !== id) return;
+    if (err.status === 404) { showNotFound(id); return; }
+    if (obj) showDetail(obj, "Full record not loaded: " + err.message);   // show what we have
+    else showNotFound(id);
+  }
+}
+
+/* The telemetry cells: only the fields this object has, then its facts */
+function telemetryRows(obj) {
   const rows = [
     ["Category", CATEGORY_LABELS[obj.category] || obj.category],
     ["Class", obj.subcategory],
@@ -786,15 +951,83 @@ function openDetail(id) {
     ["Magnitude", obj.magnitude],
     ["First recorded", obj.discovered],
   ];
-  /* --i is each cell's position; the CSS uses it to bring the cells in one by one */
-  $("#telemetry").innerHTML = rows.map(([k, v], i) =>
-    `<div style="--i:${i}"><dt>${k}</dt><dd>${v}</dd></div>`).join("");
+  (obj.facts || []).forEach(f => rows.push([f.label, [f.value, f.unit].filter(Boolean).join(" ")]));
+  return rows.filter(([, value]) => value);
+}
 
-  const related = CATALOG.filter(o => o.category === obj.category && o.id !== obj.id);
+/* Show one photo of the object as the big picture, with its credit */
+function showPhoto(obj, index) {
+  const photo = obj.images[index];
+  const img = $("#detailImg");
+  img.alt = obj.name + " — " + photo.credit;
+  $("#detailImgLink").href = photo.sourcePage || photo.url;
+  $("#detailCredit").textContent = photo.credit + " · " + photo.license;
+  $$("#photoList .photo-item").forEach((item, k) => item.classList.toggle("is-current", k === index));
+  return photo.url;
+}
+
+/* Every photo of the object, each with its own credit, license and source page.
+   One object can have hundreds; the small pictures load only when scrolled to. */
+function photoListHTML(obj) {
+  return obj.images.map((photo, k) => `<figure class="photo-item">
+      <button class="photo-thumb" data-photo="${k}" aria-label="Show photo ${k + 1} as the big picture">
+        <img src="${safeUrl(photo.thumbUrl || photo.url)}" alt="${escapeHtml(obj.name + " — " + photo.credit)}" loading="lazy"
+             onload="this.classList.add('is-loaded')">
+      </button>
+      <figcaption>
+        <span class="photo-credit">${escapeHtml(photo.credit)}</span>
+        <span class="photo-license">${escapeHtml(photo.license)}
+          ${photo.sourcePage ? `· <a href="${safeUrl(photo.sourcePage)}" target="_blank" rel="noopener">source</a>` : ""}</span>
+      </figcaption>
+    </figure>`).join("");
+}
+
+/* Where the data came from (OpenNGC, Wikidata …) */
+function sourceListHTML(obj) {
+  return (obj.sources || []).map(s => `<li>
+      <a href="${safeUrl(s.url)}" target="_blank" rel="noopener">${escapeHtml(s.catalog)}</a>
+      <span>${escapeHtml(s.catalogId)} · ${escapeHtml(s.license)}</span>
+    </li>`).join("");
+}
+
+function showDetail(obj, noticeText) {
+  const img = $("#detailImg");
+  const panel = $("#view-detail");
+  /* Clean up the last object first:
+     - drop the old picture, or the browser keeps showing it while the new one loads
+     - drop the old entrance classes, or the browser replays them the moment the
+       page shows again (that would fade in the old picture) */
+  img.removeAttribute("src");
+  img.classList.remove("is-arriving");
+  panel.classList.remove("is-entering");
+  panel.classList.add("is-waiting");
+  $("#detailTitle").textContent = obj.name;
+  $("#detailDesig").textContent = obj.designation;
+  $("#detailNotice").textContent = noticeText;
+  $("#detailNotice").hidden = !noticeText;
+  $("#detailDesc").hidden = !obj.description;
+  prepareTyping($("#detailDesc"), obj.description || "");
+
+  /* --i is each cell's position; the CSS uses it to bring the cells in one by one */
+  $("#telemetry").innerHTML = telemetryRows(obj).map(([k, v], i) =>
+    `<div style="--i:${i}"><dt>${escapeHtml(k)}</dt><dd>${escapeHtml(v)}</dd></div>`).join("");
+
+  /* The photos (BGAPI) — or only the one we have, when the details failed */
+  const hasPhotos = obj.images && obj.images.length;
+  const photos = hasPhotos ? obj.images : [{ url: obj.imageUrl, thumbUrl: obj.thumbUrl, credit: obj.credit, license: "" }];
+  obj.images = photos;
+  $("#photoList").innerHTML = photoListHTML(obj);
+  $("#photoLabel").textContent = photos.length === 1 ? "1 photo" : photos.length + " photos";
+  $("#photoWrap").hidden = photos.length < 2;
+  $("#sourceList").innerHTML = sourceListHTML(obj);
+  $("#sourceWrap").hidden = !(obj.sources || []).length;
+  const pictureUrl = showPhoto(obj, 0);
+
+  const related = objects.filter(o => o.category === obj.category && o.id !== obj.id);
   $("#relatedRail").innerHTML = related.map(o =>
-    `<div class="related-item brackets" data-id="${o.id}" tabindex="0" role="button"
-       aria-label="Open ${o.name}">
-       ${frameHTML(o, true)}<h4 class="uao-name">${o.name}</h4>
+    `<div class="related-item brackets" data-id="${escapeHtml(o.id)}" tabindex="0" role="button"
+       aria-label="Open ${escapeHtml(o.name)}">
+       ${frameHTML(o, true)}<h4 class="uao-name">${escapeHtml(o.name)}</h4>
      </div>`).join("");
   $("#relatedLabel").textContent = "More in " + (CATEGORY_LABELS[obj.category] || obj.category);
   $("#relatedWrap").style.display = related.length ? "block" : "none";
@@ -803,11 +1036,29 @@ function openDetail(id) {
   panel.scrollTop = 0;
   /* Everything stays hidden (is-waiting); once the picture is here, the
      whole entrance plays together, the same in every browser. */
-  loadPicture(img, obj.imageUrl, () => {
+  loadPicture(img, pictureUrl, () => {
     panel.classList.remove("is-waiting");
     replayAnimation(panel, "is-entering");    // title and data slide in
     replayAnimation(img, "is-arriving");      // picture comes into focus
   });
+}
+
+/* A click on a small photo makes it the big picture */
+function initPhotoList() {
+  $("#photoList").addEventListener("click", (e) => {
+    const thumb = e.target.closest("[data-photo]");
+    if (!thumb) return;
+    const obj = objects.find(o => o.id === openObjectId());
+    if (!obj) return;
+    $("#detailImg").src = showPhoto(obj, +thumb.dataset.photo);
+    $("#view-detail").scrollTo({ top: 0, behavior: "smooth" });
+  });
+}
+
+/* The page for a link to an object that does not exist */
+function showNotFound(id) {
+  $("#notFoundSlug").textContent = id;
+  showView("notfound");
 }
 
 /* ------------------------------------------------------------
@@ -919,7 +1170,7 @@ function showView(name) {
   $$(".side-link[data-route]").forEach(l =>
     l.classList.toggle("is-active", l.dataset.route === name));
   document.body.classList.toggle("detail-open", name === "detail");
-  if (name !== "detail") lastRoute = name;
+  if (name !== "detail" && name !== "notfound") lastRoute = name;
   if (leavingDetail) window.scrollTo(0, galleryScrollY);   // back where the reader was
 }
 
@@ -1033,12 +1284,16 @@ function initAuthStubs() {
 document.addEventListener("DOMContentLoaded", () => {
   initStarfield();
   initShell();
-  initHero();
   initFilters();
   initDelegation();
+  initPhotoList();
   initAuthStubs();
   syncPills();
-  renderGrid();
-  window.addEventListener("hashchange", route);
-  route();
+  $("#resultCount").textContent = "Loading catalog…";
+  loadCatalog().then(() => {
+    initHero();
+    renderGrid();
+    window.addEventListener("hashchange", route);
+    route();
+  });
 });

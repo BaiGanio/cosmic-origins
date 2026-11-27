@@ -15,8 +15,8 @@ for (const width of [1440, 390]) {
       expect(consoleErrors).toEqual([]);
     });
 
-    test("detail #obj/m31 loads with no console errors", async ({ page, consoleErrors }) => {
-      await openDetail(page, "m31");
+    test("detail #obj/messier-31 loads with no console errors", async ({ page, consoleErrors }) => {
+      await openDetail(page, "messier-31");
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(500);
       expect(consoleErrors).toEqual([]);

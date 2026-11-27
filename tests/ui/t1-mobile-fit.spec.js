@@ -32,7 +32,7 @@ for (const width of [360, 390, 768]) {
 test.describe("width 360", () => {
   test.use({ viewport: VIEWPORTS[360] });
 
-  for (const id of ["m31", "trappist1e"]) {
+  for (const id of ["messier-31", "trappist1e"]) {
     test("T1.2 detail #obj/" + id + ": telemetry fits, 2 columns", async ({ page }) => {
       await openDetail(page, id);
       expect(await hasNoSideScroll(page)).toBe(true);

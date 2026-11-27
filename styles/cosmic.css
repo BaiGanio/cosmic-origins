@@ -844,7 +844,8 @@ html.opening-detail body { visibility: hidden; }
   50%, 100% { opacity: 0; }
 }
 
-.related-label {
+.related-label,
+.section-label {                     /* the same small heading for photos and data sources */
   font-family: var(--f-mono);
   font-size: 10px;
   letter-spacing: 0.2em;
@@ -984,3 +985,94 @@ html.opening-detail body { visibility: hidden; }
   }
   #starfield { display: none; }
 }
+
+/* ============================================================
+   BGAPI DATA — notices, photo credits, photo list, sources, 404
+   ============================================================ */
+
+/* "Live catalog not reachable" — a small data readout, not an alarm */
+.data-notice {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--signal);
+  border: 1px solid var(--hairline);
+  background: var(--signal-dim);
+  border-radius: 2px;
+  padding: 6px 10px;
+  margin: 0 0 18px;
+}
+.data-notice[hidden] { display: none; }
+
+/* the credit of the big photo, under the name. Credits can have line breaks. */
+.detail-credit {
+  font-family: var(--f-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  color: var(--text-lo);
+  white-space: pre-line;
+  margin-top: 6px;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.8);
+}
+
+/* every photo of the object, with its own credit */
+.photo-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+  max-height: 70vh;                   /* hundreds of photos scroll inside the list */
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.photo-item { margin: 0; }
+.photo-thumb {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  padding: 0;
+  border: 1px solid var(--hairline);
+  border-radius: 2px;
+  background: var(--deep);
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color var(--t-fast) var(--ease-hud);
+}
+.photo-thumb:hover, .photo-thumb:focus-visible { border-color: var(--ion); }
+.photo-item.is-current .photo-thumb { border-color: var(--ion); box-shadow: 0 0 0 1px var(--ion); }
+.photo-thumb img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity var(--t-med) var(--ease-hud);
+}
+.photo-thumb img.is-loaded { opacity: 1; }
+.photo-item figcaption {
+  font-family: var(--f-mono);
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--text-lo);
+  margin-top: 6px;
+}
+.photo-credit { display: block; white-space: pre-line; }
+.photo-license { display: block; color: var(--text-mute); }
+.photo-license a, .source-list a { color: var(--ion); }
+
+.source-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 24px;
+  font-family: var(--f-mono);
+  font-size: 11px;
+  color: var(--text-lo);
+}
+.source-list span { color: var(--signal); margin-left: 6px; }
+
+#photoWrap[hidden], #sourceWrap[hidden] { display: none; }
+
+.notfound p { color: var(--text-lo); }
+.notfound code { font-family: var(--f-mono); color: var(--signal); }

@@ -33,7 +33,7 @@ for (const width of [1440, 390]) {
     test.use({ viewport: VIEWPORTS[width] });
 
     test("T3.1 name and designation on screen without scrolling; data one tap below", async ({ page }) => {
-      await openDetail(page, "m16");
+      await openDetail(page, "messier-16");
       await expect(page.locator("#detailTitle")).toHaveText("Eagle Nebula");
       expect(await isInViewport(page.locator("#detailTitle"))).toBe(true);
       expect(await isInViewport(page.locator("#detailDesig"))).toBe(true);
@@ -42,7 +42,7 @@ for (const width of [1440, 390]) {
     });
 
     test("T3.4 the label says 'Catalog record', not LIVE", async ({ page }) => {
-      await openDetail(page, "m16");
+      await openDetail(page, "messier-16");
       await expect(page.locator(".detail-live")).toHaveText(/^Catalog record$/i);
       expect(await page.locator("#view-detail").innerText()).not.toMatch(/\bLIVE\b/i);
     });
@@ -76,7 +76,7 @@ for (const width of [1440, 390]) {
     });
 
     test("T3.8 related rail: 'More in Galaxies', tiles about phone-card size", async ({ page }) => {
-      await openDetail(page, "m31");
+      await openDetail(page, "messier-31");
       await expect(page.locator(".related-label")).toHaveText("More in Galaxies");
       const tiles = page.locator("#relatedRail .related-item");
       await expect(tiles).toHaveCount(1);
@@ -91,7 +91,7 @@ test.describe("width 1440", () => {
   test.use({ viewport: VIEWPORTS[1440] });
 
   test("T3.2 the photo is a link to the original NASA file, in a new tab", async ({ page, context }) => {
-    await openDetail(page, "m16");
+    await openDetail(page, "messier-16");
     const link = page.locator("#detailImgLink");
     await expect(link).toHaveAttribute("href", "https://images-assets.nasa.gov/image/PIA03096/PIA03096~orig.jpg");
     await expect(link).toHaveAttribute("target", "_blank");
@@ -108,20 +108,20 @@ test.describe("width 1440", () => {
     await openGallery(page);
     await onlyCategories(page, ["nebula"]);
     await expect(visibleCards(page)).toHaveCount(2);
-    await openFromGallery(page, "m16");
+    await openFromGallery(page, "messier-16");
 
     await page.keyboard.press("ArrowRight");
-    await expect(page).toHaveURL(/#obj\/m42$/);
+    await expect(page).toHaveURL(/#obj\/messier-42$/);
     await expect(page.locator("#detailTitle")).toHaveText("Orion Nebula");
     await page.keyboard.press("ArrowRight");
-    await expect(page).toHaveURL(/#obj\/m16$/);           // wraps to the start
+    await expect(page).toHaveURL(/#obj\/messier-16$/);           // wraps to the start
     await page.keyboard.press("ArrowLeft");
-    await expect(page).toHaveURL(/#obj\/m42$/);           // wraps to the end
+    await expect(page).toHaveURL(/#obj\/messier-42$/);           // wraps to the end
 
     await page.locator("#detailNext").click();
-    await expect(page).toHaveURL(/#obj\/m16$/);
+    await expect(page).toHaveURL(/#obj\/messier-16$/);
     await page.locator("#detailPrev").click();
-    await expect(page).toHaveURL(/#obj\/m42$/);
+    await expect(page).toHaveURL(/#obj\/messier-42$/);
   });
 
   test("T3.7 a list of 1: next stays on the same object", async ({ page }) => {
@@ -167,7 +167,7 @@ for (const width of [1440, 1024, 390]) {
     test.use({ viewport: { width, height: 900 } });
 
     test("T3.3 telemetry has full rows, no empty filler cells", async ({ page }) => {
-      await openDetail(page, "m31");
+      await openDetail(page, "messier-31");
       const lefts = await page.locator("#telemetry > div").evaluateAll(els =>
         els.map(el => Math.round(el.getBoundingClientRect().left)));
       const columns = new Set(lefts).size;
