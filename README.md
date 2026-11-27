@@ -12,8 +12,8 @@ _A record of humanity's — and its machines' — discoveries across the univers
 - Filter by category, search by name. "All" turns every category on, or clears them all
 - Detail page for each object: Esc goes back, ← / → (or the ‹ › buttons) go to the previous / next object in your filtered list, a click on the photo opens the original NASA file
 - Favorite star on each card. Favorites stay in your browser (`localStorage`, key `co-favs`)
-- **No accounts.** The login and register forms are visual only. The platform brief removes them.
-- Data is a mock `CATALOG` list inside `src/ui/cosmic.js`
+- **No accounts.** No login, no sign-up, no cookies. A slim top bar holds the brand (back to the gallery) and the Ambience switch.
+- Data comes from BGAPI only. If BGAPI does not answer, or has no objects yet, the page says so in one line and shows no cards
 
 ## Where it is going
 
@@ -70,7 +70,7 @@ deploy.
 cosmic-origins/
 ├── index.html                           # The one page; loads only src/ui/cosmic.js
 ├── src/
-│   ├── ui/cosmic.js                     # App shell: mock CATALOG, grid, detail, favorites
+│   ├── ui/cosmic.js                     # App shell: loads BGAPI, grid, detail, favorites
 │   └── models/UniversalAstronomicalObject.js   # UAO data model (reference shape)
 ├── styles/cosmic.css                    # Design system and all styles
 ├── tests/                               # Playwright UI tests (dev only)

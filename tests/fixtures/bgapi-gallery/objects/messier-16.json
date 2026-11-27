@@ -1,0 +1,29 @@
+{
+  "slug": "messier-16",
+  "name": "Eagle Nebula",
+  "aliases": [
+    "M 16",
+    "NGC 6611"
+  ],
+  "category": "nebula",
+  "subcategory": "emission nebula",
+  "constellation": "Serpens",
+  "magnitude": 6,
+  "distanceLy": 5700,
+  "ra": "18h 18m 48s",
+  "dec": "−13° 49′ 00″",
+  "discovered": "1745",
+  "description": "Home of the Pillars of Creation — towers of cold gas and dust several light-years tall, sculpted by ultraviolet radiation from the young hot stars of the embedded cluster. An active stellar nursery where new suns are condensing right now.",
+  "tags": [],
+  "facts": [],
+  "images": [
+    {
+      "url": "https://images-assets.nasa.gov/image/PIA03096/PIA03096~large.jpg",
+      "thumbUrl": "https://images-assets.nasa.gov/image/PIA03096/PIA03096~thumb.jpg",
+      "credit": "NASA",
+      "license": "public-domain",
+      "sourcePage": "https://images-assets.nasa.gov/image/PIA03096/PIA03096~orig.jpg"
+    }
+  ],
+  "sources": []
+}

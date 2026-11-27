@@ -30,8 +30,8 @@ Direction (approved 2026-11-24, see `docs/briefs/cosmic-origins-platform.md`): t
 backend moves to the BaiGanio platform — data from BGAPI
 (`https://api.baiganio.io/api/cosmic`). **No user accounts** for now: no login, no
 sign-up; favorites stay in `localStorage`. Only objects with a real photo are shown; image files stay on
-NASA/ESA/ESO/NOIRLab servers. The catalog already loads from BGAPI; keep the
-`CATALOG` mock shape as the fallback. Open work is tracked as GitHub issues (see Issues below). Data import is BGAPI's job, not this repo's (#3 closed).
+NASA/ESA/ESO/NOIRLab servers. All data comes from BGAPI; there is no mock catalog
+(change request for the brief: `docs/change-requests/2026-11-27-no-mock-fallback.md`). Open work is tracked as GitHub issues (see Issues below). Data import is BGAPI's job, not this repo's (#3 closed).
 
 ## Co-pilot Contract
 
@@ -57,7 +57,8 @@ NASA/ESA/ESO/NOIRLab servers. The catalog already loads from BGAPI; keep the
 npx serve .                       # serve locally (or just open index.html)
 node --check src/ui/cosmic.js     # syntax-check any touched JS file
 npm ci && npx playwright install  # once: test tooling + browsers
-npm test                          # UI tests: Chromium, Firefox, WebKit
+npx playwright test tests/ui/<file> --project=chromium   # while coding: 1 browser, only what you touch
+npm test                          # when done: UI tests in Chromium, Firefox, WebKit (once)
 ```
 
 The app has no build, no bundler, no lint. Test tooling (Playwright) lives in
@@ -68,7 +69,7 @@ entire page, which is why `node --check` is non-negotiable.
 ## Tech Stack
 
 - **Runtime**: global `<script>` tags in `index.html` — no modules, load order matters
-- **Backend**: BGAPI `/api/cosmic` (local dev only so far); the mock `CATALOG` is the fallback when it does not answer
+- **Backend**: BGAPI `/api/cosmic` (local dev only so far); when it does not answer, the page shows a one-line notice and no cards
 - **Data & imagery**: NASA images API (`images-api.nasa.gov`) today; ESA and other
   free open catalogs planned as sources (BGAPI imports them; this repo only reads)
 - **Testing**: Playwright Test, offline (NASA + CDN served from local files) — see
@@ -85,21 +86,21 @@ only port BGAPI's dev CORS allows). Tests fake BGAPI: `api` option in `tests/hel
 ## Database
 
 None yet. `src/models/UniversalAstronomicalObject.js` (UAO) is the shape every source
-catalog gets parsed into. The shell (`src/ui/cosmic.js`) loads `GET /catalog` from BGAPI
-and falls back to the mock `CATALOG` const, whose fields mirror the UAO model.
+catalog gets parsed into. The shell (`src/ui/cosmic.js`) loads `GET /catalog` from BGAPI;
+`objectFromCatalogItem()` turns each item into the shape the page uses.
 Favorites live in localStorage (key `co-favs`); no user accounts for now.
 
 ## Module Coupling Map
 
 | Coupling | Why |
 |----------|-----|
-| `src/ui/cosmic.js` `CATALOG` mock ↔ `src/models/UniversalAstronomicalObject.js` | Mock field names mirror the UAO schema; renaming a UAO field silently breaks the planned BGAPI wiring |
-| `index.html` `data-stub` forms ↔ `initAuthStubs()` in `cosmic.js` | The brief removes both together |
+| `objectFromCatalogItem()` / `addDetails()` in `cosmic.js` ↔ the object shape in the brief | They read BGAPI field names (`slug`, `aliases`, `distanceLy` …); a contract change must change them too |
+| `tests/fixtures/bgapi*/` ↔ the object shape in the brief | Fake BGAPI answers for the tests; keep them in the contract shape |
 | `styles/cosmic.css` tokens ↔ classes used in `index.html` / `cosmic.js` | `brackets`, `--ion` / `--signal` roles, `--ease-hud` motion — UI code must consume tokens, never raw values |
 
 ## Security Model
 
-- No accounts, no login: the `data-stub` forms are visual only.
+- No accounts, no login, no forms, no cookies (#4 removed the old visual-only forms).
 - Client-only app — nothing in this repo can enforce access control; assume all repo
   code is public. Access control lives in BGAPI.
 - No secrets belong in this repo.
@@ -164,6 +165,7 @@ gitignored local scratch (raw downloads in `var/data/`); never put docs there.
 | Open work (what to do next) | GitHub issues: `gh issue list` (order rules: § Issues) |
 | Roadmap: later-stage ideas and history | `docs/follow-ups.md` (reconstructed 2026-07-10 — the original was lost) |
 | Brief: move to BGAPI + Keycloak (contract, steps, checks) | `docs/briefs/cosmic-origins-platform.md` |
+| Contract changes asked from the platform team (open until the brief is updated) | `docs/change-requests/` |
 | Data sources, licenses, image rules | `docs/data-sources.md` |
 | Old plan, partly superseded (fetch/normalize steps still apply) | `docs/plans/real-data-pipeline.md` + `-tests.md` |
 | Design-system notes (tokens, type roles, motion) | token block at top of `styles/cosmic.css` (the follow-ups copy was lost) |

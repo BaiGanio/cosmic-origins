@@ -1,0 +1,28 @@
+{
+  "slug": "europa",
+  "name": "Europa",
+  "aliases": [
+    "Jupiter II"
+  ],
+  "category": "solar_system",
+  "subcategory": "icy moon",
+  "constellation": "—",
+  "magnitude": 5.29,
+  "distanceLy": null,
+  "ra": "ephemeris",
+  "dec": "ephemeris",
+  "discovered": "1610",
+  "description": "An ice-shelled moon hiding a global saltwater ocean with more liquid water than all of Earth's seas. Tidal flexing keeps the ocean liquid, making Europa one of the most promising places to search for life beyond Earth.",
+  "tags": [],
+  "facts": [],
+  "images": [
+    {
+      "url": "https://images-assets.nasa.gov/image/PIA17043/PIA17043~large.jpg",
+      "thumbUrl": "https://images-assets.nasa.gov/image/PIA17043/PIA17043~thumb.jpg",
+      "credit": "NASA",
+      "license": "public-domain",
+      "sourcePage": "https://images-assets.nasa.gov/image/PIA17043/PIA17043~orig.jpg"
+    }
+  ],
+  "sources": []
+}

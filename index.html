@@ -31,53 +31,25 @@
 
   <div class="app-shell">
 
-    <!-- ================= SIDEBAR ================= -->
-    <aside class="sidebar" id="sidebar">
-      <div class="side-head">
-        <a class="brand" href="#" aria-label="Cosmic Origins home">
-          <svg class="brand-mark" width="34" height="34" viewBox="0 0 34 34" fill="none" aria-hidden="true">
-            <circle cx="17" cy="17" r="6" stroke="#7dd3e8" stroke-width="1.2"/>
-            <ellipse cx="17" cy="17" rx="14" ry="5.5" stroke="#ffc46b" stroke-width="0.9" transform="rotate(-24 17 17)"/>
-            <circle cx="28.5" cy="11.5" r="1.6" fill="#ffc46b"/>
-          </svg>
-          <span class="brand-text">
-            <span class="brand-name">Cosmic Origins</span><br>
-            <span class="brand-sub">Unified Data Hub</span>
-          </span>
-        </a>
-      </div>
-
-      <nav class="side-nav" aria-label="Primary">
-        <button class="side-link" data-route="gallery" onclick="location.hash=''">
-          <i class="bi bi-grid-3x3-gap"></i><span>Gallery</span>
-        </button>
-        <button class="side-link" data-route="login" onclick="location.hash='login'">
-          <i class="bi bi-person-badge"></i><span>Login</span>
-        </button>
-        <button class="side-link" data-route="register" onclick="location.hash='register'">
-          <i class="bi bi-person-plus"></i><span>Register</span>
-        </button>
-      </nav>
-
-      <div class="side-foot">
-        <button class="side-link" id="ambienceBtn">
-          <i class="bi bi-star-half"></i><span id="ambienceLabel">Ambience on</span>
-        </button>
-      </div>
-
-      <!-- Bug B fix: collapse tab docked on the sidebar's own border -->
-      <button class="side-collapse" id="collapseBtn" aria-expanded="true"
-              aria-label="Collapse sidebar" title="Collapse sidebar">
-        <i class="bi bi-chevron-left"></i>
+    <!-- ================= TOP BAR: brand (= gallery link) + Ambience ================= -->
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Cosmic Origins, back to the gallery">
+        <svg class="brand-mark" width="30" height="30" viewBox="0 0 34 34" fill="none" aria-hidden="true">
+          <circle class="mark-ion" cx="17" cy="17" r="6" stroke-width="1.2"/>
+          <ellipse class="mark-signal" cx="17" cy="17" rx="14" ry="5.5" stroke-width="0.9" transform="rotate(-24 17 17)"/>
+          <circle class="mark-signal-dot" cx="28.5" cy="11.5" r="1.6"/>
+        </svg>
+        <span class="brand-name">Cosmic Origins</span>
+      </a>
+      <div class="topbar-eyebrow">The unified data hub of the <em>known universe</em></div>
+      <button class="ambience-btn" id="ambienceBtn" aria-pressed="true"
+              title="Moving starfield in the background">
+        <i class="bi bi-star-half" aria-hidden="true"></i><span>Ambience</span>
       </button>
-    </aside>
+    </header>
 
     <!-- ================= MAIN ================= -->
     <main class="content">
-      <header class="topbar">
-        <div class="topbar-eyebrow">The unified data hub of the <em>known universe</em></div>
-        <div class="system-clock" id="systemClock" aria-live="off">UTC --:--:--</div>
-      </header>
 
       <!-- ---------- GALLERY ---------- -->
       <section class="view is-active" id="view-gallery" aria-label="Object gallery">
@@ -132,7 +104,7 @@
           </a>
           <div class="hero-scrim"></div>
           <button class="detail-back" id="detailBack">◂ Back to gallery</button>
-          <span class="system-clock detail-live">Catalog record</span>
+          <span class="detail-live">Catalog record</span>
           <div class="detail-caption">
             <h2 class="detail-title" id="detailTitle"></h2>
             <div class="detail-desig" id="detailDesig"></div>
@@ -166,57 +138,17 @@
 
       <!-- ---------- NOT FOUND: a link to an object that does not exist ---------- -->
       <section class="view" id="view-notfound" aria-label="Object not found">
-        <div class="auth-wrap brackets notfound">
-          <div class="auth-eyebrow">404 · no signal</div>
-          <h2 class="auth-title">Object not found</h2>
+        <div class="panel-wrap brackets notfound">
+          <div class="panel-eyebrow">404 · no signal</div>
+          <h2 class="panel-title">Object not found</h2>
           <p>The catalog has no object called <code id="notFoundSlug"></code>.</p>
           <button class="search-btn" onclick="location.hash=''">Back to gallery</button>
         </div>
       </section>
 
-      <!-- ---------- LOGIN ---------- -->
-      <section class="view" id="view-login" aria-label="Login">
-        <form class="auth-wrap brackets" data-stub>
-          <div class="auth-eyebrow">Crew access</div>
-          <h2 class="auth-title">Log in</h2>
-          <div class="field">
-            <label for="loginEmail">Email</label>
-            <input id="loginEmail" type="email" autocomplete="email" required>
-          </div>
-          <div class="field">
-            <label for="loginPass">Password</label>
-            <input id="loginPass" type="password" autocomplete="current-password" required>
-          </div>
-          <button class="search-btn auth-submit" type="submit">Log in</button>
-          <div class="auth-alt">No account? <a href="#register">Register</a></div>
-          <div class="auth-note">▸ Identity service link pending — see follow-ups.md</div>
-        </form>
-      </section>
-
-      <!-- ---------- REGISTER ---------- -->
-      <section class="view" id="view-register" aria-label="Register">
-        <form class="auth-wrap brackets" data-stub>
-          <div class="auth-eyebrow">Crew access</div>
-          <h2 class="auth-title">Register</h2>
-          <div class="field">
-            <label for="regName">Call sign (display name)</label>
-            <input id="regName" type="text" autocomplete="nickname" required>
-          </div>
-          <div class="field">
-            <label for="regEmail">Email</label>
-            <input id="regEmail" type="email" autocomplete="email" required>
-          </div>
-          <div class="field">
-            <label for="regPass">Password</label>
-            <input id="regPass" type="password" autocomplete="new-password" required>
-          </div>
-          <button class="search-btn auth-submit" type="submit">Create account</button>
-          <div class="auth-alt">Already aboard? <a href="#login">Log in</a></div>
-          <div class="auth-note">▸ Identity service link pending — see follow-ups.md</div>
-        </form>
-      </section>
-
     </main>
+
+    <!-- The footer (credits + privacy links) comes here with issue #6. -->
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

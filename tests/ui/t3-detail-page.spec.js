@@ -18,6 +18,7 @@ async function onlyCategories(page, keep) {
 async function openFromGallery(page, id) {
   await page.locator('.uao-card[data-id="' + id + '"] .uao-name').click();
   await expect(page).toHaveURL(new RegExp("#obj/" + id + "$"));
+  await expect(page.locator("#view-detail")).toHaveClass(/is-active/);   // details come from BGAPI first
   await expect(page.locator("#view-detail")).not.toHaveClass(/is-waiting/);
 }
 
@@ -50,11 +51,19 @@ for (const width of [1440, 390]) {
     test("T3.5 Esc goes back to the gallery; scroll and filters kept", async ({ page }) => {
       await openGallery(page);
       await page.locator('.pill[data-cat="galaxy"]').click();
-      await page.locator('.uao-card[data-id="crab"]').scrollIntoViewIfNeeded();
+      const crab = page.locator('.uao-card[data-id="crab"]');
+      await crab.scrollIntoViewIfNeeded();
+      await crab.focus();
       const scrollBefore = await page.evaluate(() => scrollY);
       expect(scrollBefore).toBeGreaterThan(200);
 
-      await openFromGallery(page, "crab");
+      // Open with the keyboard, not a mouse click: on a busy machine, a
+      // Playwright click can scroll the page a little first (the card still
+      // moves from its hover effect), and then scrollBefore is wrong.
+      await page.keyboard.press("Enter");
+      await expect(page).toHaveURL(/#obj\/crab$/);
+      await expect(page.locator("#view-detail")).toHaveClass(/is-active/);
+      await expect(page.locator("#view-detail")).not.toHaveClass(/is-waiting/);
       await page.keyboard.press("Escape");
 
       await expect(page.locator("#view-gallery")).toHaveClass(/is-active/);

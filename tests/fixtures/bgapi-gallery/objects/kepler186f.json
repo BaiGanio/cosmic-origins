@@ -1,0 +1,28 @@
+{
+  "slug": "kepler186f",
+  "name": "Kepler-186f",
+  "aliases": [
+    "KOI-571.05"
+  ],
+  "category": "exoplanet",
+  "subcategory": "terrestrial",
+  "constellation": "Cygnus",
+  "magnitude": null,
+  "distanceLy": 579,
+  "ra": "19h 54m 36s",
+  "dec": "+43° 57′ 18″",
+  "discovered": "2014",
+  "description": "The first Earth-sized planet ever confirmed in the habitable zone of another star. It circles a red dwarf every 130 days at the outer edge of the zone, where water could persist if a suitable atmosphere exists.",
+  "tags": [],
+  "facts": [],
+  "images": [
+    {
+      "url": "https://images-assets.nasa.gov/image/PIA17999/PIA17999~large.jpg",
+      "thumbUrl": "https://images-assets.nasa.gov/image/PIA17999/PIA17999~thumb.jpg",
+      "credit": "NASA",
+      "license": "public-domain",
+      "sourcePage": "https://images-assets.nasa.gov/image/PIA17999/PIA17999~orig.jpg"
+    }
+  ],
+  "sources": []
+}

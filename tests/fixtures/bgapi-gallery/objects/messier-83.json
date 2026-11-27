@@ -1,0 +1,29 @@
+{
+  "slug": "messier-83",
+  "name": "Southern Pinwheel",
+  "aliases": [
+    "M 83",
+    "NGC 5236"
+  ],
+  "category": "galaxy",
+  "subcategory": "barred spiral",
+  "constellation": "Hydra",
+  "magnitude": 7.54,
+  "distanceLy": 15210000,
+  "ra": "13h 37m 01s",
+  "dec": "−29° 51′ 57″",
+  "discovered": "1752",
+  "description": "A grand-design barred spiral seen nearly face-on, one of the closest and brightest of its kind. It has hosted six observed supernovae, more than almost any other galaxy, and its arms blaze with pink star-forming regions.",
+  "tags": [],
+  "facts": [],
+  "images": [
+    {
+      "url": "https://images-assets.nasa.gov/image/GSFC_20171208_Archive_e001262/GSFC_20171208_Archive_e001262~large.jpg",
+      "thumbUrl": "https://images-assets.nasa.gov/image/GSFC_20171208_Archive_e001262/GSFC_20171208_Archive_e001262~thumb.jpg",
+      "credit": "NASA",
+      "license": "public-domain",
+      "sourcePage": "https://images-assets.nasa.gov/image/GSFC_20171208_Archive_e001262/GSFC_20171208_Archive_e001262~orig.jpg"
+    }
+  ],
+  "sources": []
+}

@@ -1,0 +1,209 @@
+{
+  "version": "test-gallery-2026-11-27",
+  "count": 14,
+  "items": [
+    {
+      "slug": "messier-16",
+      "name": "Eagle Nebula",
+      "aliases": [
+        "M 16",
+        "NGC 6611"
+      ],
+      "category": "nebula",
+      "subcategory": "emission nebula",
+      "constellation": "Serpens",
+      "magnitude": 6,
+      "distanceLy": 5700,
+      "thumbUrl": "https://images-assets.nasa.gov/image/PIA03096/PIA03096~thumb.jpg",
+      "credit": "NASA"
+    },
+    {
+      "slug": "jupiter",
+      "name": "Jupiter",
+      "aliases": [
+        "Sol V"
+      ],
+      "category": "solar_system",
+      "subcategory": "gas giant",
+      "constellation": "—",
+      "magnitude": -2.94,
+      "distanceLy": null,
+      "thumbUrl": "https://images-assets.nasa.gov/image/PIA04866/PIA04866~thumb.jpg",
+      "credit": "NASA"
+    },
+    {
+      "slug": "messier-31",
+      "name": "Andromeda",
+      "aliases": [
+        "M 31",
+        "NGC 224"
+      ],
+      "category": "galaxy",
+      "subcategory": "spiral galaxy",
+      "constellation": "Andromeda",
+      "magnitude": 3.44,
+      "distanceLy": 2537000,
+      "thumbUrl": "https://images-assets.nasa.gov/image/PIA04921/PIA04921~thumb.jpg",
+      "credit": "NASA"
+    },
+    {
+      "slug": "sgra",
+      "name": "Sagittarius A*",
+      "aliases": [
+        "Sgr A*"
+      ],
+      "category": "exotic",
+      "subcategory": "supermassive black hole",
+      "constellation": "Sagittarius",
+      "magnitude": null,
+      "distanceLy": 26673,
+      "thumbUrl": "https://images-assets.nasa.gov/image/PIA12348/PIA12348~thumb.jpg",
+      "credit": "NASA"
+    },
+    {
+      "slug": "messier-45",
+      "name": "Pleiades",
+      "aliases": [
+        "M 45",
+        "Seven Sisters"
+      ],
+      "category": "cluster",
+      "subcategory": "open cluster",
+      "constellation": "Taurus",
+      "magnitude": 1.6,
+      "distanceLy": 444,
+      "thumbUrl": "https://images-assets.nasa.gov/image/PIA09262/PIA09262~thumb.jpg",
+      "credit": "NASA"
+    },
+    {
+      "slug": "crab",
+      "name": "Crab Pulsar",
+      "aliases": [
+        "PSR B0531+21"
+      ],
+      "category": "exotic",
+      "subcategory": "neutron star",
+      "constellation": "Taurus",
+      "magnitude": 16.5,
+      "distanceLy": 6500,
+      "thumbUrl": "https://images-assets.nasa.gov/image/PIA03606/PIA03606~thumb.jpg",
+      "credit": "NASA"
+    },
+    {
+      "slug": "messier-83",
+      "name": "Southern Pinwheel",
+      "aliases": [
+        "M 83",
+        "NGC 5236"
+      ],
+      "category": "galaxy",
+      "subcategory": "barred spiral",
+      "constellation": "Hydra",
+      "magnitude": 7.54,
+      "distanceLy": 15210000,
+      "thumbUrl": "https://images-assets.nasa.gov/image/GSFC_20171208_Archive_e001262/GSFC_20171208_Archive_e001262~thumb.jpg",
+      "credit": "NASA"
+    },
+    {
+      "slug": "messier-42",
+      "name": "Orion Nebula",
+      "aliases": [
+        "M 42",
+        "NGC 1976"
+      ],
+      "category": "nebula",
+      "subcategory": "diffuse nebula",
+      "constellation": "Orion",
+      "magnitude": 4,
+      "distanceLy": 1344,
+      "thumbUrl": "https://images-assets.nasa.gov/image/PIA01322/PIA01322~thumb.jpg",
+      "credit": "NASA"
+    },
+    {
+      "slug": "ngc-5139",
+      "name": "Omega Centauri",
+      "aliases": [
+        "NGC 5139"
+      ],
+      "category": "cluster",
+      "subcategory": "globular cluster",
+      "constellation": "Centaurus",
+      "magnitude": 3.9,
+      "distanceLy": 17090,
+      "thumbUrl": "https://images-assets.nasa.gov/image/PIA13125/PIA13125~thumb.jpg",
+      "credit": "NASA"
+    },
+    {
+      "slug": "betelgeuse",
+      "name": "Betelgeuse",
+      "aliases": [
+        "α Orionis",
+        "HD 39801"
+      ],
+      "category": "star",
+      "subcategory": "red supergiant",
+      "constellation": "Orion",
+      "magnitude": 0.5,
+      "distanceLy": 548,
+      "thumbUrl": "https://images-assets.nasa.gov/image/PIA16680/PIA16680~thumb.jpg",
+      "credit": "NASA"
+    },
+    {
+      "slug": "proxima",
+      "name": "Proxima Centauri",
+      "aliases": [
+        "α Cen C",
+        "GJ 551"
+      ],
+      "category": "star",
+      "subcategory": "red dwarf",
+      "constellation": "Centaurus",
+      "magnitude": 11.13,
+      "distanceLy": 4.246,
+      "thumbUrl": "https://images-assets.nasa.gov/image/GSFC_20171208_Archive_e000968/GSFC_20171208_Archive_e000968~thumb.jpg",
+      "credit": "NASA"
+    },
+    {
+      "slug": "trappist1e",
+      "name": "TRAPPIST-1e",
+      "aliases": [
+        "2MASS J23062928-0502285 e"
+      ],
+      "category": "exoplanet",
+      "subcategory": "terrestrial",
+      "constellation": "Aquarius",
+      "magnitude": null,
+      "distanceLy": 40.7,
+      "thumbUrl": "https://images-assets.nasa.gov/image/PIA24371/PIA24371~thumb.jpg",
+      "credit": "NASA"
+    },
+    {
+      "slug": "kepler186f",
+      "name": "Kepler-186f",
+      "aliases": [
+        "KOI-571.05"
+      ],
+      "category": "exoplanet",
+      "subcategory": "terrestrial",
+      "constellation": "Cygnus",
+      "magnitude": null,
+      "distanceLy": 579,
+      "thumbUrl": "https://images-assets.nasa.gov/image/PIA17999/PIA17999~thumb.jpg",
+      "credit": "NASA"
+    },
+    {
+      "slug": "europa",
+      "name": "Europa",
+      "aliases": [
+        "Jupiter II"
+      ],
+      "category": "solar_system",
+      "subcategory": "icy moon",
+      "constellation": "—",
+      "magnitude": 5.29,
+      "distanceLy": null,
+      "thumbUrl": "https://images-assets.nasa.gov/image/PIA17043/PIA17043~thumb.jpg",
+      "credit": "NASA"
+    }
+  ]
+}

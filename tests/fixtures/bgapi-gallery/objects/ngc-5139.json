@@ -1,0 +1,28 @@
+{
+  "slug": "ngc-5139",
+  "name": "Omega Centauri",
+  "aliases": [
+    "NGC 5139"
+  ],
+  "category": "cluster",
+  "subcategory": "globular cluster",
+  "constellation": "Centaurus",
+  "magnitude": 3.9,
+  "distanceLy": 17090,
+  "ra": "13h 26m 47s",
+  "dec": "−47° 28′ 46″",
+  "discovered": "1677",
+  "description": "The largest known globular cluster of the Milky Way: roughly ten million stars packed into a sphere 150 light-years across. Possibly the stripped core of a dwarf galaxy consumed by our own long ago.",
+  "tags": [],
+  "facts": [],
+  "images": [
+    {
+      "url": "https://images-assets.nasa.gov/image/PIA13125/PIA13125~large.jpg",
+      "thumbUrl": "https://images-assets.nasa.gov/image/PIA13125/PIA13125~thumb.jpg",
+      "credit": "NASA",
+      "license": "public-domain",
+      "sourcePage": "https://images-assets.nasa.gov/image/PIA13125/PIA13125~orig.jpg"
+    }
+  ],
+  "sources": []
+}

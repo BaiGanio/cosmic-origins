@@ -6,6 +6,8 @@ Red first: before a chapter starts, run its group and confirm the tests fail.
 
 > **Automated (2026-11-24):** T0.1, T0.2, T0.4, T1, T2 and T3 run in `tests/ui/`
 > (`npm test`, 3 engines). T0.3 and T0.5 stay manual. Helpers: `tests/helpers/app.js`.
+> **2026-11-27:** T4 runs in `tests/ui/t4-slim-shell.spec.js` (T4.6 waits for issue #6).
+> Do not mix it up with `t4-bgapi.spec.js`: another plan also named its group "T4".
 
 ## 1. Coverage map
 
@@ -25,8 +27,10 @@ Red first: before a chapter starts, run its group and confirm the tests fail.
 - Clean start: DevTools console → `localStorage.clear(); location.reload()`.
 - Overflow check snippet (console):
   `document.documentElement.scrollWidth === window.innerWidth`
-- No seed data needed for Ch 1–3 (mock `CATALOG`, 14 objects).
-  Ch 4–5: brief Part B merged; BGAPI up, or its mock fallback active.
+- Data: the app has no mock catalog any more. In the browser, run BGAPI
+  (`https://localhost:44364`). The automated tests use a fake BGAPI with the same
+  14 objects the mock had (`tests/fixtures/bgapi-gallery/`), so "14 objects" below
+  still holds there.
 
 ## 3. Test cases
 
@@ -48,9 +52,9 @@ Red first: before a chapter starts, run its group and confirm the tests fail.
 | T1.2 | 360 px | Open `#obj/m31`, run overflow snippet | `true`; all telemetry cells fully visible, 2 columns | Long value "2MASS J23062928-0502285 e" (`#obj/trappist1e`) wraps, no overflow |
 | T1.3 | 390 px | Swipe the pill row to the end | Pill row is 1 line; "Exotic" (and later ★) reachable and tappable | 360 px |
 | T1.4 | 360 px | Look at the cards | 1 column, no card clipped, photo square | 768 px shows 2+ columns |
-| T1.5 | 390 px | Look at header | Eyebrow text fully visible (wrapped or short) | — |
+| T1.5 | 390 px | Look at the top bar | Brand name, tagline and Ambience fully visible (the tagline wraps to its own line) | 360 px |
 | T1.6 | 390 px | Look at hero | Prev and next buttons both visible; caption readable | — |
-| T1.7 | 1440 px | Compare with screenshot before change | Desktop layout unchanged | Sidebar collapsed / open |
+| T1.7 | 1440 px | Look at the gallery | Full width: the hero is 1440 px wide; 5 card columns | — *(Changed 2026-11-27: the sidebar is gone, Ch 4.)* |
 
 ### T2 — Gallery controls
 
@@ -83,12 +87,13 @@ Red first: before a chapter starts, run its group and confirm the tests fail.
 
 | ID | Steps | Expected | Edge cases |
 |---|---|---|---|
+| T4.0 | Look everywhere | No login, sign-up, form or password field; no cookies | Open `#login` and `#register`: the gallery shows |
 | T4.1 | Load at 1440 and 390 px | No sidebar, no rail, no collapse tab; top bar with brand + Ambience | Overflow snippet `true` |
-| T4.2 | Click brand | Gallery, filters kept | From detail view → gallery |
+| T4.2 | Click brand | Gallery, filters kept | The detail view covers the top bar: its Back button goes to the gallery, filters kept |
 | T4.3 | Toggle Ambience, reload | Setting kept (`co-ambience`) | Reduced motion: starfield stays off |
 | T4.4 | `localStorage` in DevTools | No `co-sidebar` written | Old value present → ignored |
 | T4.5 | Look for UTC clock | Gone | — |
-| T4.6 | Scroll to bottom | Brief's footer (credits, privacy) present | — |
+| T4.6 | Scroll to bottom | Brief's footer (credits, privacy) present | Waits for issue #6 (the test is `fixme` until then) |
 
 ### T5 — Sort (after brief step B3)
 
@@ -110,3 +115,9 @@ Tests inside a group are independent.
 
 Update this file if a chapter changes an expectation (for example, the real
 catalog makes "14 objects" a different number — use the live count).
+
+- 2026-11-27 (Ch 4): the sidebar is gone, so T1.5 checks the top bar and T1.7
+  checks full width. T4.0 added (no login, old links). T4.2: the detail view is
+  full screen, so its Back button (not the brand) is the way out.
+- 2026-11-27: the mock catalog is gone. BGAPI down or empty: a one-line notice,
+  no cards, no hero (`t4-bgapi.spec.js` T4.8, T4.9).

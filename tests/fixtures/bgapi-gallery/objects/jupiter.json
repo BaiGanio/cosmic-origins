@@ -1,0 +1,28 @@
+{
+  "slug": "jupiter",
+  "name": "Jupiter",
+  "aliases": [
+    "Sol V"
+  ],
+  "category": "solar_system",
+  "subcategory": "gas giant",
+  "constellation": "—",
+  "magnitude": -2.94,
+  "distanceLy": null,
+  "ra": "ephemeris",
+  "dec": "ephemeris",
+  "discovered": "antiquity",
+  "description": "The Solar System's giant: more than twice the mass of all other planets combined. Its Great Red Spot is a storm wider than Earth that has raged for centuries, and its four Galilean moons form a planetary system in miniature.",
+  "tags": [],
+  "facts": [],
+  "images": [
+    {
+      "url": "https://images-assets.nasa.gov/image/PIA04866/PIA04866~large.jpg",
+      "thumbUrl": "https://images-assets.nasa.gov/image/PIA04866/PIA04866~thumb.jpg",
+      "credit": "NASA",
+      "license": "public-domain",
+      "sourcePage": "https://images-assets.nasa.gov/image/PIA04866/PIA04866~orig.jpg"
+    }
+  ],
+  "sources": []
+}
