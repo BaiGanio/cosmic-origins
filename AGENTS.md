@@ -57,7 +57,8 @@ NASA/ESA/ESO/NOIRLab servers. The catalog already loads from BGAPI; keep the
 npx serve .                       # serve locally (or just open index.html)
 node --check src/ui/cosmic.js     # syntax-check any touched JS file
 npm ci && npx playwright install  # once: test tooling + browsers
-npm test                          # UI tests: Chromium, Firefox, WebKit
+npx playwright test tests/ui/<file> --project=chromium   # while coding: 1 browser, only what you touch
+npm test                          # when done: UI tests in Chromium, Firefox, WebKit (once)
 ```
 
 The app has no build, no bundler, no lint. Test tooling (Playwright) lives in

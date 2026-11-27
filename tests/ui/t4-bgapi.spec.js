@@ -100,3 +100,17 @@ test.describe("BGAPI does not answer", () => {
     dropExpectedRequestErrors(consoleErrors);
   });
 });
+
+test.describe("BGAPI answers with an empty catalog", () => {
+  test.use({ api: "empty" });
+
+  test("T4.9 an empty catalog shows the sample data and a notice, no crash", async ({ page }) => {
+    await openGallery(page);
+    await expect(page.locator("#resultCount")).toHaveText("14 objects");
+    await expect(page.locator("#dataNotice")).toHaveText(/catalog is empty/i);
+    await expect(page.locator("#heroName")).not.toBeEmpty();
+    // the hero changes slide every 7 s; it must not crash when it does
+    await page.locator("#heroNext").click();
+    await expect(page.locator("#heroName")).not.toBeEmpty();
+  });
+});

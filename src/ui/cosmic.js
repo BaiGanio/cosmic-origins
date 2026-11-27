@@ -666,16 +666,27 @@ function showDataNotice(text) {
 
 /* Load the whole catalog once. If BGAPI does not answer, use the mock,
    so the page is never blank. */
+/* Show the mock CATALOG, with a small notice that says why */
+function useSampleData(notice) {
+  objects = CATALOG;
+  dataSource = "mock";
+  showDataNotice(notice);
+}
+
 async function loadCatalog() {
   try {
     if (!API_BASE) throw new Error("No API address set");
     const data = await getJson("/catalog");
+    if (!data.items.length) {
+      /* BGAPI answers, but has no objects yet (nothing imported):
+         show the sample data, so the page is never empty */
+      useSampleData("Live catalog is empty · showing sample data");
+      return;
+    }
     objects = data.items.map(objectFromCatalogItem);
     dataSource = "api";
   } catch (err) {
-    objects = CATALOG;
-    dataSource = "mock";
-    showDataNotice("Live catalog not reachable · showing sample data");
+    useSampleData("Live catalog not reachable · showing sample data");
   }
 }
 

@@ -7,7 +7,8 @@
 //    blocked AND makes the test fail, so a new CDN cannot sneak in.
 //    BGAPI: by default there is none, so the app shows the mock catalog.
 //    test.use({ api: "fixture" }) gives a fake BGAPI with the files in
-//    tests/fixtures/bgapi/; test.use({ api: "down" }) gives one that never answers.
+//    tests/fixtures/bgapi/; test.use({ api: "down" }) gives one that never answers;
+//    test.use({ api: "empty" }) gives one whose catalog has no objects yet.
 // 2. Clean localStorage before the app runs (once per test; a reload keeps
 //    what the test itself saved).
 // 3. Console watch: any console error or page error fails the test, except
@@ -50,6 +51,13 @@ function fakeApiAnswer(url) {
            body: JSON.stringify({ title: "The resource was not found.", status: 404 }) };
 }
 
+// What a BGAPI with nothing imported yet answers on /catalog
+const EMPTY_CATALOG_ANSWER = {
+  status: 200, contentType: "application/json",
+  headers: { "access-control-allow-origin": "*" },
+  body: JSON.stringify({ version: "00000000-0000-0000-0000-000000000000", count: 0, items: [] }),
+};
+
 // Console messages we do not count as our bugs. Keep this list short.
 const IGNORED_CONSOLE_ERRORS = [
   /decod/i,                          // "Image could not be decoded", "decode error"
@@ -76,7 +84,7 @@ const test = base.test.extend({
   // Delay for NASA picture responses, in ms. Change it with test.use({ imageDelayMs: 1000 }).
   imageDelayMs: [0, { option: true }],
 
-  // Which BGAPI the app sees: "none" (mock catalog), "fixture" or "down"
+  // Which BGAPI the app sees: "none" (mock catalog), "fixture", "down" or "empty"
   api: ["none", { option: true }],
 
   // Each fake BGAPI request: its path, like "/api/cosmic/catalog"
@@ -101,6 +109,7 @@ const test = base.test.extend({
       if (host === FAKE_API_HOST) {
         apiRequests.push(new URL(url).pathname);
         if (api === "down") return route.abort("connectionrefused");
+        if (api === "empty") return route.fulfill(EMPTY_CATALOG_ANSWER);
         return route.fulfill(fakeApiAnswer(url));
       }
 

@@ -165,26 +165,30 @@ a:hover { text-decoration: underline; }
 .mark-ion        { stroke: var(--ion); }
 .mark-signal     { stroke: var(--signal); }
 .mark-signal-dot { fill: var(--signal); }
-.brand-text {
-  display: flex;
-  align-items: baseline;
-  gap: 14px;
-  white-space: nowrap;
-  min-width: 0;
-}
 .brand-name {
   font-family: var(--f-display);
   font-weight: 700;
   font-size: 15px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
+  white-space: nowrap;
 }
-.brand-sub {
-  font-family: var(--f-mono);
-  font-size: 9.5px;
-  letter-spacing: 0.18em;
-  color: var(--text-mute);
+
+/* The tagline in the middle of the bar. On narrow screens it moves
+   to its own line under the brand and Ambience (see RESPONSIVE). */
+.topbar-eyebrow {
+  flex: 1;
+  text-align: center;
+  font-family: var(--f-display);
+  font-weight: 600;
+  font-size: clamp(13px, 1.6vw, 17px);
+  letter-spacing: 0.22em;
   text-transform: uppercase;
+  color: var(--text-hi);
+}
+.topbar-eyebrow em {
+  font-style: normal;
+  color: var(--ion);
 }
 
 /* The Ambience switch: ion cyan when on, quiet when off */
@@ -828,8 +832,11 @@ html.opening-detail body { visibility: hidden; }
 /* ============================================================
    RESPONSIVE
    ============================================================ */
+@media (max-width: 991px) {
+  .topbar { flex-wrap: wrap; row-gap: 8px; }
+  .topbar-eyebrow { order: 3; flex-basis: 100%; text-align: left; }   /* own line, under the bar */
+}
 @media (max-width: 576px) {
-  .brand-sub { display: none; }      /* phones: the name alone, so Ambience fits next to it */
   .detail-live { display: none; }    /* no room next to the back button */
   .telemetry { grid-template-columns: repeat(2, 1fr); }
   .uao-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }   /* 1 column under ~420 px of content */

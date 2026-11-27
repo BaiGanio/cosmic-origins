@@ -14,7 +14,7 @@
    catalogs → PostgreSQL → API on the Pi 5 k3s cluster).
 2. *(unknown — lost in reconstruction)*
 3. **Auth — LATER STAGE.** No user accounts for now (decided 2026-11-24). The
-   brief removes the `data-stub` forms. Accounts may come back
+   login and sign-up forms were removed in #4 (2026-11-27). Accounts may come back
    later with Keycloak (baiganio-platform `plans/cosmic-origins/README.md` §14).
 4. **Server-side favorites — LATER STAGE.** Favorites stay in `localStorage` `co-favs`
    (storing slugs). Server sync needs accounts (task 3).

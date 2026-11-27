@@ -78,9 +78,9 @@ for (const width of [360, 390]) {
       }
     });
 
-    test("T1.5 top bar: brand name and Ambience are not cut", async ({ page }) => {
+    test("T1.5 top bar: brand name, tagline and Ambience are not cut", async ({ page }) => {
       await openGallery(page);
-      for (const selector of [".brand-name", "#ambienceBtn"]) {
+      for (const selector of [".brand-name", ".topbar-eyebrow", "#ambienceBtn"]) {
         const cut = await page.locator(selector).evaluate(el => el.scrollWidth > el.clientWidth);
         expect(cut, selector).toBe(false);
         expect(await allInsideViewportWidth(page.locator(selector))).toBe(true);
