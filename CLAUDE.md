@@ -30,8 +30,8 @@ Direction (approved 2026-11-24, see `docs/briefs/cosmic-origins-platform.md`): t
 backend moves to the BaiGanio platform — data from BGAPI
 (`https://api.baiganio.io/api/cosmic`). **No user accounts** for now: no login, no
 sign-up; favorites stay in `localStorage`. Only objects with a real photo are shown; image files stay on
-NASA/ESA/ESO/NOIRLab servers. Until that lands, leave the `CATALOG` mock shape
-as it is; the brief removes the `data-stub` forms and `initAuthStubs()` (`src/core/auth.js` is already gone).
+NASA/ESA/ESO/NOIRLab servers. The catalog already loads from BGAPI; keep the
+`CATALOG` mock shape as the fallback. Open work is tracked as GitHub issues (#3–#8).
 
 ## Co-pilot Contract
 
@@ -88,8 +88,8 @@ only port BGAPI's dev CORS allows). Tests fake BGAPI: `api` option in `tests/hel
 ## Database
 
 None yet. `src/models/UniversalAstronomicalObject.js` (UAO) is the shape every source
-catalog gets parsed into. The shell (`src/ui/cosmic.js`) renders a mock `CATALOG`
-const whose fields mirror the UAO model; the brief replaces it with BGAPI data.
+catalog gets parsed into. The shell (`src/ui/cosmic.js`) loads `GET /catalog` from BGAPI
+and falls back to the mock `CATALOG` const, whose fields mirror the UAO model.
 Favorites live in localStorage (key `co-favs`); no user accounts for now.
 
 ## Module Coupling Map
@@ -200,7 +200,8 @@ gitignored local scratch (raw downloads in `var/data/`); never put docs there.
 
 | Topic | File |
 |-------|------|
-| Roadmap: wiring the redesign to real services | `docs/follow-ups.md` (reconstructed 2026-07-10 — the original was lost) |
+| Open work (what to do next) | GitHub issues: `gh issue list` |
+| Roadmap: later-stage ideas and history | `docs/follow-ups.md` (reconstructed 2026-07-10 — the original was lost) |
 | Brief: move to BGAPI + Keycloak (contract, steps, checks) | `docs/briefs/cosmic-origins-platform.md` |
 | Data sources, licenses, image rules | `docs/data-sources.md` |
 | Old plan, partly superseded (fetch/normalize steps still apply) | `docs/plans/real-data-pipeline.md` + `-tests.md` |
