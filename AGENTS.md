@@ -1,10 +1,10 @@
-# CLAUDE.md — Cosmic Origins
+# AGENTS.md — Cosmic Origins
 
 > This file orients AI agents working in this repo: what the project is, where the
 > sharp edges are, and how the developer wants to fly. It is a light marker, read at
 > the start of every session — keep it short, point to deeper docs, never duplicate them.
 >
-> *On lineage: this template is the form; every filled CLAUDE.md is a particular
+> *On lineage: this template is the form; every filled AGENTS.md is a particular
 > that partakes of it. But the truth of a project lives in neither file — it lives
 > in the developer. The protocol below exists only to recollect it.*
 >
@@ -31,7 +31,7 @@ backend moves to the BaiGanio platform — data from BGAPI
 (`https://api.baiganio.io/api/cosmic`). **No user accounts** for now: no login, no
 sign-up; favorites stay in `localStorage`. Only objects with a real photo are shown; image files stay on
 NASA/ESA/ESO/NOIRLab servers. The catalog already loads from BGAPI; keep the
-`CATALOG` mock shape as the fallback. Open work is tracked as GitHub issues (#3–#8).
+`CATALOG` mock shape as the fallback. Open work is tracked as GitHub issues (see Issues below). Data import is BGAPI's job, not this repo's (#3 closed).
 
 ## Co-pilot Contract
 
@@ -73,7 +73,7 @@ entire page, which is why `node --check` is non-negotiable.
 - **3D**: three.js (CDN) — the starfield in `cosmic.js`
 - **Backend**: BGAPI `/api/cosmic` (local dev only so far); the mock `CATALOG` is the fallback when it does not answer
 - **Data & imagery**: NASA images API (`images-api.nasa.gov`) today; ESA and other
-  free open catalogs planned as parse-and-import sources
+  free open catalogs planned as sources (BGAPI imports them; this repo only reads)
 - **Testing**: Playwright Test, offline (NASA + CDN served from local files) — see
   `tests/helpers/app.js`
 - **Hosting**: GitHub Pages via `.github/workflows/ui-tests.yml` — a push to `master`
@@ -181,6 +181,18 @@ questions, prefer one-shot execution over iterative back-and-forth.
 2. **Frontier model** — design one-shots, architecture, and anything touching the
    design system's look and feel, batched into a single session.
 
+## Issues
+
+Open work lives in GitHub issues. Each open issue has one number label: `1`, `2`, `3` …
+
+- Lower number goes first. Issues with the same number do not depend on each other.
+- An issue that must wait has a `Depends on: #N` line at the top of its body.
+- **Creating an issue:** give it a number label and, if needed, a `Depends on` line.
+  If it must go between two issues, tell Lyuben which labels to shift; do not renumber alone.
+- **Working on an issue:** read its `Depends on` line first. If one of those issues is
+  still open, stop and tell Lyuben.
+- List in order: `gh issue list --json number,title,labels`.
+
 ## Documentation Sync
 
 Only two docs exist; keep them honest:
@@ -200,7 +212,7 @@ gitignored local scratch (raw downloads in `var/data/`); never put docs there.
 
 | Topic | File |
 |-------|------|
-| Open work (what to do next) | GitHub issues: `gh issue list` |
+| Open work (what to do next) | GitHub issues: `gh issue list` (order rules: § Issues) |
 | Roadmap: later-stage ideas and history | `docs/follow-ups.md` (reconstructed 2026-07-10 — the original was lost) |
 | Brief: move to BGAPI + Keycloak (contract, steps, checks) | `docs/briefs/cosmic-origins-platform.md` |
 | Data sources, licenses, image rules | `docs/data-sources.md` |
