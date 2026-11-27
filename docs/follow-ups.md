@@ -25,8 +25,8 @@
    `cosmic.js` needs.
 8. **UI polish — plan in `plans/ui-polish.md`, chapters 1–5.** Ch 1–3 DONE 2026-11-24
    (tests T1–T3 green in `tests/ui/`). Ch 4 → issue #4. Ch 5 → issue #7.
-9. **Automated UI tests — DONE 2026-11-24.** Plan: [`plans/ui-tests.md`](plans/ui-tests.md).
-   Playwright, 3 engines. Pages Source switch → issue #8.
+9. **Automated UI tests — DONE 2026-11-24.** Code: `tests/`,
+   `playwright.config.js`. Playwright, 3 engines. Pages Source switch → issue #8.
 
 ## New follow-ups (from real-data-pipeline plan, out of its scope)
 

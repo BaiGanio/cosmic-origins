@@ -75,7 +75,7 @@ entire page, which is why `node --check` is non-negotiable.
 - **Data & imagery**: NASA images API (`images-api.nasa.gov`) today; ESA and other
   free open catalogs planned as parse-and-import sources
 - **Testing**: Playwright Test, offline (NASA + CDN served from local files) — see
-  `docs/plans/ui-tests.md`
+  `tests/helpers/app.js`
 - **Hosting**: GitHub Pages via `.github/workflows/ui-tests.yml` — a push to `master`
   deploys only after the tests pass (needs Pages Source = "GitHub Actions")
 
