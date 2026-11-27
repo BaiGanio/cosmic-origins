@@ -94,12 +94,11 @@ Favorites live in localStorage (key `co-favs`); no user accounts for now.
 | Coupling | Why |
 |----------|-----|
 | `src/ui/cosmic.js` `CATALOG` mock ↔ `src/models/UniversalAstronomicalObject.js` | Mock field names mirror the UAO schema; renaming a UAO field silently breaks the planned BGAPI wiring |
-| `index.html` `data-stub` forms ↔ `initAuthStubs()` in `cosmic.js` | The brief removes both together |
 | `styles/cosmic.css` tokens ↔ classes used in `index.html` / `cosmic.js` | `brackets`, `--ion` / `--signal` roles, `--ease-hud` motion — UI code must consume tokens, never raw values |
 
 ## Security Model
 
-- No accounts, no login: the `data-stub` forms are visual only.
+- No accounts, no login, no forms, no cookies (#4 removed the old visual-only forms).
 - Client-only app — nothing in this repo can enforce access control; assume all repo
   code is public. Access control lives in BGAPI.
 - No secrets belong in this repo.

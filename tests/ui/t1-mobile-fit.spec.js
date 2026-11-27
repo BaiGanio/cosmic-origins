@@ -78,10 +78,13 @@ for (const width of [360, 390]) {
       }
     });
 
-    test("T1.5 header eyebrow text is not cut", async ({ page }) => {
+    test("T1.5 top bar: brand name and Ambience are not cut", async ({ page }) => {
       await openGallery(page);
-      const cut = await page.locator(".topbar-eyebrow").evaluate(el => el.scrollWidth > el.clientWidth);
-      expect(cut).toBe(false);
+      for (const selector of [".brand-name", "#ambienceBtn"]) {
+        const cut = await page.locator(selector).evaluate(el => el.scrollWidth > el.clientWidth);
+        expect(cut, selector).toBe(false);
+        expect(await allInsideViewportWidth(page.locator(selector))).toBe(true);
+      }
     });
   });
 }
@@ -112,33 +115,21 @@ test.describe("width 768", () => {
 test.describe("width 1440", () => {
   test.use({ viewport: VIEWPORTS[1440] });
 
-  // Desktop numbers measured from the app on 2026-11-24 (Chromium, Firefox, WebKit agree).
-  // If a planned design change moves them, update them here on purpose.
-  const DESKTOP = {
-    open:      { sidebarWidth: 248, gridColumns: 4, heroWidth: 1192 },
-    collapsed: { sidebarWidth: 72,  gridColumns: 4, heroWidth: 1368 },
-  };
+  // Desktop numbers measured from the app on 2026-11-27, after the sidebar
+  // became a top bar (issue #4). If a planned design change moves them,
+  // update them here on purpose.
+  const DESKTOP = { gridColumns: 5, heroWidth: 1440 };
 
   async function measureDesktop(page) {
     return {
-      sidebarWidth: Math.round((await page.locator("#sidebar").boundingBox()).width),
       gridColumns: await columnCount(visibleCards(page)),
       heroWidth: Math.round((await page.locator("#hero").boundingBox()).width),
     };
   }
 
-  // The sidebar slides (CSS transition), so poll until the sizes settle.
-  test("T1.7 desktop layout unchanged — sidebar open", async ({ page }) => {
+  test("T1.7 desktop layout: full width, 5 card columns", async ({ page }) => {
     await openGallery(page);
     expect(await hasNoSideScroll(page)).toBe(true);
-    await expect.poll(() => measureDesktop(page)).toEqual(DESKTOP.open);
-  });
-
-  test("T1.7 desktop layout unchanged — sidebar collapsed", async ({ page }) => {
-    await openGallery(page);
-    await page.locator("#collapseBtn").click();
-    await expect(page.locator("#sidebar")).toHaveClass(/is-collapsed/);
-    await expect.poll(() => measureDesktop(page)).toEqual(DESKTOP.collapsed);
-    expect(await hasNoSideScroll(page)).toBe(true);
+    await expect.poll(() => measureDesktop(page)).toEqual(DESKTOP);
   });
 });

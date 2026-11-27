@@ -879,7 +879,6 @@ function initFilters() {
 /* ------------------------------------------------------------
    6. DETAIL VIEWER
    ------------------------------------------------------------ */
-let lastRoute = "gallery";
 let galleryScrollY = 0;        // where the gallery was, so we can go back to the same place
 
 /* The one place that knows what a link to an object looks like.
@@ -907,8 +906,8 @@ function stepDetail(step) {
 
 /* Back to the gallery (the "Back" button and the Esc key) */
 function closeDetail() {
-  location.hash = lastRoute === "gallery" ? "" : lastRoute;
-  showView(lastRoute);
+  location.hash = "";
+  showView("gallery");
 }
 
 /* Open one object's page. With BGAPI, the details (all photos, ra, dec …)
@@ -1157,68 +1156,43 @@ function loadPicture(img, url, whenReady) {
 }
 
 /* ------------------------------------------------------------
-   7. ROUTER — hash-based views: gallery (default), login,
-   register, offline module stub
+   7. ROUTER — hash-based views: "#obj/<id>" opens one object,
+   any other hash (also the old "#login" and "#register") shows
+   the gallery. The 404 view is opened by openDetail().
    ------------------------------------------------------------ */
-const ROUTES = ["gallery", "login", "register", "detail"];
-
 function showView(name) {
   const leavingDetail = document.body.classList.contains("detail-open") && name !== "detail";
   const enteringDetail = !document.body.classList.contains("detail-open") && name === "detail";
   if (enteringDetail) galleryScrollY = window.scrollY;
   $$(".view").forEach(v => v.classList.toggle("is-active", v.id === "view-" + name));
-  $$(".side-link[data-route]").forEach(l =>
-    l.classList.toggle("is-active", l.dataset.route === name));
   document.body.classList.toggle("detail-open", name === "detail");
-  if (name !== "detail" && name !== "notfound") lastRoute = name;
   if (leavingDetail) window.scrollTo(0, galleryScrollY);   // back where the reader was
 }
 
 function route() {
-  const h = location.hash.replace("#", "") || "gallery";
+  const h = location.hash.replace("#", "");
   document.documentElement.classList.remove("opening-detail");   // see the script in index.html <head>
   if (h.startsWith("obj/")) { openDetail(h.slice(4)); return; }
-  showView(ROUTES.includes(h) && h !== "detail" ? h : "gallery");
+  showView("gallery");
 }
 
 /* ------------------------------------------------------------
-   8. SHELL: sidebar collapse (bug B), ambience toggle, clock
+   8. SHELL: the Ambience switch in the top bar. It turns the
+   moving starfield on and off; the choice is kept in
+   localStorage ("co-ambience": "0" = off).
    ------------------------------------------------------------ */
+function setAmbience(on) {
+  document.body.classList.toggle("low-ambience", !on);
+  localStorage.setItem("co-ambience", on ? "1" : "0");
+  const button = $("#ambienceBtn");
+  button.setAttribute("aria-pressed", String(on));
+  button.querySelector(".bi").className = "bi " + (on ? "bi-star-half" : "bi-stars");
+}
+
 function initShell() {
-  const sidebar = $("#sidebar");
-
-  const setCollapsed = (on) => {
-    sidebar.classList.toggle("is-collapsed", on);
-    document.body.classList.toggle("sidebar-collapsed", on);
-    localStorage.setItem("co-sidebar", on ? "1" : "0");
-    $("#collapseBtn").setAttribute("aria-expanded", String(!on));
-  };
-  $("#collapseBtn").addEventListener("click", () =>
-    setCollapsed(!sidebar.classList.contains("is-collapsed")));
-  // restore persisted state; force rail on narrow screens
-  setCollapsed(localStorage.getItem("co-sidebar") === "1" || window.innerWidth < 992);
-  window.addEventListener("resize", () => {
-    if (window.innerWidth < 992) setCollapsed(true);
-  });
-
-  // ambience toggle (replaces the old dark/light switch — the
-  // cockpit is dark by design; this controls motion & glow)
-  $("#ambienceBtn").addEventListener("click", () => {
-    const off = document.body.classList.toggle("low-ambience");
-    localStorage.setItem("co-ambience", off ? "0" : "1");
-    $("#ambienceBtn .bi").className = "bi " + (off ? "bi-stars" : "bi-star-half");
-    $("#ambienceLabel").textContent = off ? "Ambience off" : "Ambience on";
-  });
-  if (localStorage.getItem("co-ambience") === "0") $("#ambienceBtn").click();
-
-  // UTC mission clock
-  const clock = $("#systemClock");
-  const tick = () => {
-    const d = new Date();
-    clock.textContent = "UTC " + d.toISOString().slice(11, 19) +
-      " · " + d.toISOString().slice(0, 10);
-  };
-  tick(); setInterval(tick, 1000);
+  $("#ambienceBtn").addEventListener("click", () =>
+    setAmbience(document.body.classList.contains("low-ambience")));
+  if (localStorage.getItem("co-ambience") === "0") setAmbience(false);
 }
 
 /* ------------------------------------------------------------
@@ -1268,17 +1242,6 @@ function initDelegation() {
 }
 
 /* ------------------------------------------------------------
-   10. AUTH STUBS — visual only; wiring lives in follow-ups.md
-   ------------------------------------------------------------ */
-function initAuthStubs() {
-  $$("form[data-stub]").forEach(f => f.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const note = f.querySelector(".auth-note");
-    note.textContent = "▸ Access control is not yet linked to the identity service. See follow-ups.md.";
-  }));
-}
-
-/* ------------------------------------------------------------
    BOOT
    ------------------------------------------------------------ */
 document.addEventListener("DOMContentLoaded", () => {
@@ -1287,7 +1250,6 @@ document.addEventListener("DOMContentLoaded", () => {
   initFilters();
   initDelegation();
   initPhotoList();
-  initAuthStubs();
   syncPills();
   $("#resultCount").textContent = "Loading catalog…";
   loadCatalog().then(() => {
