@@ -1,5 +1,10 @@
 # Plan: UI polish — mobile fit, gallery controls, detail page, slim shell
 
+> **Status 2026-11-27:** Chapters 1–4 are done (Ch 4 = issue #4). Chapter 5 (sort)
+> is issue #7. The mock `CATALOG` is gone: all data comes from BGAPI, and the tests
+> use fake BGAPI data (`tests/fixtures/bgapi-gallery/`). Text below that talks
+> about the mock or the sidebar describes the state before that work.
+
 ## 1. Objective
 
 Fix the weak and unfinished parts of the current UI (phone layout, gallery
@@ -164,7 +169,7 @@ phones (72 px rail).
 | Risk | Mitigation |
 |---|---|
 | Ch 1–3 and the brief edit the same files (`index.html`, `cosmic.js`, `cosmic.css`) | Ch 1–3 do not touch auth forms, routing format or data loading. Merge Ch 1–3 before the brief starts. Brief agent reads this plan's "touched" list. |
-| Favorites store mock ids (`m31`) today; brief maps them to slugs | Ch 2.4 reads whatever `co-favs` holds; the brief's one-time id → slug map keeps it working. |
+| Favorites store mock ids (`m31`) today; brief maps them to slugs | Ch 2.4 reads whatever `co-favs` holds. *(2026-11-27: the id → slug map was dropped with the mock; old `m31` stars are gone.)* |
 | Prev/next hash format changes in the brief | One link helper (3.6); the brief edits one line. |
 | Sticky / scrolling pill row hides pills on phones | Test T1.3 swipes to the last pill. |
 | Photo cap (60vh) crops tall images badly | `object-position: center` + full image one click away (3.2). |
@@ -177,4 +182,4 @@ phones (72 px rail).
 |---|---|
 | `README.md` | New features: favorites-only filter, sort, keyboard (Esc, ← / →), no sidebar |
 | `docs/follow-ups.md` | Add "UI polish" with chapter status; mark chapters DONE as they land |
-| `CLAUDE.md` | Coupling map: shell no longer has a sidebar (`co-sidebar` gone) after Ch 4 |
+| `AGENTS.md` (was `CLAUDE.md`) | Coupling map: shell no longer has a sidebar (`co-sidebar` gone) after Ch 4 — done 2026-11-27 |
