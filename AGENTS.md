@@ -131,32 +131,31 @@ directly, so review-before-commit is also review-before-deploy.
 ## Plans
 
 When asked to write or design a plan — architecture, feature design, data-import
-strategy, refactor roadmap — produce a plan document at `docs/plans/<slug>.md`
-(kebab-case slugs; committed, so the team can read them and they cannot be lost).
+strategy, refactor roadmap — write it in the body of its GitHub issue: one issue holds
+the goal, the plan and the tests. No plan files. (Old plans in `docs/plans/` stay until done.)
 
 ### Plan structure
 Every plan must include:
 
 1. **Objective** — one sentence: the problem being solved and why it matters
 2. **Diagram** — a [Mermaid](https://mermaid.js.org/) diagram of key components and
-   relationships. For UI mockups, generate a PNG alongside as `<slug>.png`.
+   relationships. For UI mockups, attach a PNG to the issue.
 3. **Model recommendation** — which model to use for execution, with estimated
    tokens/cost and a one-sentence rationale (see Model selection below)
 4. **Steps** — ordered, each with a concrete acceptance criterion ("works when…") and
-   a reference to the companion test file where its tests are defined
+   the test group in the issue's Tests section
 5. **Risks** — what can go wrong, mitigation for each
 6. **Doc updates** — which files need changes after implementation (see Documentation Sync)
 
 ### TDD — Tests First
 
-Every plan MUST have a companion test file at `docs/plans/<slug>-tests.md`, produced
-alongside the plan. When the plan is executed, its verification criteria are validated
+Every plan MUST have a **Tests** section in the same issue, written with the plan. When the plan is executed, its verification criteria are validated
 **before** the implementation is considered complete — verify-first, not verify-after.
 In this repo a "test" is usually a provable browser behavior (exact steps + expected
 result) plus `node --check` on touched files; automate it in `tests/ui/` (Playwright)
 when it can be measured.
 
-**Test file structure** (`docs/plans/<slug>-tests.md`):
+**Tests section structure:**
 
 1. **Coverage map** — table mapping each plan step to a test group, so nothing falls
    through the cracks
@@ -167,8 +166,8 @@ when it can be measured.
 4. **Diagrams** (optional) — Mermaid, when a flow is easier to see than read
 5. **Required setup** — fixtures, seed data, config
 
-Execution loop: read the test file first → confirm the current state fails the
-criteria (red) → implement until green → update the test file if discoveries change
+Execution loop: read the Tests section first → confirm the current state fails the
+criteria (red) → implement until green → update the issue if discoveries change
 expectations → confirm the coverage map still holds.
 
 ### Model selection
