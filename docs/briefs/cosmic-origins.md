@@ -1,6 +1,6 @@
 # Brief: Cosmic Origins on BGAPI (cosmic-origins)
 
-> Status: APPROVED 2026-11-24. Revised 2026-11-27 (BaiGanio/baiganio-platform#1, #2, #3). Copied from baiganio-platform `plans/cosmic-origins/brief-cosmic-origins.md`. Do not edit it here.
+> Status: APPROVED 2026-11-24. Revised 2026-11-28 (BaiGanio/baiganio-platform#1, #2, #3, #4, #6). Copied from baiganio-platform `plans/cosmic-origins/brief-cosmic-origins.md`. Do not edit it here.
 > To change it, open an issue in `BaiGanio/baiganio-platform` (template "Change request").
 > Master plan: baiganio-platform `plans/cosmic-origins/README.md` (private).
 > This brief has all you need. You do not need the platform repo.
@@ -15,40 +15,11 @@ Replace Firebase and the mock `CATALOG` with BGAPI:
 Read `CLAUDE.md` first. Its rules hold: never commit, `node --check` every
 touched file, load the app and click the changed flow, code a junior can read.
 This brief replaces the DB, API and k3s steps of `docs/plans/real-data-pipeline.md`.
-Its fetch and normalize steps stay, with the new target shape below.
+Its fetch and normalize steps are dropped too. The import has its own repo,
+`BaiGanio/cosmic-importer`. This repo has no import code and needs no Keycloak.
 
-## Part A: import scripts (`tools/import/`, Node, runs on the Mac)
+## Website
 
-Sources, filters and licenses: `docs/data-sources.md`. That file is the source of truth.
-
-1. `fetch-sources.js`: download raw files to `var/data/` (gitignored).
-   Write to a temp name, rename when done. Safe to run twice.
-2. `normalize-<source>.js`: one per source. Output: objects in the shape below.
-3. `enrich-images.js`: find **real photos** only. No concept art, ever.
-   - Search `images-api.nasa.gov` by name + aliases + category word (no key, no `Authorization` header).
-   - Drop results whose title or keywords contain "artist", "illustration", "concept",
-     "rendering" or "animation". Drop any URL in `tools/import/image-blocklist.json`.
-   - Add hand-picked photos from `tools/import/hero-images.json` (ESA/Hubble, ESA/Webb, ESO, NOIRLab).
-   - **An object with no photo left is not uploaded.** Write it to `var/data/no-image.json`
-     (slug, name, category, what was searched).
-4. `upload.js`: get a token, then send batches of max 1000 to `POST /import`.
-   Print `inserted / updated / rejected` and the count in `no-image.json`.
-   Also print the object count and the gzip size of the catalog. Warn at 16,000
-   objects or 800 KB (80% of the scale trigger: 20k objects or 1 MB).
-   Stop on a 401 or 403. Wait on a 429 (read `Retry-After`).
-
-Config is from environment variables only. Never commit a secret.
-
-| Variable | Dev value | Real value |
-|---|---|---|
-| `KEYCLOAK_ISSUER` | `http://localhost:8080/realms/baiganio-dev` | `https://auth.baiganio.io/realms/baiganio` |
-| `COSMIC_IMPORTER_CLIENT_ID` | `cosmic-importer` | `cosmic-importer` |
-| `COSMIC_IMPORTER_SECRET` | `cosmic-importer-secret` | from Lyuben, shell only |
-| `BGAPI_BASE_URL` | `https://localhost:44364` | `https://api.baiganio.io` |
-
-Token: `POST {issuer}/protocol/openid-connect/token` with `grant_type=client_credentials`.
-
-## Part B: website
 
 1. `src/core/api-config.js`: the API URL. Pick the dev URL when `location.hostname` is
    `localhost`. Run locally with `npx serve -l 4300 .` (BGAPI's dev CORS allows this port).
@@ -66,6 +37,7 @@ Token: `POST {issuer}/protocol/openid-connect/token` with `grant_type=client_cre
    slug is not in `/catalog`, and treat a 404 from `GET /objects/{slug}` as "gone", not as an error.
 5. **Credits.** Detail panel shows each image's `credit` + `license` + `sourcePage`
    and each `sources` entry. Footer links to a credits section (CC-BY-SA needs it).
+   What to show, and the credit text for each source: `docs/data-sources.md`, "Credits we must show".
 6. Remove the `Authorization` header and key from `src/ui/nasa.js`.
 7. **Privacy.**
    - **Self-host fonts and libraries.** Copy Chakra Petch, IBM Plex Sans and IBM Plex
@@ -99,7 +71,8 @@ Token: `POST {issuer}/protocol/openid-connect/token` with `grant_type=client_cre
   "discovered": "964", "description": "", "tags": ["local-group"],
   "facts":   [{ "key": "diameter", "label": "Diameter", "value": "152000", "unit": "ly" }],
   "images":  [{ "url": "https://images-assets.nasa.gov/...", "thumbUrl": "...", "credit": "NASA/JPL-Caltech",
-                "license": "public-domain", "sourcePage": "https://images.nasa.gov/details/..." }],
+                "license": "public-domain", "sourcePage": "https://images.nasa.gov/details/...",
+                "description": "The text of the image page." }],
   "sources": [{ "catalog": "OpenNGC", "catalogId": "NGC0224", "license": "CC-BY-SA-4.0", "url": "https://github.com/mattiaverga/OpenNGC" }],
   "updatedAt": "2026-11-24T10:00:00Z"
 }
@@ -109,14 +82,15 @@ Token: `POST {issuer}/protocol/openid-connect/token` with `grant_type=client_cre
 - `category`: `galaxy, nebula, cluster, star, exoplanet, solar_system, exotic` (the website's groups).
 - `/catalog` item: `slug, name, aliases, category, subcategory, constellation, magnitude, distanceLy, thumbUrl, credit`.
 - Every object has at least 1 image. BGAPI rejects an object with none.
+- Image `description`: optional, plain text, max 4000 characters. Only in `GET /objects/{slug}`, not in `/catalog`.
+  You may show it in the detail panel. Set it as text (`textContent`), never as HTML.
 - Image hosts BGAPI accepts: `images-assets.nasa.gov`, `cdn.esahubble.org`, `cdn.esawebb.org`, `cdn.eso.org`, `storage.noirlab.edu`.
 - Scale trigger: past 20k objects or 1 MB gzip, search moves to the server (master plan §11).
 
 ## Works when
 
 1. `node --check` passes on every touched file.
-2. Part A: `upload.js` against local BGAPI prints `rejected: 0`. A second run prints `inserted: 0`.
-3. Part B, at `http://localhost:4300/`:
+2. At `http://localhost:4300/`:
    - The grid shows real objects from BGAPI. Filters and search work with **no** extra network request.
    - Every card has a real photo. No card shows a placeholder image.
    - Add a favorite. Reload. It is still there.
@@ -128,5 +102,5 @@ Token: `POST {issuer}/protocol/openid-connect/token` with `grant_type=client_cre
 
 ## Doc updates (confirm with Lyuben first, per `CLAUDE.md`)
 
-`README.md` (architecture, credits, import how-to), `CLAUDE.md` (stack, config,
+`README.md` (architecture, credits, a link to `BaiGanio/cosmic-importer` for the import), `CLAUDE.md` (stack, config,
 no auth, coupling map: API shape ↔ UAO model), `docs/follow-ups.md` (tasks 1, 3, 4 changed).
